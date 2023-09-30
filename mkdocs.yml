@@ -4,6 +4,15 @@ docs_dir: Docs
 repo_url: https://github.com/Italink/EchoX
 repo_name: Github
 nav:
+    - '首页' : 'index.md'
+    - '教程' :
+        - 'Tutorial/index.md'
+    - '展品' :
+        - 'Exhibits/index.md'
+    - '反馈' :
+        - 'Feedback/index.md'
+    - '资讯' :
+        - 'News/index.md'
 theme:
     icon:
         repo: fontawesome/brands/github
@@ -41,8 +50,8 @@ theme:
         icon: material/brightness-4
 plugins:
     - blog:
-        blog_dir: Blog
-        post_dir: "Blog/Posts"
+        blog_dir: News
+        post_dir: "News/Posts"
     - glightbox
     - search:
         separator: '[\s\u200b\-]'
@@ -54,6 +63,8 @@ plugins:
         branch: main
         docs_path: Docs
         enabled: true
+    - rss:
+        comments_path: "#__comments"
 extra:
   social:
     - icon: fontawesome/brands/github

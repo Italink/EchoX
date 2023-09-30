@@ -101,6 +101,29 @@
   max-width: 80rem
 }
 
+.md-typeset__table {
+  min-width: 100%;
+  vertical-align:bottom
+}
+
+.md-typeset table:not([class]) {
+   display: table;
+}
+
+.md-typeset table:not([class]) th {
+  font-weight: 700;
+  min-width: 5rem;
+  padding: .9375em 1.25em;
+  vertical-align: middle
+}
+
+.md-typeset table:not([class]) td {
+  border-top: .05rem solid var(--md-typeset-table-color);
+  padding: .9375em 1.25em;
+  vertical-align: middle
+}
+
+
 /* body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
