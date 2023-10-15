@@ -1,28 +1,5 @@
 #include "QWindow3DPainter.h"
-#include "rhi/qshader.h"
-#include "rhi/qshaderbaker.h"
-
-QShader newShaderFromCode(QShader::Stage stage, const char* code) {
-	QShaderBaker baker;
-	baker.setGeneratedShaderVariants({ QShader::StandardShader });
-	baker.setGeneratedShaders({
-		QShaderBaker::GeneratedShader{QShader::Source::SpirvShader,QShaderVersion(100)},
-		QShaderBaker::GeneratedShader{QShader::Source::GlslShader,QShaderVersion(430)},
-		QShaderBaker::GeneratedShader{QShader::Source::MslShader,QShaderVersion(12)},
-		QShaderBaker::GeneratedShader{QShader::Source::HlslShader,QShaderVersion(60)},
-		});
-	baker.setSourceString(code, stage);
-	QShader shader = baker.bake();
-
-	if (!shader.isValid()) {
-		QStringList codelist = QString(code).split('\n');
-		for (int i = 0; i < codelist.size(); i++) {
-			qWarning() << i + 1 << codelist[i].toLocal8Bit().data();
-		}
-		qWarning(baker.errorMessage().toLocal8Bit());
-	}
-	return shader;
-}
+#include "Render/RHI/QRhiHelper.h"
 
 static float VertexData[] = {
 	//position(xy)		texture coord(uv)
@@ -95,9 +72,9 @@ void QWindow3DPainter::compile()
 			%1
 		}
 	)";
-	QShader vs = newShaderFromCode(QShader::VertexStage, vsCode.arg(mRhi->isYUpInNDC() ? "	vUV.y = 1 - vUV.y;" : "").toLocal8Bit());
+	QShader vs = QRhiHelper::newShaderFromCode(QShader::VertexStage, vsCode.arg(mRhi->isYUpInNDC() ? "	vUV.y = 1 - vUV.y;" : "").toLocal8Bit());
 
-	QShader fs = newShaderFromCode(QShader::FragmentStage, R"(#version 450
+	QShader fs = QRhiHelper::newShaderFromCode(QShader::FragmentStage, R"(#version 450
 		layout (binding = 1) uniform sampler2D uSamplerColor;
 		layout (location = 0) in vec2 vUV;
 		layout (location = 0) out vec4 outFragColor;

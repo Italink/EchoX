@@ -4,11 +4,12 @@
 #include <QWidget>
 #include <QMatrix3x3>
 #include "QQuadF.h"
+#include "EchoXEditorAPI.h"
 
 class QWindow3DEditor;
 class QWindow3DEffect;
 
-class QWindow3D : public QWidget {
+class ECHOXEDITOR_API QWindow3D : public QWidget {
 	Q_OBJECT
 public:
 	static QWindow3D* create(QWidget* widget);
