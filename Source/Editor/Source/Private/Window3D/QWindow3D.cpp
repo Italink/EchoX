@@ -3,6 +3,7 @@
 #include "QWindow3DEditor.h"
 #include <QApplication>
 #include <private/qwidgetwindow_p.h>
+#include <private/qcoreapplication_p.h>
 #include <private/qwidgetrepaintmanager_p.h>
 #include <QResizeEvent>
 
@@ -100,26 +101,50 @@ QPointF QWindow3D::mapGlobalPos(QPointF point)
 	return QQuadF::transPoint(mGlobalQuadToRect, point);
 }
 
-bool QWindow3D::notify(QApplication* app, QObject* o, QEvent* e)
-{
+bool QWindow3D::notify(QObject* o, QEvent* e)
+{ 
+	static QSet<QEvent*> visited;
+	if (visited.contains(e))
+		return false;
 	if (e->type() == QEvent::MouseButtonPress
 		|| e->type() == QEvent::MouseButtonRelease
 		|| e->type() == QEvent::MouseMove
-		) {
+		) { 
 		if (QString(o->metaObject()->className()) == "QWidgetWindow") {
 			QWidgetWindow* qww = static_cast<QWidgetWindow*>(o);
 			if (QWindow3D* q3d = qobject_cast<QWindow3D*>(qww->widget())) {
 				QMouseEvent* mouseEvent = (QMouseEvent*)(e);
-				QMouseEvent* newMouseEvent = new QMouseEvent(
+				QMouseEvent newMouseEvent(
 					mouseEvent->type(),
 					qww->mapFromGlobal(q3d->mapGlobalPos(mouseEvent->globalPosition())),
 					mouseEvent->button(),
 					mouseEvent->buttons(),
 					mouseEvent->modifiers()
 				);
-				return app->notify(o, newMouseEvent);
+				visited.insert(&newMouseEvent);
+				QApplication::sendEvent(o, &newMouseEvent);
+				visited.remove(&newMouseEvent);
+				return true;
 			}
-			auto c = qww->widget();
+		}
+	}
+	else if (e->type() == QEvent::ContextMenu) {
+		if (QString(o->metaObject()->className()) == "QWidgetWindow") {
+			QWidgetWindow* qww = static_cast<QWidgetWindow*>(o);
+			if (QWindow3D* q3d = qobject_cast<QWindow3D*>(qww->widget())) {
+				QContextMenuEvent* ctxMenuEvent = (QContextMenuEvent*)(e);
+				QPoint globalPos = q3d->mapGlobalPos(ctxMenuEvent->globalPos()).toPoint();
+				QContextMenuEvent newCtxMenuEvent(
+					ctxMenuEvent->reason(),
+					qww->mapFromGlobal(globalPos),
+					globalPos,
+					ctxMenuEvent->modifiers()
+				);
+				visited.insert(&newCtxMenuEvent);
+				QApplication::sendEvent(o, &newCtxMenuEvent);
+				visited.remove(&newCtxMenuEvent);
+				return true;
+			}
 		}
 	}
 	else if (e->type() == QEvent::Wheel) {
@@ -128,7 +153,7 @@ bool QWindow3D::notify(QApplication* app, QObject* o, QEvent* e)
 			if (QWindow3D* q3d = qobject_cast<QWindow3D*>(qww->widget())) {
 				QWheelEvent* wheelEvent = (QWheelEvent*)(e);
 				QPointF globalPos = q3d->mapGlobalPos(wheelEvent->globalPosition());
-				QWheelEvent* newWheelEvent = new QWheelEvent(
+				QWheelEvent newWheelEvent(
 					qww->mapFromGlobal(globalPos),
 					globalPos,
 					wheelEvent->pixelDelta(),
@@ -140,16 +165,23 @@ bool QWindow3D::notify(QApplication* app, QObject* o, QEvent* e)
 					wheelEvent->source(),
 					wheelEvent->pointingDevice()
 				);
-				return app->notify(o, newWheelEvent);
+				newWheelEvent.setTimestamp(wheelEvent->timestamp());
+				QCoreApplicationPrivate::setEventSpontaneous(&newWheelEvent, true);
+				visited.insert(&newWheelEvent);
+				QApplication::sendEvent(o, &newWheelEvent);
+				visited.remove(&newWheelEvent);
+				return true;
 			}
-			auto c = qww->widget();
 		}
 	}
-	if (e->type() == QEvent::UpdateRequest) {
+	else if (e->type() == QEvent::UpdateRequest) {
 		if (QWindow3D* q3d = qobject_cast<QWindow3D*>(o)) {
 			QWidgetPrivate* w = QWidgetPrivate::get(q3d);
 			w->scrollRect(q3d->rect(), 0, 0);
 		}
 	}
-	return app->notify(o, e);
+	//else if (e->type() != QEvent::Paint) {
+	//	qDebug() << o << e->type();
+	//}
+	return false;
 }

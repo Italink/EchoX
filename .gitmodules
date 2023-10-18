@@ -1,3 +1,6 @@
 [submodule "3rdParty/QEngineUtilities"]
 	path = 3rdParty/QEngineUtilities
 	url = https://github.com/Italink/QEngineUtilities.git
+[submodule "3rdParty/framelesshelper"]
+	path = 3rdParty/framelesshelper
+	url = https://github.com/wangwenx190/framelesshelper.git

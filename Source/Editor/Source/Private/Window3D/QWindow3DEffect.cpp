@@ -2,7 +2,7 @@
 #include "private/qvulkandefaultinstance_p.h"
 #include <QPainter>
 #include <QVulkanInstance>
-#include "qvulkaninstance.h"
+#include "QEchoXApplication.h"
 #include "QWindow3D.h"
 #include <private/qwidgetwindow_p.h>
 #include <private/qwidgetrepaintmanager_p.h>
@@ -11,11 +11,6 @@
 QWindow3DEffect::QWindow3DEffect(QObject* parent)
 	: QGraphicsEffect(parent)
 {
-}
-
-void QWindow3DEffect::setupRhi(QRhi* rhi)
-{
-	mRhi = rhi;
 }
 
 void QWindow3DEffect::setupWidget(QWindow3D* containter, QWidget* widget)
@@ -29,30 +24,31 @@ QRectF QWindow3DEffect::boundingRectFor(const QRectF& rect) const{
 }
 
 void QWindow3DEffect::draw(QPainter* painter){
+	QRhi* rhi = qApp->getGlobalRhi();
 	PixmapPadMode mode = PadToEffectiveBoundingRect;
 	QPoint pos;
 	QPixmap widgetImage = sourcePixmap(Qt::DeviceCoordinates, &pos, mode);
 	widgetImage = widgetImage.copy(mWidget->rect());
 	if (mRenderTargetTexture.isNull() || widgetImage.size() != mRenderTargetTexture->pixelSize()) {
-		mWidgetTexutre.reset(mRhi->newTexture(QRhiTexture::RGBA8, widgetImage.size(), 1, QRhiTexture::UsedAsTransferSource));
+		mWidgetTexutre.reset(rhi->newTexture(QRhiTexture::RGBA8, widgetImage.size(), 1, QRhiTexture::UsedAsTransferSource));
 		mWidgetTexutre->create();
-		mRenderTargetTexture.reset(mRhi->newTexture(QRhiTexture::RGBA8, mContainter->size(), 1, QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource));
+		mRenderTargetTexture.reset(rhi->newTexture(QRhiTexture::RGBA8, mContainter->size(), 1, QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource));
 		mRenderTargetTexture->create();
-		mRenderTarget.reset(mRhi->newTextureRenderTarget({ mRenderTargetTexture.get() }));
+		mRenderTarget.reset(rhi->newTextureRenderTarget({ mRenderTargetTexture.get() }));
 		mRenderTargetDesc.reset(mRenderTarget->newCompatibleRenderPassDescriptor());
 		mRenderTarget->setRenderPassDescriptor(mRenderTargetDesc.get());
 		mRenderTarget->create();
 		mPainter.reset(new QWindow3DPainter);
-		mPainter->setupRhi(mRhi);
+		mPainter->setupRhi(rhi);
 		mPainter->setupRenderPassDesc(mRenderTargetDesc.get());
 		mPainter->setupTexture(mWidgetTexutre.get());
 		mPainter->compile();
 	}
 	QWidgetPrivate* w = QWidgetPrivate::get(mWidget);
 	QRhiCommandBuffer* cmdBuffer;
-	if (mRhi->beginOffscreenFrame(&cmdBuffer) != QRhi::FrameOpSuccess)
+	if (rhi->beginOffscreenFrame(&cmdBuffer) != QRhi::FrameOpSuccess)
 		return;
-	auto resourceUpdates = mRhi->nextResourceUpdateBatch();
+	auto resourceUpdates = rhi->nextResourceUpdateBatch();
 	resourceUpdates->uploadTexture(mWidgetTexutre.get(), widgetImage.toImage().convertedTo(QImage::Format_RGBA8888));
 
 	mPainter->setupNDCQuad(mContainter->getLoaclNDCQuad());
@@ -64,7 +60,7 @@ void QWindow3DEffect::draw(QPainter* painter){
 	mPainter->paint(cmdBuffer, mRenderTarget.get());
 	cmdBuffer->endPass();
 
-	resourceUpdates = mRhi->nextResourceUpdateBatch();
+	resourceUpdates = rhi->nextResourceUpdateBatch();
 	QRhiReadbackResult rbResult;
 
 	rbResult.completed = [&rbResult, pos, painter] {
@@ -77,5 +73,5 @@ void QWindow3DEffect::draw(QPainter* painter){
 	QRhiReadbackDescription rb(mRenderTargetTexture.get());
 	resourceUpdates->readBackTexture(rb, &rbResult);
 	cmdBuffer->resourceUpdate(resourceUpdates);
-	mRhi->endOffscreenFrame();
+	rhi->endOffscreenFrame();
 }

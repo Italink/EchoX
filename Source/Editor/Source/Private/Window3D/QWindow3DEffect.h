@@ -10,7 +10,6 @@ class QWindow3D;
 class QWindow3DEffect: public QGraphicsEffect {
 public:
 	QWindow3DEffect(QObject * parent = nullptr);
-	void setupRhi(QRhi* rhi);
 	void setupWidget(QWindow3D* containter, QWidget* widget);
 protected:
 	QRectF boundingRectFor(const QRectF& rect) const override;
@@ -18,7 +17,6 @@ protected:
 private:
 	QWidget* mWidget = nullptr;
 	QWindow3D* mContainter = nullptr;
-	QRhi* mRhi = nullptr;
 	QScopedPointer<QWindow3DPainter> mPainter;
 	QScopedPointer<QRhiTexture> mWidgetTexutre;
 	QScopedPointer<QRhiTexture> mRenderTargetTexture;

@@ -8,3 +8,6 @@ add_executable(EchoX
 target_link_libraries(EchoX PRIVATE
     EchoXEditor
 )
+
+qengine_make_copy_target(EchoXCopyDLLTarget)
+add_dependencies(EchoX EchoXCopyDLLTarget)

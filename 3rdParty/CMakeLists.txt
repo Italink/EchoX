@@ -1,0 +1,26 @@
+add_subdirectory(QSmtcManager)
+add_subdirectory(framelesshelper)
+
+function(get_all_targets OUT_LIST)
+    set(TARGETS)
+    get_all_targets_internal(TARGETS ${CMAKE_CURRENT_SOURCE_DIR})
+    set(${OUT_LIST} ${TARGETS} PARENT_SCOPE)
+endfunction()
+
+macro(get_all_targets_internal TARGETS DIR)
+    get_property(SUB_DIR DIRECTORY ${DIR} PROPERTY SUBDIRECTORIES)
+    foreach(subdir ${SUB_DIR})
+        get_all_targets_internal(${TARGETS} ${subdir})
+    endforeach()
+    get_property(CURRENT_TARGETS DIRECTORY ${DIR} PROPERTY BUILDSYSTEM_TARGETS)
+    list(APPEND ${TARGETS} ${CURRENT_TARGETS})
+endmacro()
+
+get_all_targets(COMMON_LOCAL_TARGETS)
+list(APPEND COMMON_TARGETS ${COMMON_LOCAL_TARGETS})
+foreach(TARGET_ITEM ${COMMON_LOCAL_TARGETS})
+    set_target_properties(${TARGET_ITEM} PROPERTIES FOLDER "3rdParty")
+endforeach()
+
+set(QENGINE_SOURCE_GROUP_PREFIX "3rdParty/QEngineUtilities" CACHE INTERNAL "")
+add_subdirectory(QEngineUtilities)

@@ -21,7 +21,7 @@ public:
 	QQuadF getLocalQuad();
 	QQuadF getLoaclNDCQuad();
 	QPointF mapGlobalPos(QPointF point);
-	static bool notify(QApplication* app, QObject* o, QEvent* e);
+	static bool notify(QObject* o, QEvent* e);
 private:
 	QWindow3D();
 	void setupBody(QWidget* widget);
