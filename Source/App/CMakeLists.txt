@@ -9,5 +9,10 @@ target_link_libraries(EchoX PRIVATE
     EchoXEditor
 )
 
+add_custom_command(TARGET EchoX POST_BUILD     
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    $<TARGET_FILE_DIR:QSmtcServer>
+                    $<TARGET_FILE_DIR:EchoX>)     
+
 qengine_make_copy_target(EchoXCopyDLLTarget)
 add_dependencies(EchoX EchoXCopyDLLTarget)

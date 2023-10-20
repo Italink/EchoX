@@ -6,8 +6,9 @@
 #include <QTcpSocket>
 #include <QProcess>
 #include <QTimer>
+#include "EchoXCoreAPI.h"
 
-enum class QSmtcCommand {
+enum class ECHOXCORE_API QSmtcCommand {
 	Play = 0,
 	Pause,
 	Stop,
@@ -22,7 +23,7 @@ enum class QSmtcCommand {
 	Max
 };
 
-struct QSmtcMediaPlaybackDataSourceInfo
+struct ECHOXCORE_API QSmtcMediaPlaybackDataSourceInfo
 {
 	QString SourceAppId;
 	QString SourceDeviceId;
@@ -38,7 +39,7 @@ struct QSmtcMediaPlaybackDataSourceInfo
 	int AlbumTrackCount;
 };
 
-struct QSmtcMediaPlaybackInfo {
+struct ECHOXCORE_API QSmtcMediaPlaybackInfo {
 	QString PlaybackState;
 	QString PlaybackCaps;
 	QString PlaybackMode;
@@ -47,7 +48,7 @@ struct QSmtcMediaPlaybackInfo {
 	double PlaybackRate;
 };
 
-struct QSmtcMediaTimelineProperties {
+struct ECHOXCORE_API QSmtcMediaTimelineProperties {
 	QTime Position;
 	QTime StartTime;
 	QTime EndTime;
@@ -56,17 +57,14 @@ struct QSmtcMediaTimelineProperties {
 	QTime PositionSetFileTime;
 };
 
-class QSmtcManager: public QObject{
+class ECHOXCORE_API QSmtcManager: public QObject{
 	Q_OBJECT
-
-	struct SourceInfo {
-		QString title;
-	};
 public:
-	QSmtcManager();
-	~QSmtcManager();
+	static QSmtcManager& Get();
 
-	bool ensureConnect();
+	void startup();
+	void shutdown();
+
 	void requestSendCommand(QSmtcCommand command);
 	void requestGetMediaPlaybackDataSourceInfo();
 	void requestGetMediaPlaybackInfo();
@@ -74,12 +72,14 @@ public:
 private:
 	void sendMessage(QJsonObject json);
 	void notify();
+	bool ensureConnect();
 Q_SIGNALS:
 	void asMediaPlaybackDataChanged();
 	void asReceiveMediaPlaybackDataSourceInfo(QSmtcMediaPlaybackDataSourceInfo);
 	void asReceiveMediaPlaybackInfo(QSmtcMediaPlaybackInfo);
 	void asReceiveMediaTimelineProperties(QSmtcMediaTimelineProperties);
 public:
+	QSmtcManager();
 	QProcess mServerProcess;
 	QTcpSocket* mClient = nullptr;
 };

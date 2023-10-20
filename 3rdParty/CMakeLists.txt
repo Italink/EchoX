@@ -1,4 +1,5 @@
-add_subdirectory(QSmtcManager)
+add_subdirectory(QSmtcServer)
+add_subdirectory(Gist)
 add_subdirectory(framelesshelper)
 
 function(get_all_targets OUT_LIST)

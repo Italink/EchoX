@@ -56,10 +56,13 @@ void QEchoXApplication::onActivatedSysTrayIcon(QSystemTrayIcon::ActivationReason
 {
 	switch (reason) {
 	case QSystemTrayIcon::Trigger: {
-		if (!mMainEditor->isVisible())
+		if (!mMainEditor->isVisible()) {
 			mMainEditor->show();
-		else
+			mMainEditor->activateWindow();
+		}
+		else {
 			mMainEditor->close();
+		}
 		break;
 	}
 	case QSystemTrayIcon::Context:

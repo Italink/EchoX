@@ -8,5 +8,6 @@ set(CMAKE_MAP_IMPORTED_CONFIG_DEBUGEDITOR Debug Release)
 find_package(Qt6 COMPONENTS Core Widgets Gui Multimedia ShaderTools REQUIRED)
 
 add_subdirectory(3rdParty)
+add_subdirectory(Source/Core)
 add_subdirectory(Source/Editor)
 add_subdirectory(Source/App)

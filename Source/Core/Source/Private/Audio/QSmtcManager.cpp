@@ -3,10 +3,20 @@
 
 QSmtcManager::QSmtcManager()
 {
+}
+
+QSmtcManager& QSmtcManager::Get()
+{
+	static QSmtcManager Instance;
+	return Instance;
+}
+
+void QSmtcManager::startup()
+{
 	ensureConnect();
 }
 
-QSmtcManager::~QSmtcManager()
+void QSmtcManager::shutdown()
 {
 	if (mClient) {
 		mClient->disconnectFromHost();
