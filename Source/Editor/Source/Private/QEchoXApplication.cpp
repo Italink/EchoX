@@ -5,6 +5,8 @@
 #include "QEchoXTrayMenu.h"
 #include "Render/RHI/QRhiHelper.h"
 #include "QEchoXMainEditor.h"
+#include "Settings/AudioAnalyse/QAudioAnalyseView.h"
+#include "Utils/Serialization.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
@@ -23,6 +25,14 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	mMainEditor->show();
 	setQuitOnLastWindowClosed(false);
 	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
+
+	QAudioAnalyseManager::Get().startup();
+	QAudioAnalyseView* view = new QAudioAnalyseView;
+	view->show();
+
+	TestObject t;
+	qDebug()<< Serialization::toJson(&t);
+
 }
 
 void QEchoXApplication::preInitialize()

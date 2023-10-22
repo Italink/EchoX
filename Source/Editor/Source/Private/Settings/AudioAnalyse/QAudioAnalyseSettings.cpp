@@ -7,6 +7,6 @@ QString QAudioAnalyseSettings::path()
 
 QWidget* QAudioAnalyseSettings::createWidget()
 {
-
+	return nullptr;
 }
 

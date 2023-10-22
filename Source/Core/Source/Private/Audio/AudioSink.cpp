@@ -26,7 +26,7 @@ void XAudioSink::pushRawData(unsigned char* data, const size_t size)
 	mBufferSize += size;
 }
 
-std::vector<float> XAudioSink::popAudio(const size_t size) const
+std::vector<float> XAudioSink::popAudio(const size_t size, int channelIndex) const
 {
 	std::vector<float> audioData(size);
 	int offset = mBufferSize - size * mFormat.wBitsPerSample/8 * mFormat.nChannels;

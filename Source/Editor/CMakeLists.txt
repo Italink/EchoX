@@ -9,6 +9,7 @@ qengine_add_target(EchoXEditor
         Qt::Multimedia
         QEngineCore
         QEngineEditor
+        EchoXCore
         FramelessHelper::Core
         FramelessHelper::Widgets
     QRC_FILE EchoXEditor.qrc

@@ -20,7 +20,7 @@ public:
 	const XAudioFormat& format(){ return mFormat;}
 	void setFormat(XAudioFormat format);
 	void pushRawData(unsigned char* data, const size_t size) ;
-	std::vector<float> popAudio(const size_t size) const;
+	std::vector<float> popAudio(const size_t size, int channelIndex = 0) const;
 private:
 	XAudioFormat mFormat;
 	unsigned char mBuffer[MAX_BUFFER_SIZE] ={};
