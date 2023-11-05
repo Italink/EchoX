@@ -95,7 +95,7 @@ Q_DECLARE_METATYPE(std::shared_ptr<TestInlineGadget>);
 class ECHOXEDITOR_API QEchoXApplication : public QApplication {
 public:
 	QEchoXApplication(int& argc, char** argv);
-
+	~QEchoXApplication();
 	static void preInitialize();
 
 	QRhi* getGlobalRhi() const;

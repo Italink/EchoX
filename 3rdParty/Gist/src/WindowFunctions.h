@@ -40,30 +40,30 @@ enum WindowType
 };
 
 //=======================================================================
-/** A collection of different window functions */
+/** A collection of different mWindow functions */
 template <class T>
 class WindowFunctions
 {
 public:
     
     //=======================================================================
-    /** @Returns a window with a specified type */
+    /** @Returns a mWindow with a specified type */
     static std::vector<T> createWindow (int numSamples, WindowType windowType);
     
     //=======================================================================
-    /** @Returns a Hanning window */
+    /** @Returns a Hanning mWindow */
     static std::vector<T> createHanningWindow (int numSamples);
     
-    /** @Returns a Hamming window */
+    /** @Returns a Hamming mWindow */
     static std::vector<T> createHammingWindow (int numSamples);
     
-    /** @Returns a Blackman window */
+    /** @Returns a Blackman mWindow */
     static std::vector<T> createBlackmanWindow (int numSamples);
     
-    /** @Returns a Tukey window */
+    /** @Returns a Tukey mWindow */
     static std::vector<T> createTukeyWindow (int numSamples, T alpha = 0.5);
     
-    /** @Returns a Rectangular window */
+    /** @Returns a Rectangular mWindow */
     static std::vector<T> createRectangularWindow (int numSamples);
 };
 

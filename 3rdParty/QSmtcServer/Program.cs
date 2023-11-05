@@ -62,6 +62,22 @@ namespace QSmtcServer{
                     jsonInfo["AlbumTitle"] = info.AlbumTitle;
                     jsonInfo["AlbumArtist"] = info.AlbumArtist;
                     jsonInfo["AlbumTrackCount"] = info.AlbumTrackCount;
+                    var thumbnailStream = manager.CurrentSession.ActivateMediaPlaybackDataSource().GetThumbnailStream();
+                    if (thumbnailStream != null)
+                    {
+                        var path = Path.Combine(Path.GetTempPath(), info.Title +".png");
+                        if (!File.Exists(path))
+                        {
+                            var file = File.Create(path);
+                            thumbnailStream.CopyTo(file);
+                            thumbnailStream.Close();
+                            file.Close();
+                            thumbnailStream.Dispose();
+                            file.Dispose();
+                        }
+                        jsonInfo["Thumbnail"] = path;
+                    }
+
                     SendMessgae(ref stream, jsonInfo);
                 }
                 else if (command.Equals("GetMediaPlaybackInfo"))

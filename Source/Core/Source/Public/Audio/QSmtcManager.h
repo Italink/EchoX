@@ -29,6 +29,7 @@ struct ECHOXCORE_API QSmtcMediaPlaybackDataSourceInfo
 	QString SourceDeviceId;
 	QString RenderDeviceId;
 	QString MediaClassPrimaryID;
+	QString Thumbnail;
 	QString Title;
 	QString Artist;
 	QString Subtitle;

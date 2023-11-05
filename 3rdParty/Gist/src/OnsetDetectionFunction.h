@@ -27,6 +27,10 @@
 #define _USE_MATH_DEFINES
 #include <vector>
 #include <cmath>
+#include <complex>
+#define PFFFT_ENABLE_FLOAT
+#define PFFFT_ENABLE_DOUBLE
+#include "pffft.hpp"
 
 /** template class for calculating onset detection functions
  * Instantiations of the class should be of either 'float' or 
@@ -76,7 +80,7 @@ public:
      * @param fftImag a vector containing the imaginary part of the FFT
      * @returns the complex spectral difference onset detection function sample
      */
-    T complexSpectralDifference (const std::vector<T>& fftReal, const std::vector<T>& fftImag);
+    T complexSpectralDifference (const pffft::AlignedVector<std::complex<T>>& fft);
 
     //===========================================================
     /** calculates the high frequency content onset detection function from

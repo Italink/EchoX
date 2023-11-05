@@ -3,14 +3,13 @@ project (Gist VERSION 1.0.7)
 
 set (CMAKE_CXX_STANDARD 11)
 
-option (BUILD_TESTS "Build tests" OFF)
+file(GLOB_RECURSE PROJECT_SOURCE FILES *.h *.cpp *.c *.hh)
 
-add_subdirectory (src)
+add_library(Gist STATIC ${PROJECT_SOURCE})
+target_link_libraries(Gist PUBLIC PFFFT)
+target_include_directories(Gist PUBLIC src)
 
-if (BUILD_TESTS)
-    enable_testing()
-    add_subdirectory (tests)
-endif (BUILD_TESTS)
+source_group (Source src)
 
 set (CMAKE_SUPPRESS_REGENERATION true)
 

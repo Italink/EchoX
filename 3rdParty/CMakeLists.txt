@@ -1,4 +1,5 @@
 add_subdirectory(QSmtcServer)
+add_subdirectory(PFFFT)
 add_subdirectory(Gist)
 add_subdirectory(framelesshelper)
 

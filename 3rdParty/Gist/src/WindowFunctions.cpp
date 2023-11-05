@@ -30,28 +30,28 @@ std::vector<T> WindowFunctions<T>::createWindow (int numSamples, WindowType wind
 {
     if (windowType == HanningWindow)
     {
-        std::vector<T> window = createHanningWindow (numSamples);
-        return window;
+        std::vector<T> mWindow = createHanningWindow (numSamples);
+        return mWindow;
     }
     else if (windowType == HammingWindow)
     {
-        std::vector<T> window = createHammingWindow (numSamples);
-        return window;
+        std::vector<T> mWindow = createHammingWindow (numSamples);
+        return mWindow;
     }
     else if (windowType == BlackmanWindow)
     {
-        std::vector<T> window = createBlackmanWindow (numSamples);
-        return window;
+        std::vector<T> mWindow = createBlackmanWindow (numSamples);
+        return mWindow;
     }
     else if (windowType == TukeyWindow)
     {
-        std::vector<T> window = createTukeyWindow (numSamples);
-        return window;
+        std::vector<T> mWindow = createTukeyWindow (numSamples);
+        return mWindow;
     }
     else // NOTE THIS COVERS THE RECTANGULAR WINDOW CASE AND ANY OTHER UNKNOWN TYPE
     {
-        std::vector<T> window = createRectangularWindow (numSamples);
-        return window;
+        std::vector<T> mWindow = createRectangularWindow (numSamples);
+        return mWindow;
     }
 }
 
@@ -59,51 +59,51 @@ std::vector<T> WindowFunctions<T>::createWindow (int numSamples, WindowType wind
 template <class T>
 std::vector<T> WindowFunctions<T>::createHanningWindow (int numSamples)
 {
-    std::vector<T> window (numSamples);
+    std::vector<T> mWindow (numSamples);
     
     T numSamplesMinus1 = (T) (numSamples - 1);		// the number of samples minus 1
     
     for (int i = 0; i < numSamples; i++)
     {
-        window[i] = 0.5 * (1 - cos (2. * M_PI * (i / numSamplesMinus1)));
+        mWindow[i] = 0.5 * (1 - cos (2. * M_PI * (i / numSamplesMinus1)));
     }
     
-    return window;
+    return mWindow;
 }
 
 //===========================================================
 template <class T>
 std::vector<T> WindowFunctions<T>::createHammingWindow (int numSamples)
 {
-    std::vector<T> window (numSamples);
+    std::vector<T> mWindow (numSamples);
     
     T numSamplesMinus1 = (T) (numSamples - 1);		// the number of samples minus 1
     
     for (int i = 0; i < numSamples; i++)
-        window[i] = 0.54 - (0.46 * cos (2 * M_PI * ((T)i / numSamplesMinus1)));
+        mWindow[i] = 0.54 - (0.46 * cos (2 * M_PI * ((T)i / numSamplesMinus1)));
     
-    return window;
+    return mWindow;
 }
 
 //===========================================================
 template <class T>
 std::vector<T> WindowFunctions<T>::createBlackmanWindow (int numSamples)
 {
-    std::vector<T> window (numSamples);
+    std::vector<T> mWindow (numSamples);
     
     T numSamplesMinus1 = (T) (numSamples - 1);		// the number of samples minus 1
         
     for (int i = 0; i < numSamples; i++)
-        window[i] = 0.42 - (0.5 * cos (2. * M_PI * ((T)i / numSamplesMinus1))) + (0.08 * cos (4. * M_PI * ((T)i / numSamplesMinus1)));
+        mWindow[i] = 0.42 - (0.5 * cos (2. * M_PI * ((T)i / numSamplesMinus1))) + (0.08 * cos (4. * M_PI * ((T)i / numSamplesMinus1)));
     
-    return window;
+    return mWindow;
 }
 
 //===========================================================
 template <class T>
 std::vector<T> WindowFunctions<T>::createTukeyWindow (int numSamples, T alpha)
 {
-    std::vector<T> window (numSamples);
+    std::vector<T> mWindow (numSamples);
     
     T numSamplesMinus1 = (T) (numSamples - 1);		// the number of samples minus 1
         
@@ -113,33 +113,33 @@ std::vector<T> WindowFunctions<T>::createTukeyWindow (int numSamples, T alpha)
     {
         if ((value >= 0) && (value <= (alpha * (numSamplesMinus1 / 2))))
         {
-            window[i] = 1.0;
+            mWindow[i] = 1.0;
         }
         else if ((value <= 0) && (value >= (-1 * alpha * (numSamplesMinus1 / 2))))
         {
-            window[i] = 1.0;
+            mWindow[i] = 1.0;
         }
         else
         {
-            window[i] = 0.5 * (1 + cos (M_PI * ((( 2 * value) / (alpha * numSamplesMinus1)) - 1)));
+            mWindow[i] = 0.5 * (1 + cos (M_PI * ((( 2 * value) / (alpha * numSamplesMinus1)) - 1)));
         }
         
         value += 1;
     }
     
-    return window;
+    return mWindow;
 }
 
 //===========================================================
 template <class T>
 std::vector<T> WindowFunctions<T>::createRectangularWindow (int numSamples)
 {
-    std::vector<T> window (numSamples);
+    std::vector<T> mWindow (numSamples);
     
     for (int i = 0; i < numSamples; i++)
-        window[i] = 1.;
+        mWindow[i] = 1.;
     
-    return window;
+    return mWindow;
 }
 
 //===========================================================

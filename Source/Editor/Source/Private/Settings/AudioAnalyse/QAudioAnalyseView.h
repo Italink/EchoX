@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QTimer>
-#include "EchoXEditorAPI.h"
 #include "Audio/QAudioAnalyseManager.h"
 
 class QAudioOscillogram;
@@ -25,6 +24,7 @@ private:
 	QAudioOscillogram* mSpectralDifference;
 
 	QAudioSpectrogram* mMagnitudeSpectrum;
+	QAudioSpectrogram* mConstantQTransformSpectrum;
 	QAudioSpectrogram* mMelFrequencySpectrum;
 	QHighFrequencyContentOscillogram* mHighFrequencyContent;
 };

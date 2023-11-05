@@ -7,6 +7,8 @@
 #include "QEchoXMainEditor.h"
 #include "Settings/AudioAnalyse/QAudioAnalyseView.h"
 #include "Utils/Serialization.h"
+#include "Audio/QSmtcManager.h"
+#include "Settings/Smtc/QSmtcView.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
@@ -27,12 +29,22 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 
 	QAudioAnalyseManager::Get().startup();
+	QSmtcManager::Get().startup();
+
 	QAudioAnalyseView* view = new QAudioAnalyseView;
 	view->show();
+
+	QSmtcView* sview = new QSmtcView;
+	sview->show();
 
 	TestObject t;
 	qDebug()<< Serialization::toJson(&t);
 
+}
+
+QEchoXApplication::~QEchoXApplication() {
+	QAudioAnalyseManager::Get().shutdown();
+	QSmtcManager::Get().shutdown();
 }
 
 void QEchoXApplication::preInitialize()

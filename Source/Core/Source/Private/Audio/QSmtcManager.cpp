@@ -32,11 +32,9 @@ bool QSmtcManager::ensureConnect()
 	}
 	if(!mServerProcess.isOpen()){
 		mServerProcess.setProgram("QSmtcServer.exe");
-		mServerProcess.setProcessChannelMode(QProcess::SeparateChannels);
+		//mServerProcess.setProcessChannelMode(QProcess::SeparateChannels);
 		mServerProcess.start();
 		mServerProcess.waitForStarted();
-
-		qDebug() << mServerProcess.state() << mServerProcess.processChannelMode() << mServerProcess.readAllStandardError();
 	}
 	if (mClient->state() != QAbstractSocket::ConnectedState) {
 		mClient->connectToHost(QHostAddress::LocalHost, 40529);
@@ -44,7 +42,7 @@ bool QSmtcManager::ensureConnect()
 		connect(mClient, &QTcpSocket::readyRead, this, &QSmtcManager::notify);
 	}
 
-#if 1
+#if 0
 	QTimer* timer = new QTimer;
 	connect(timer, &QTimer::timeout, [this]() {
 		requestSendCommand(QSmtcCommand::Play);
@@ -121,6 +119,7 @@ void QSmtcManager::notify()
 		info.AlbumTitle = json["AlbumTitle"].toString();
 		info.AlbumArtist = json["AlbumArtist"].toString();
 		info.AlbumTrackCount = json["AlbumTrackCount"].toInt();
+		info.Thumbnail = json["Thumbnail"].toString();
 		Q_EMIT asReceiveMediaPlaybackDataSourceInfo(info);
 	}
 	else if (reply == "MediaPlaybackInfo") {
@@ -143,5 +142,5 @@ void QSmtcManager::notify()
 		info.PositionSetFileTime = QTime::fromString(json["PositionSetFileTime"].toString());
 		Q_EMIT asReceiveMediaTimelineProperties(info);
 	}
-	qDebug() << json;
+	//qDebug() << json;
 }

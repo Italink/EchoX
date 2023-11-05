@@ -26,12 +26,13 @@
 
 //=======================================================================
 template <class T>
-Gist<T>::Gist (int audioFrameSize, int fs, WindowType windowType_)
- :  windowType (windowType_),
-    fftConfigured (false),
+Gist<T>::Gist (int audioFrameSize, int fs,  WindowType windowType_)
+    : windowType (windowType_),
     onsetDetectionFunction (audioFrameSize),
     yin (fs),
-    mfcc (audioFrameSize, fs)
+    mfcc (audioFrameSize, fs),
+    mFft (audioFrameSize)
+
 {
     samplingFrequency = fs;
     setAudioFrameSize (audioFrameSize);
@@ -41,10 +42,6 @@ Gist<T>::Gist (int audioFrameSize, int fs, WindowType windowType_)
 template <class T>
 Gist<T>::~Gist()
 {
-    if (fftConfigured)
-    {
-        freeFFT();
-    }
 }
 
 //=======================================================================
@@ -57,8 +54,7 @@ void Gist<T>::setAudioFrameSize (int audioFrameSize)
     
     windowFunction = WindowFunctions<T>::createWindow (audioFrameSize, windowType);
         
-    fftReal.resize (frameSize);
-    fftImag.resize (frameSize);
+    mFft.prepareLength(frameSize);
     magnitudeSpectrum.resize (frameSize / 2);
     
     configureFFT();
@@ -204,7 +200,7 @@ T Gist<T>::spectralDifferenceHWR()
 template <class T>
 T Gist<T>::complexSpectralDifference()
 {
-    return onsetDetectionFunction.complexSpectralDifference (fftReal, fftImag);
+    return onsetDetectionFunction.complexSpectralDifference (mFftBuffer);
 }
 
 //=======================================================================
@@ -241,126 +237,26 @@ const std::vector<T>& Gist<T>::getMelFrequencyCepstralCoefficients()
 template <class T>
 void Gist<T>::configureFFT()
 {
-    if (fftConfigured)
-    {
-        freeFFT();
-    }
-    
-#ifdef USE_FFTW
-    // ------------------------------------------------------
-    // initialise the fft time and frequency domain audio frame arrays
-    fftIn = (fftw_complex*)fftw_malloc (sizeof (fftw_complex) * frameSize);  // complex array to hold fft data
-    fftOut = (fftw_complex*)fftw_malloc (sizeof (fftw_complex) * frameSize); // complex array to hold fft data
-    
-    // FFT plan initialisation
-    p = fftw_plan_dft_1d (frameSize, fftIn, fftOut, FFTW_FORWARD, FFTW_ESTIMATE);
-#endif /* END USE_FFTW */
-    
-#ifdef USE_KISS_FFT
-    // ------------------------------------------------------
-    // initialise the fft time and frequency domain audio frame arrays
-    fftIn = new kiss_fft_cpx[frameSize];
-    fftOut = new kiss_fft_cpx[frameSize];
-    cfg = kiss_fft_alloc (frameSize, 0, 0, 0);
-#endif /* END USE_KISS_FFT */
-    
-#ifdef USE_ACCELERATE_FFT
-    accelerateFFT.setAudioFrameSize (frameSize);
-#endif
-    
-    fftConfigured = true;
-}
-
-//=======================================================================
-template <class T>
-void Gist<T>::freeFFT()
-{
-#ifdef USE_FFTW
-    // destroy fft plan
-    fftw_destroy_plan (p);
-    
-    fftw_free (fftIn);
-    fftw_free (fftOut);
-#endif
-    
-#ifdef USE_KISS_FFT
-    // free the Kiss FFT configuration
-    free (cfg);
-    
-    delete[] fftIn;
-    delete[] fftOut;
-#endif
+    mFftInputBuffer = mFft.valueVector();
+    mFftBuffer = mFft.spectrumVector();
 }
 
 //=======================================================================
 template <class T>
 void Gist<T>::performFFT()
 {
-#ifdef USE_FFTW
-    // copy samples from audio frame
     for (int i = 0; i < frameSize; i++)
     {
-        fftIn[i][0] = (double)(audioFrame[i] * windowFunction[i]);
-        fftIn[i][1] = (double)0.0;
+        mFftInputBuffer[i] = (audioFrame[i] * windowFunction[i]);
     }
-    
-    // perform the FFT
-    fftw_execute (p);
-    
-    // store real and imaginary parts of FFT
-    for (int i = 0; i < frameSize; i++)
-    {
-        fftReal[i] = (T)fftOut[i][0];
-        fftImag[i] = (T)fftOut[i][1];
-    }
-#endif
-    
-#ifdef USE_KISS_FFT
-    for (int i = 0; i < frameSize; i++)
-    {
-        fftIn[i].r = (double)(audioFrame[i] * windowFunction[i]);
-        fftIn[i].i = 0.0;
-    }
-    
-    // execute kiss fft
-    kiss_fft (cfg, fftIn, fftOut);
-    
-    // store real and imaginary parts of FFT
-    for (int i = 0; i < frameSize; i++)
-    {
-        fftReal[i] = (T)fftOut[i].r;
-        fftImag[i] = (T)fftOut[i].i;
-    }
-#endif
-    
-#ifdef USE_ACCELERATE_FFT
-    
-    T inputFrame[frameSize];
-    T outputReal[frameSize];
-    T outputImag[frameSize];
-    
-    for (int i = 0; i < frameSize; i++)
-    {
-        inputFrame[i] = audioFrame[i] * windowFunction[i];
-    }
-    
-    accelerateFFT.performFFT (inputFrame, outputReal, outputImag);
-    
-    for (int i = 0; i < frameSize; i++)
-    {
-        fftReal[i] = outputReal[i];
-        fftImag[i] = outputImag[i];
-    }
-    
-#endif
-    
+    mFft.forward(mFftInputBuffer, mFftBuffer);
     // calculate the magnitude spectrum
     for (int i = 0; i < frameSize / 2; i++)
     {
-        magnitudeSpectrum[i] = sqrt ((fftReal[i] * fftReal[i]) + (fftImag[i] * fftImag[i]));
+        magnitudeSpectrum[i] = sqrt ((mFftBuffer[i].real() * mFftBuffer[i].real()) + (mFftBuffer[i].imag() * mFftBuffer[i].imag()));
     }
 }
 
 //===========================================================
 template class Gist<float>;
-template class Gist<double>;
+//template class Gist<double>;

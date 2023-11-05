@@ -39,24 +39,11 @@
 #include "MFCC.h"
 
 //=======================================================================
-// fft
-#ifdef USE_FFTW
-#include "fftw3.h"
-#endif
-
-#ifdef USE_KISS_FFT
-#include "kiss_fft.h"
-#endif
-
-#ifdef USE_ACCELERATE_FFT
-#include "AccelerateFFT.h"
-#endif
-
-#if !(defined(USE_FFTW) ^ defined(USE_KISS_FFT) ^ defined (USE_ACCELERATE_FFT))
-#error "You must define one FFT macro to ensure you select a FFT implementation - either USE_FFTW, USE_KISS_FFT or USE_ACCELERATE_FFT. You have either not defined one of these macros or you have defined more than one of them."
-#endif
 
 #include "WindowFunctions.h"
+#define PFFFT_ENABLE_FLOAT
+#include "pffft.hpp"
+#include "ConstantQTransform.h"
 
 //=======================================================================
 /** Class for all performing all Gist audio analyses */
@@ -69,13 +56,13 @@ public:
     /** Constructor
      * @param audioFrameSize the input audio frame size
      * @param fs the input audio sample rate
-     * @param windowType the type of window function to use
+     * @param windowType the type of mWindow function to use
      */
     Gist (int audioFrameSize, int fs, WindowType windowType = HanningWindow);
 
     /** Destructor */
     ~Gist();
-
+    
     //=======================================================================
     /** Set the audio frame size.
      * @param frameSize_ the frame size to use
@@ -174,41 +161,22 @@ private:
     /** Configure the FFT implementation given the audio frame size) */
     void configureFFT();
 
-    /** Free all FFT-related data */
-    void freeFFT();
-
     /** perform the FFT on the current audio frame */
     void performFFT();
 
     //=======================================================================
 
-#ifdef USE_FFTW
-    fftw_plan p;          /**< fftw plan */
-    fftw_complex* fftIn;  /**< to hold complex fft values for input */
-    fftw_complex* fftOut; /**< to hold complex fft values for output */
-#endif
-
-#ifdef USE_KISS_FFT
-    kiss_fft_cfg cfg;     /**< Kiss FFT configuration */
-    kiss_fft_cpx* fftIn;  /**< FFT input samples, in complex form */
-    kiss_fft_cpx* fftOut; /**< FFT output samples, in complex form */
-#endif
-    
-#ifdef USE_ACCELERATE_FFT
-    AccelerateFFT<T> accelerateFFT;
-#endif
+    pffft::Fft<T> mFft;
+    pffft::AlignedVector<T> mFftInputBuffer;
+    pffft::AlignedVector<std::complex<T>> mFftBuffer;
 
     int frameSize;                    /**< The audio frame size */
     int samplingFrequency;            /**< The sampling frequency used for analysis */
-    WindowType windowType;            /**< The window type used in FFT analysis */
+    WindowType windowType;            /**< The mWindow type used in FFT analysis */
 
     std::vector<T> audioFrame;        /**< The current audio frame */
-    std::vector<T> windowFunction;    /**< The window function used in FFT processing */
-    std::vector<T> fftReal;           /**< The real part of the FFT for the current audio frame */
-    std::vector<T> fftImag;           /**< The imaginary part of the FFT for the current audio frame */
+    std::vector<T> windowFunction;    /**< The mWindow function used in FFT processing */
     std::vector<T> magnitudeSpectrum; /**< The magnitude spectrum of the current audio frame */
-
-    bool fftConfigured;
 
     /** object to compute core time domain features */
     CoreTimeDomainFeatures<T> coreTimeDomainFeatures;

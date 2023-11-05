@@ -2,18 +2,21 @@
 #define QAudioAnalyseManager_h__
 
 #include <QObject>
-#include "EchoXCoreAPI.h"
 #include <QAudioFormat>
 #include <QSharedPointer>
 #include <QTimer>
 #include <QThread>
+#include <QMutex>
+#include <QMap>
+#include "EchoXCoreAPI.h"
+#include "ConstantQTransform.h"
 
 class XAudioSink;
 class IAudioCapture;
 class QAudioAnalyseInformant;
 template<typename _Ty> class Gist;
 
-enum class EAudioWindowType
+enum class ECHOXCORE_API EAudioWindowType
 {
 	RectangularWindow,
 	HanningWindow,
@@ -36,6 +39,7 @@ public:
 	void tick();
 
 	int getTickInterval() const;
+	QMutex* getMutex();
 	QAudioFormat getCurrentFormat();
 	std::vector<float> popAudio(const size_t desiredSize);
 
@@ -45,9 +49,9 @@ private:
 	void registerInformant(QAudioAnalyseInformant* informant);
 	void unregisterInformant(QAudioAnalyseInformant* informant);
 private:
+	QMutex mMutex;
 	QThread mTickThread;
-	QTimer mTickTimer;
-
+	QTimer* mTickTimer = nullptr;
 	std::shared_ptr<XAudioSink> mAudioSink;
 	std::shared_ptr<IAudioCapture> mAudioCapture;
 	QList<QAudioAnalyseInformant*> mInformants;
@@ -63,9 +67,9 @@ public:
 	void setWindowType(EAudioWindowType w);
 	int getSampleRate() const;
 
-	std::vector<float> getMagnitudeSpectrum();
-	std::vector<float> getMelFrequencySpectrum();
-	std::vector<float> getMelFrequencyCepstralCoefficients();
+	QVector<float> getMagnitudeSpectrum();
+	QVector<float> getMelFrequencySpectrum();
+	QVector<float> getMelFrequencyCepstralCoefficients();
 	float getPeakEnergy();
 	float getRootMeanSquare();
 	float getZeroCrossingRate();
@@ -80,13 +84,38 @@ public:
 	float getComplexSpectralDifference();
 	float getHighFrequencyContent();
 	float getPitch();
+
+	void setCqtEnabled(bool bEnable);
+	void setCqtSetting(int hopSize = 256, int binsPerOctave = 12, int octaveNumber = 7);
+	std::vector<Cqt::ScheduleElement> getCqtSchedule();
+	QVector<float> getCqtMagnitudeSpectrum(const Cqt::ScheduleElement schedule);
 private:
 	void ensureGist();
+	void ensureCqt();
 	void process();
 private:
 	int mDesiredAudioFrameSize = 128;
 	EAudioWindowType mDesiredWindowType = EAudioWindowType::HanningWindow;
 	std::shared_ptr<Gist<float>> mGist;
+
+	struct CqtSetting{
+		bool bEnabled = true;
+		int hopSize = 256;
+		int binsPerOctave = 12;
+		int octaveNumber = 7;
+	};
+	CqtSetting mDesiredCqtSetting;
+	std::shared_ptr<Cqt::ConstantQTransform> mCqt;
+
+	struct SpectrumCache {
+		QVector<float> MagnitudeSpectrum;
+		QVector<float> MelFrequencySpectrum;
+		QVector<float> MelFrequencyCepstralCoefficients;
+		QMap<int,QVector<float>> CqtMagnitudeSpectrum;
+	}mSpectrumCache;
+
+	float mSmoothingUp = 0.0f;
+	float mSmoothingDown = 0.5f;
 };
 
 #endif // QAudioAnalyseManager_h__
