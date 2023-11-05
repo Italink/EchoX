@@ -45,10 +45,10 @@ bool QSmtcManager::ensureConnect()
 #if 0
 	QTimer* timer = new QTimer;
 	connect(timer, &QTimer::timeout, [this]() {
-		requestSendCommand(QSmtcCommand::Play);
-		requestGetMediaPlaybackDataSourceInfo();
-		requestGetMediaTimelineProperties();
-		qDebug() << mServerProcess.state() << mClient->state() << mServerProcess.readAllStandardError() << mServerProcess.readAllStandardError();
+		//requestSendCommand(QSmtcCommand::Play);
+		//requestGetMediaPlaybackDataSourceInfo();
+		//requestGetMediaTimelineProperties();
+		qDebug() << mServerProcess.state() << mClient->state() << mServerProcess.readAllStandardOutput() << mServerProcess.readAllStandardError();
 	});
 	timer->setInterval(1000);
 	timer->start();
@@ -96,51 +96,55 @@ void QSmtcManager::sendMessage(QJsonObject json)
 void QSmtcManager::notify()
 {
 	int dataLength = 0;
-	mClient->read((char*)&dataLength, 4);
-	if (dataLength <= 0)
-		return;
-	QByteArray data = mClient->read(dataLength);
-	QJsonObject json = QJsonDocument::fromJson(data).object();
-	QString reply = json.value("Reply").toString();
-	if (reply == "MediaPlaybackDataChanged") {
-		Q_EMIT asMediaPlaybackDataChanged();
+
+	while (mClient->bytesAvailable()) {
+		mClient->read((char*)&dataLength, 4);
+		if (dataLength <= 0)
+			continue;
+
+		QByteArray data = mClient->read(dataLength);
+		QJsonObject json = QJsonDocument::fromJson(data).object();
+		QString reply = json.value("Reply").toString();
+		if (reply == "MediaPlaybackDataChanged") {
+			Q_EMIT asMediaPlaybackDataChanged();
+		}
+		else if (reply == "MediaPlaybackDataSourceInfo") {
+			QSmtcMediaPlaybackDataSourceInfo info;
+			info.SourceAppId = json["SourceAppId"].toString();
+			info.SourceDeviceId = json["SourceDeviceId"].toString();
+			info.RenderDeviceId = json["RenderDeviceId"].toString();
+			info.MediaClassPrimaryID = json["MediaClassPrimaryID"].toString();
+			info.Title = json["Title"].toString();
+			info.Artist = json["Artist"].toString();
+			info.Subtitle = json["Subtitle"].toString();
+			info.Genres = json["Genres"].toString().split("|", Qt::SplitBehaviorFlags::SkipEmptyParts);
+			info.TrackNumber = json["TrackNumber"].toInt();
+			info.AlbumTitle = json["AlbumTitle"].toString();
+			info.AlbumArtist = json["AlbumArtist"].toString();
+			info.AlbumTrackCount = json["AlbumTrackCount"].toInt();
+			info.Thumbnail = json["Thumbnail"].toString();
+			Q_EMIT asReceiveMediaPlaybackDataSourceInfo(info);
+		}
+		else if (reply == "MediaPlaybackInfo") {
+			QSmtcMediaPlaybackInfo info;
+			info.PlaybackState = json["PlaybackState"].toString();
+			info.PlaybackCaps = json["PlaybackCaps"].toString();
+			info.PlaybackMode = json["PlaybackMode"].toString();
+			info.PlaybackRate = json["PlaybackRate"].toDouble();
+			info.RepeatMode = json["RepeatMode"].toString();
+			info.LastPlayingFileTime = json["LastPlayingFileTime"].toString();
+			Q_EMIT asReceiveMediaPlaybackInfo(info);
+		}
+		else if (reply == "MediaTimelineProperties") {
+			QSmtcMediaTimelineProperties info;
+			info.Position = QTime::fromString(json["Position"].toString());
+			info.StartTime = QTime::fromString(json["StartTime"].toString());
+			info.EndTime = QTime::fromString(json["EndTime"].toString());
+			info.MinSeekTime = QTime::fromString(json["MinSeekTime"].toString());
+			info.MaxSeekTime = QTime::fromString(json["MaxSeekTime"].toString());
+			info.PositionSetFileTime = QTime::fromString(json["PositionSetFileTime"].toString());
+			Q_EMIT asReceiveMediaTimelineProperties(info);
+		}
+		//qDebug() << json;
 	}
-	else if (reply == "MediaPlaybackDataSourceInfo") {
-		QSmtcMediaPlaybackDataSourceInfo info;
-		info.SourceAppId = json["SourceAppId"].toString();
-		info.SourceDeviceId = json["SourceDeviceId"].toString();
-		info.RenderDeviceId = json["RenderDeviceId"].toString();
-		info.MediaClassPrimaryID = json["MediaClassPrimaryID"].toString();
-		info.Title = json["Title"].toString();
-		info.Artist = json["Artist"].toString();
-		info.Subtitle = json["Subtitle"].toString();
-		info.Genres = json["Genres"].toString().split("|",Qt::SplitBehaviorFlags::SkipEmptyParts);
-		info.TrackNumber = json["TrackNumber"].toInt();
-		info.AlbumTitle = json["AlbumTitle"].toString();
-		info.AlbumArtist = json["AlbumArtist"].toString();
-		info.AlbumTrackCount = json["AlbumTrackCount"].toInt();
-		info.Thumbnail = json["Thumbnail"].toString();
-		Q_EMIT asReceiveMediaPlaybackDataSourceInfo(info);
-	}
-	else if (reply == "MediaPlaybackInfo") {
-		QSmtcMediaPlaybackInfo info;
-		info.PlaybackState = json["PlaybackState"].toString();
-		info.PlaybackCaps = json["PlaybackCaps"].toString();
-		info.PlaybackMode = json["PlaybackMode"].toString();
-		info.PlaybackRate = json["PlaybackRate"].toDouble();
-		info.RepeatMode = json["RepeatMode"].toString();
-		info.LastPlayingFileTime = json["LastPlayingFileTime"].toString();
-		Q_EMIT asReceiveMediaPlaybackInfo(info);
-	}
-	else if (reply == "MediaTimelineProperties") {
-		QSmtcMediaTimelineProperties info;
-		info.Position = QTime::fromString(json["Position"].toString());
-		info.StartTime = QTime::fromString(json["StartTime"].toString());
-		info.EndTime = QTime::fromString(json["EndTime"].toString());
-		info.MinSeekTime = QTime::fromString(json["MinSeekTime"].toString());
-		info.MaxSeekTime = QTime::fromString(json["MaxSeekTime"].toString());
-		info.PositionSetFileTime = QTime::fromString(json["PositionSetFileTime"].toString());
-		Q_EMIT asReceiveMediaTimelineProperties(info);
-	}
-	//qDebug() << json;
 }

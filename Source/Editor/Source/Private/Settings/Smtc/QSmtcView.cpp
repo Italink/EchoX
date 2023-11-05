@@ -120,8 +120,8 @@ void QSmtcView::updatePlaybackInfo(QSmtcMediaPlaybackInfo info)
 
 void QSmtcView::paintEvent(QPaintEvent* e)
 {
+	QPainter painter(this);
 	if (!mThumbnail.isNull()) {
-		QPainter painter(this);
 		float wh = width() /(float) height();
 		float imwh = mThumbnailBlurred.width() / (float)mThumbnailBlurred.height();
 		QRect imgRect(0, 0, mThumbnailBlurred.width(), mThumbnailBlurred.height());
@@ -135,8 +135,8 @@ void QSmtcView::paintEvent(QPaintEvent* e)
 		}
 		imgRect.moveCenter(rect().center());
 		painter.drawImage(imgRect, mThumbnailBlurred);
-		painter.fillRect(rect(), QColor(0, 0, 0, 100));
 	}
+	painter.fillRect(rect(), QColor(0, 0, 0, 100));
 }
 
 void QSmtcView::resizeEvent(QResizeEvent* e)

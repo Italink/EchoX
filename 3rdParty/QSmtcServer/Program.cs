@@ -19,6 +19,7 @@ namespace QSmtcServer{
         {
             try
             {
+                //Console.WriteLine("Send Msg {0}", json.ToString());
                 var jsonString = JsonConvert.SerializeObject(json);
                 byte[] jsonBuffer = Encoding.UTF8.GetBytes(jsonString);
                 byte[] lengthBuffer = System.BitConverter.GetBytes(jsonBuffer.Length);
@@ -33,6 +34,8 @@ namespace QSmtcServer{
 
         static void HandleMessage(ref NetworkStream stream, ref NPSMLib.NowPlayingSessionManager manager)
         {
+            if (!stream.DataAvailable)
+                return;
             byte[] buffer = new byte[4];
             stream.ReadAsync(buffer, 0, buffer.Length).Wait();
             int dataLength = System.BitConverter.ToInt32(buffer, 0);
@@ -117,20 +120,30 @@ namespace QSmtcServer{
                 Console.WriteLine(e);
             }
         }
+
+        delegate void DataChangedEvent(MediaObjectInfo mediaObjectInfo);
+        static string mLastTitle;
         static void ThreadProc(ref TcpClient client) {
+            Console.WriteLine("Smtc Connect Success");
             var stream = client.GetStream();
-            string lastTitle = "";
-            var eventHander = new EventHandler<MediaPlaybackDataChangedArgs>(delegate (Object o, MediaPlaybackDataChangedArgs a)
+
+            DataChangedEvent changedEvent = delegate (MediaObjectInfo mediaObjectInfo)
             {
-                var mediaObjectInfo = a.MediaPlaybackDataSource.GetMediaObjectInfo();
-                if (lastTitle != mediaObjectInfo.Title)
+                if (mLastTitle != mediaObjectInfo.Title)
                 {
-                    lastTitle = mediaObjectInfo.Title;
+                    //Console.WriteLine("Smtc Connect Changed {0} -> {1}", mLastTitle, mediaObjectInfo.Title);
+                    mLastTitle = mediaObjectInfo.Title;
                     JObject json = new JObject();
                     json["Reply"] = "MediaPlaybackDataChanged";
                     SendMessgae(ref stream, json);
                 }
+            };
+
+            var eventHander = new EventHandler<MediaPlaybackDataChangedArgs>(delegate (Object o, MediaPlaybackDataChangedArgs a)
+            {
+                changedEvent(a.MediaPlaybackDataSource.GetMediaObjectInfo());
             });
+
             NPSMLib.NowPlayingSessionManager manager = new NPSMLib.NowPlayingSessionManager();
             try
             {
@@ -138,6 +151,7 @@ namespace QSmtcServer{
                 {
                     if (manager.CurrentSession != null && manager.CurrentSession.ActivateMediaPlaybackDataSource() != null)
                     {
+                        changedEvent(manager.CurrentSession.ActivateMediaPlaybackDataSource().GetMediaObjectInfo());
                         manager.CurrentSession.ActivateMediaPlaybackDataSource().MediaPlaybackDataChanged += eventHander;
                         HandleMessage(ref stream, ref manager);
                     }
