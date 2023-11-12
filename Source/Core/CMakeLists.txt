@@ -4,6 +4,7 @@ qengine_add_target(EchoXCore
         Qt::CorePrivate
         Qt::Multimedia
         QEngineCore
+        QEngineEditor
         Gist
     SOURCE_GROUP " "
 )

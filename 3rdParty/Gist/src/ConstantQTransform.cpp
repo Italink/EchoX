@@ -232,7 +232,7 @@ void Cqt::ConstantQTransform::inputBlock(float* const data, const int blockSize)
 		calculateKernels();
 	}
 	// process Filterbank and create Schedule
-	mFilterbank->inputBlock(data, blockSize);
+	//mFilterbank->inputBlock(data, blockSize);
 	// determine cqt positions and schedule them
 	mCqtSchedule.clear();
 	for (int i = 0; i < blockSize; i++)

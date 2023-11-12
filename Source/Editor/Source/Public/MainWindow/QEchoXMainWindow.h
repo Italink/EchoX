@@ -1,5 +1,5 @@
-#ifndef QEchoXMainEditor_h__
-#define QEchoXMainEditor_h__
+#ifndef QEchoXMainWindow_h__
+#define QEchoXMainWindow_h__
 
 #include <QWidget>
 #include <FramelessHelper/Widgets/framelesswidget.h>
@@ -9,10 +9,10 @@ FRAMELESSHELPER_BEGIN_NAMESPACE
 class StandardTitleBar;
 FRAMELESSHELPER_END_NAMESPACE
 
-class ECHOXEDITOR_API QEchoXMainEditor : public FRAMELESSHELPER_PREPEND_NAMESPACE(FramelessWidget) {
+class ECHOXEDITOR_API QEchoXMainWindow : public FRAMELESSHELPER_PREPEND_NAMESPACE(FramelessWidget) {
 public:
-	QEchoXMainEditor();
-	~QEchoXMainEditor();
+	QEchoXMainWindow();
+	~QEchoXMainWindow();
 protected:
 	void initialize();
 	void waitReady();

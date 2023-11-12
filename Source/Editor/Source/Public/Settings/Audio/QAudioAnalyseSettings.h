@@ -5,8 +5,6 @@
 
 class QAudioAnalyseSettings : public IEchoXSettings {
 public:
-	QString path() override;
-	QWidget* createWidget() override;
 };
 
 #endif // QAudioAnalyseSettings_h__

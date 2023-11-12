@@ -4,16 +4,19 @@
 #include "framelesswidgetshelper.h"
 #include "QEchoXTrayMenu.h"
 #include "Render/RHI/QRhiHelper.h"
-#include "QEchoXMainEditor.h"
-#include "Settings/AudioAnalyse/QAudioAnalyseView.h"
+#include "QEchoXMainWindow.h"
+#include "Settings/Audio/QAudioAnalyseView.h"
 #include "Utils/Serialization.h"
 #include "Audio/QSmtcManager.h"
-#include "Settings/Smtc/QSmtcView.h"
+#include "Settings/Audio/QSmtcView.h"
+#include "Project/QProjectsManager.h"
+#include "QEchoXProjectsPanel.h"
+#include "QEchoXProjectsPage.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
 	, mRhi(QRhiHelper::create())
-	, mMainEditor(new QEchoXMainEditor)
+	, mMainWindow(new QEchoXMainWindow)
 	, mSysIcon(new QSystemTrayIcon(this))
 	, mSysTrayMenu(new QEchoXMenu(nullptr))
 {
@@ -23,22 +26,25 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	mSysIcon->setIcon(QIcon(":/Resources/SystemTrayIcon.png"));
 	mSysIcon->setContextMenu(mSysTrayMenu);
 	mSysIcon->show();
-	mMainEditor->setMinimumSize(800, 600);
-	mMainEditor->show();
+	mMainWindow->setMinimumSize(800, 600);
+	mMainWindow->show();
 	setQuitOnLastWindowClosed(false);
 	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 
 	QAudioAnalyseManager::Get().startup();
 	QSmtcManager::Get().startup();
+	QProjectsManager::Get().loadProjects();
 
-	QAudioAnalyseView* view = new QAudioAnalyseView;
-	view->show();
+	QEchoXProjectsPage* panel = new QEchoXProjectsPage;
+	panel->show();
+	//QAudioAnalyseView* view = new QAudioAnalyseView;
+	//view->show();
 
-	QSmtcView* sview = new QSmtcView;
-	sview->show();
+	//QSmtcView* sview = new QSmtcView;
+	//sview->show();
 
-	TestObject t;
-	qDebug()<< Serialization::toJson(&t);
+	//TestObject t;
+	//qDebug()<< Serialization::toJson(&t);
 
 }
 
@@ -57,9 +63,9 @@ QRhi* QEchoXApplication::getGlobalRhi() const
 	return mRhi.get();
 }
 
-QEchoXMainEditor* QEchoXApplication::getMainEditor() const
+QEchoXMainWindow* QEchoXApplication::getMainEditor() const
 {
-	return mMainEditor;
+	return mMainWindow;
 }
 
 QSystemTrayIcon* QEchoXApplication::getSystemTrayIcon() const
@@ -78,12 +84,12 @@ void QEchoXApplication::onActivatedSysTrayIcon(QSystemTrayIcon::ActivationReason
 {
 	switch (reason) {
 	case QSystemTrayIcon::Trigger: {
-		if (!mMainEditor->isVisible()) {
-			mMainEditor->show();
-			mMainEditor->activateWindow();
+		if (!mMainWindow->isVisible()) {
+			mMainWindow->show();
+			mMainWindow->activateWindow();
 		}
 		else {
-			mMainEditor->close();
+			mMainWindow->close();
 		}
 		break;
 	}

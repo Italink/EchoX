@@ -27,7 +27,7 @@ namespace Cqt
 
 typedef CircularBuffer<float>* BufferPtr;
 
-constexpr float FilterTransitionBandwidth{ 0.1 };
+constexpr float FilterTransitionBandwidth{ 0.1f };
 constexpr unsigned AllpassNumber{ 3 };
 
 class ResamplingFilterbank

@@ -123,7 +123,7 @@ namespace QSmtcServer{
 
         delegate void DataChangedEvent(MediaObjectInfo mediaObjectInfo);
         static string mLastTitle;
-        static void ThreadProc(ref TcpClient client) {
+        static void TickLoop(ref TcpClient client) {
             Console.WriteLine("Smtc Connect Success");
             var stream = client.GetStream();
 
@@ -173,16 +173,8 @@ namespace QSmtcServer{
             IPAddress localAddr = IPAddress.Parse("127.0.0.1");
             TcpListener server = new TcpListener(localAddr, port);
             server.Start();
-            while (true){
-                try {
-                    var client = await server.AcceptTcpClientAsync();
-                    ThreadPool.QueueUserWorkItem(new WaitCallback((_) => ThreadProc(ref client)));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
+            var client = await server.AcceptTcpClientAsync();
+            TickLoop(ref client);
             server.Stop();
 
         }

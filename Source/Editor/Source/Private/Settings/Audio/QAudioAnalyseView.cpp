@@ -151,7 +151,7 @@ QAudioAnalyseView::QAudioAnalyseView()
 	, mMelFrequencySpectrum(new QAudioSpectrogram("Mel Frequency Spectrum"))
 	, mHighFrequencyContent(new QHighFrequencyContentOscillogram("High Frequency Content"))
 {
-	mDebugInformant->setCqtSetting(256, 512, 3);
+	mDebugInformant->setCqtSetting(64, 128, 1);
 
 	QPalette palette(this->palette());
 	palette.setColor(QPalette::Window, Qt::white);

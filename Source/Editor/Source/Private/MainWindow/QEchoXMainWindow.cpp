@@ -1,4 +1,4 @@
-#include "QEchoXMainEditor.h"
+#include "QEchoXMainWindow.h"
 #include <QFileIconProvider>
 #include <QVBoxLayout>
 #include "framelessmanager.h"
@@ -8,20 +8,20 @@
 
 using namespace FRAMELESSHELPER_NAMESPACE;
 
-QEchoXMainEditor::QEchoXMainEditor()
+QEchoXMainWindow::QEchoXMainWindow()
 	:mTitleBar(new StandardTitleBar(this))
 {
 	initialize();
 	mTimerId = startTimer(100);
-	connect(FramelessManager::instance(), &FramelessManager::systemThemeChanged, this, &QEchoXMainEditor::updateStyleSheet);
+	connect(FramelessManager::instance(), &FramelessManager::systemThemeChanged, this, &QEchoXMainWindow::updateStyleSheet);
 }
 
-QEchoXMainEditor::~QEchoXMainEditor()
+QEchoXMainWindow::~QEchoXMainWindow()
 {
 
 }
 
-void QEchoXMainEditor::initialize()
+void QEchoXMainWindow::initialize()
 {
 	setWindowTitle(tr("EchoX"));
 	setWindowIcon(QFileIconProvider().icon(QFileIconProvider::Desktop));
@@ -41,14 +41,14 @@ void QEchoXMainEditor::initialize()
 	helper->setSystemButton(mTitleBar->closeButton(), Global::SystemButtonType::Close);
 }
 
-void QEchoXMainEditor::waitReady()
+void QEchoXMainWindow::waitReady()
 {
 	FramelessWidgetsHelper* helper = FramelessWidgetsHelper::get(this);
 	helper->waitForReady();
 	helper->moveWindowToDesktopCenter();
 }
 
-void QEchoXMainEditor::updateStyleSheet()
+void QEchoXMainWindow::updateStyleSheet()
 {
 	const bool dark = (FramelessManager::instance()->systemTheme() == Global::SystemTheme::Dark);
 	const QColor labelTextColor = (dark ? kDefaultWhiteColor : kDefaultBlackColor);

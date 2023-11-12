@@ -5,7 +5,6 @@
 
 class QSmtcSettings : public IEchoXSettings {
 public:
-	QString path() override;
 	QWidget* createWidget() override;
 };
 

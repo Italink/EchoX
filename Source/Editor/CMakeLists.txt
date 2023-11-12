@@ -7,8 +7,6 @@ qengine_add_target(EchoXEditor
         Qt::Widgets
         Qt::WidgetsPrivate
         Qt::Multimedia
-        QEngineCore
-        QEngineEditor
         EchoXCore
         FramelessHelper::Core
         FramelessHelper::Widgets

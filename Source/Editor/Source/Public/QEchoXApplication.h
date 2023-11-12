@@ -7,7 +7,7 @@
 #include "qvectornd.h"
 
 class QRhi;
-class QEchoXMainEditor;
+class QEchoXMainWindow;
 class QEchoXMenu;
 
 #undef qApp
@@ -99,14 +99,14 @@ public:
 	static void preInitialize();
 
 	QRhi* getGlobalRhi() const;
-	QEchoXMainEditor* getMainEditor() const;
+	QEchoXMainWindow* getMainEditor() const;
 	QSystemTrayIcon* getSystemTrayIcon() const;
 protected:
 	bool notify(QObject* o, QEvent* e) override;
 	void onActivatedSysTrayIcon(QSystemTrayIcon::ActivationReason reason);
 private:
 	QSharedPointer<QRhi> mRhi;
-	QEchoXMainEditor* mMainEditor = nullptr;
+	QEchoXMainWindow* mMainWindow = nullptr;
 	QSystemTrayIcon* mSysIcon = nullptr;
 	QEchoXMenu* mSysTrayMenu = nullptr;
 };

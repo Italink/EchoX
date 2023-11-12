@@ -1,0 +1,1 @@
+#include "QSmtcSettings.h"
