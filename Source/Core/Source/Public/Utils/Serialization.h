@@ -4,6 +4,8 @@
 #include "EchoXCoreAPI.h"
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QCborArray>
+#include <QCborMap>
 
 class ECHOXCORE_API Serialization {
 public:
@@ -11,11 +13,9 @@ public:
 	};
 
 	static void registerBuiltinType();
-
-	static QJsonValue toJsonValue(const QVariant& var, const Context& context);
-	static QJsonObject toJson(QObject* object, const Context& context);
-
-	static void fromJson(QObject* object, QJsonObject json);
+	static QCborValue toCborValue(const QVariant& var, const Context& context);
+	static QCborMap toCbor(QObject* object, const Context& context);
+	static void fromCbor(QObject* object, QCborMap cbor);
 };
 
 #endif // Serialization_h__

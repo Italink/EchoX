@@ -1,10 +1,10 @@
 #include "Serialization.h"
 #include <QMetaObject>
 #include <QMetaProperty>
-#include <QJsonArray>
 #include <QSequentialIterable>
 #include <QAssociativeIterable>
 #include "qvectornd.h"
+
 
 template<typename From, typename To>
 void registerType(std::function<To(const From&)> convertor) {
@@ -21,15 +21,15 @@ void registerType(std::function<To(const From&)> convertor) {
 
 void Serialization::registerBuiltinType()
 {
-	registerType<QVector2D, QJsonValue>([](const QVector2D& var)->QJsonValue {
-		QJsonArray array;
+	registerType<QVector2D, QCborValue>([](const QVector2D& var)->QCborValue {
+		QCborArray array;
 		array << var.x();
 		array << var.y();
 		return array;
 	});
 
-	registerType<QJsonValue, QVector2D>([](const QJsonValue& var)->QVector2D {
-		QJsonArray array = var.toArray();
+	registerType<QCborValue, QVector2D>([](const QCborValue& var)->QVector2D {
+		QCborArray array = var.toArray();
 		QVector2D vec;
 		if (array.size() == 2) {
 			vec.setX(array[0].toDouble());
@@ -38,16 +38,16 @@ void Serialization::registerBuiltinType()
 		return vec;
 	});
 
-	registerType<QVector3D, QJsonValue>([](const QVector3D& var)->QJsonValue {
-		QJsonArray array;
+	registerType<QVector3D, QCborValue>([](const QVector3D& var)->QCborValue {
+		QCborArray array;
 		array << var.x();
 		array << var.y();
 		array << var.z();
 		return array;
 	});
 
-	registerType<QJsonValue, QVector3D>([](const QJsonValue& var)->QVector3D {
-		QJsonArray array = var.toArray();
+	registerType<QCborValue, QVector3D>([](const QCborValue& var)->QVector3D {
+		QCborArray array = var.toArray();
 		QVector3D vec;
 		if (array.size() == 3) {
 			vec.setX(array[0].toDouble());
@@ -57,8 +57,8 @@ void Serialization::registerBuiltinType()
 		return vec;
 	});
 
-	registerType<QVector4D, QJsonValue>([](const QVector4D& var)->QJsonValue {
-		QJsonArray array;
+	registerType<QVector4D, QCborValue>([](const QVector4D& var)->QCborValue {
+		QCborArray array;
 		array << var.x();
 		array << var.y();
 		array << var.z();
@@ -66,8 +66,8 @@ void Serialization::registerBuiltinType()
 		return array;
 	});
 
-	registerType<QJsonValue, QVector4D>([](const QJsonValue& var)->QVector4D {
-		QJsonArray array = var.toArray();
+	registerType<QCborValue, QVector4D>([](const QCborValue& var)->QVector4D {
+		QCborArray array = var.toArray();
 		QVector4D vec;
 		if (array.size() == 4) {
 			vec.setX(array[0].toDouble());
@@ -79,36 +79,38 @@ void Serialization::registerBuiltinType()
 	});
 }
 
-QJsonValue Serialization::toJsonValue(const QVariant& var, const Context& context)
+QCborValue Serialization::toCborValue(const QVariant& var, const Context& context)
 {
 	if (var.isNull()) {
-		return QJsonValue();
+		return QCborValue();
 	}
 	QMetaType metaType = var.metaType();
-	if (QMetaType::canConvert(metaType, QMetaType::fromType<QJsonValue>())) {
-		return var.toJsonValue();
+	if (QMetaType::canConvert(metaType, QMetaType::fromType<QCborValue>())) {
+		QCborValue value;
+		QMetaType::convert(metaType, var.data(), QMetaType::fromType<QCborValue>(), &value);
+		return value;
 	}
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QString>())) {
-		return QJsonValue(var.toString());
+		return QCborValue(var.toString());
 	}
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantList>())) {
-		QJsonArray array;
+		QCborArray array;
 		QSequentialIterable iterable = var.value<QSequentialIterable>();
 		for (int index = 0; index < iterable.size(); index++) {
-			array << toJsonValue(iterable.at(index), context);
+			array << toCborValue(iterable.at(index), context);
 		}
 		return array;
 	}
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantMap>())) {
-		QJsonObject object;
+		QCborMap object;
 		QAssociativeIterable iterable = var.value<QAssociativeIterable>();
 		for (auto iter = iterable.begin(); iter != iterable.end(); ++iter) {
-			object.insert(iter.key().toString(), toJsonValue(iter.value(), context));
+			object.insert(iter.key().toString(), toCborValue(iter.value(), context));
 		}
 		return object;
 	}
 	else if (metaType.flags() & QMetaType::IsEnumeration) {
-		return QJsonValue(var.toInt());
+		return QCborValue(var.toInt());
 	}
 	else {
 		QRegularExpression reg("(QSharedPointer|std::shared_ptr|shared_ptr)\\<(.+)\\>");
@@ -137,35 +139,35 @@ QJsonValue Serialization::toJsonValue(const QVariant& var, const Context& contex
 			}
 		}
 		if (metaObject) {
-			QJsonObject object;
+			QCborMap object;
 			for (int i = 0; i < metaObject->propertyCount(); i++) {
 				QMetaProperty prop = metaObject->property(i);
-				QJsonValue value;
+				QCborValue value;
 				if (metaObject->inherits(&QObject::staticMetaObject)) {
 					QObject* objectPtr = var.value<QObject*>();
 					if (objectPtr) {
-						value = toJsonValue(prop.read((QObject*)objectPtr), context);
+						value = toCborValue(prop.read((QObject*)objectPtr), context);
 					}
 				}
 				else {
 					const void* ptr = var.data();
 					if (metaType.flags().testFlag(QMetaType::IsPointer))
 						ptr = *(void**)var.data();
-					value = toJsonValue(prop.readOnGadget(ptr), context);
+					value = toCborValue(prop.readOnGadget(ptr), context);
 				}
 				if (!value.isNull()) {
-					object.insert(prop.name(), value);
+					object.insert(QString(prop.name()), value);
 				}
 			}
 			return object;
 		}
 	}
-	return QJsonValue("Invalid Type");
+	return QCborValue("Invalid Type");
 }
 
-QJsonObject Serialization::toJson(QObject* object, const Context& context)
+QCborMap Serialization::toCbor(QObject* object, const Context& context)
 {
-	return toJsonValue(QVariant::fromValue(object), context).toObject();
+	return toCborValue(QVariant::fromValue(object), context).toMap();
 }
 
 struct ExternalRefCountWithMetaType : public QtSharedPointer::ExternalRefCountData {
@@ -193,10 +195,10 @@ struct ExternalRefCountWithMetaType : public QtSharedPointer::ExternalRefCountDa
 	}
 };
 
-QVariant fromJsonValue(const QJsonValue& value, QMetaType metaType) {
-	if (QMetaType::canConvert(QMetaType::fromType<QJsonValue>(), metaType)) {
+QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
+	if (QMetaType::canConvert(QMetaType::fromType<QCborValue>(), metaType)) {
 		QVariant var(metaType);
-		QMetaType::convert(QMetaType::fromType<QJsonValue>(), &value, metaType, var.data());
+		QMetaType::convert(QMetaType::fromType<QCborValue>(), &value, metaType, var.data());
 		return var;
 	}
 	else if (value.isString() && QMetaType::canConvert(QMetaType::fromType<QString>(), metaType)) {
@@ -206,10 +208,10 @@ QVariant fromJsonValue(const QJsonValue& value, QMetaType metaType) {
 		return var;
 	}
 	else if (metaType.flags() & QMetaType::IsEnumeration) {
-		return value.toInt();
+		return value.toInteger();
 	}
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantList>())) {
-		QJsonArray array = value.toArray();
+		QCborArray array = value.toArray();
 		QVariant varList(metaType);
 		QSequentialIterable iterable = varList.value<QSequentialIterable>();
 		void* containterPtr = const_cast<void*>(iterable.constIterable());
@@ -217,14 +219,14 @@ QVariant fromJsonValue(const QJsonValue& value, QMetaType metaType) {
 		QMetaType valueMetaType = iterable.valueMetaType();
 		QtPrivate::QVariantTypeCoercer coercer;
 		for (auto item : array) {
-			QVariant var = fromJsonValue(item, valueMetaType);
+			QVariant var = fromCborValue(item, valueMetaType);
 			const void* dataPtr = coercer.coerce(var, var.metaType());
 			metaContainer.addValueAtEnd(containterPtr, dataPtr);
 		}
 		return varList;
 	}
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantMap>())) {
-		QJsonObject object = value.toObject();
+		QCborMap object = value.toMap();
 		QVariant varMap(metaType);
 		QAssociativeIterable iterable = varMap.value<QAssociativeIterable>();
 		QMetaAssociation metaContainer = iterable.metaContainer();
@@ -232,14 +234,14 @@ QVariant fromJsonValue(const QJsonValue& value, QMetaType metaType) {
 		QtPrivate::QVariantTypeCoercer mappedCoercer;
 		for (auto it = object.begin(); it != object.end(); ++it) {
 			void* containterPtr = const_cast<void*>(iterable.constIterable());
-			QVariant var = fromJsonValue(it.value(), metaContainer.mappedMetaType());
+			QVariant var = fromCborValue(it.value(), metaContainer.mappedMetaType());
 			const void* dataPtr = mappedCoercer.coerce(var, var.metaType());
-			metaContainer.setMappedAtKey(containterPtr, keyCoercer.coerce(it.key(), metaContainer.keyMetaType()), dataPtr);
+			metaContainer.setMappedAtKey(containterPtr, keyCoercer.coerce(it.key().toString(), metaContainer.keyMetaType()), dataPtr);
 		}
 		return varMap;
 	}
 	else {
-		QJsonObject object = value.toObject();
+		QCborMap object = value.toMap();
 		const QMetaObject* metaObject = nullptr;
 		QVariant newObject;
 		QRegularExpression reg("(QSharedPointer|std::shared_ptr|shared_ptr)\\<(.+)\\>");
@@ -264,17 +266,19 @@ QVariant fromJsonValue(const QJsonValue& value, QMetaType metaType) {
 		else {
 			metaObject = metaType.metaObject();
 			bIsPointer = metaType.flags().testFlag(QMetaType::IsPointer);
-			if (metaObject && metaObject->inherits(&QObject::staticMetaObject)) {
-				QObject* obj = metaObject->newInstance();
-				if (obj)
-					newObject = QVariant::fromValue(obj);
-				else {
+			if (metaObject) {
+				if (metaObject->inherits(&QObject::staticMetaObject)) {
+					QObject* obj = metaObject->newInstance();
+					if (obj)
+						newObject = QVariant::fromValue(obj);
+				}
+				if(newObject.isNull()){
 					QMetaType innerMetaType = QMetaType::fromName(QString(metaType.name()).remove("*").toLocal8Bit());
 					if (innerMetaType.isValid()) {
 						void* ptr = innerMetaType.create();
 						QVariant var(metaType, ptr);
 						memcpy(var.data(), &ptr, sizeof(ptr));
-						return var;
+						newObject = var;
 					}
 				}
 			}
@@ -285,9 +289,9 @@ QVariant fromJsonValue(const QJsonValue& value, QMetaType metaType) {
 				objectPtr = *(void**)objectPtr;
 			for (int i = 0; i < metaObject->propertyCount(); i++) {
 				QMetaProperty prop = metaObject->property(i);
-				if (object.contains(prop.name())) {
-					QJsonValue value = object.value(prop.name());
-					QVariant var = fromJsonValue(value, prop.metaType());
+				if (object.contains(QString(prop.name()))) {
+					QCborValue value = object.value(QString(prop.name()));
+					QVariant var = fromCborValue(value, prop.metaType());
 					if (metaObject->inherits(&QObject::staticMetaObject)) {
 						prop.write((QObject*)objectPtr, var);
 					}
@@ -302,16 +306,16 @@ QVariant fromJsonValue(const QJsonValue& value, QMetaType metaType) {
 	return QVariant();
 }
 
-void Serialization::fromJson(QObject* object, QJsonObject json)
+void Serialization::fromCbor(QObject* object, QCborMap cbor)
 {
 	if (object) {
 		const QMetaObject* metaObject = object->metaObject();
 		for (int i = 0; i < metaObject->propertyCount(); i++) {
 			QMetaProperty prop = metaObject->property(i);
 			QString name = prop.name();
-			if (json.contains(name)) {
-				QJsonValue value = json.value(prop.name());
-				QVariant var = fromJsonValue(value, prop.metaType());
+			if (cbor.contains(name)) {
+				QCborValue value = cbor.value(QString(prop.name()));
+				QVariant var = fromCborValue(value, prop.metaType());
 				qDebug() << var;
 				if (var.isValid()) {
 					prop.write(object, var);

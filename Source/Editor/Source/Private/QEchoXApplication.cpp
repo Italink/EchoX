@@ -43,14 +43,14 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 
 	////QSmtcView* sview = new QSmtcView;
 	////sview->show();
-	//qRegisterMetaType<TestInlineGadget>();
-	//qRegisterMetaType<TestInlineObject>();
-	//TestObject to;
-	//QJsonObject data  = Serialization::toJson(&to,Serialization::Context());
-	//qDebug() << data;
-	//TestObject from;
-	//Serialization::fromJson(&from, data);
-	//qDebug() << Serialization::toJson(&from, Serialization::Context());
+	qRegisterMetaType<TestInlineGadget>();
+	qRegisterMetaType<TestInlineObject>();
+	TestObject to;
+	QCborMap data  = Serialization::toJson(&to,Serialization::Context());
+	qDebug() << data;
+	TestObject from;
+	Serialization::fromJson(&from, data);
+	qDebug() << Serialization::toJson(&from, Serialization::Context());
 }
 
 QEchoXApplication::~QEchoXApplication() {
