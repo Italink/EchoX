@@ -31,21 +31,26 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	setQuitOnLastWindowClosed(false);
 	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 
+	Serialization::registerBuiltinType();
 	QAudioAnalyseManager::Get().startup();
 	QSmtcManager::Get().startup();
 	QProjectsManager::Get().loadProjects();
 
-	QEchoXProjectsPage* panel = new QEchoXProjectsPage;
-	panel->show();
+	//QEchoXProjectsPage* panel = new QEchoXProjectsPage;
+	//panel->show();
 	//QAudioAnalyseView* view = new QAudioAnalyseView;
 	//view->show();
 
-	//QSmtcView* sview = new QSmtcView;
-	//sview->show();
-
-	//TestObject t;
-	//qDebug()<< Serialization::toJson(&t);
-
+	////QSmtcView* sview = new QSmtcView;
+	////sview->show();
+	//qRegisterMetaType<TestInlineGadget>();
+	//qRegisterMetaType<TestInlineObject>();
+	//TestObject to;
+	//QJsonObject data  = Serialization::toJson(&to,Serialization::Context());
+	//qDebug() << data;
+	//TestObject from;
+	//Serialization::fromJson(&from, data);
+	//qDebug() << Serialization::toJson(&from, Serialization::Context());
 }
 
 QEchoXApplication::~QEchoXApplication() {

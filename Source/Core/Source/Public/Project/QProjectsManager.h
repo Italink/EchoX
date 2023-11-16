@@ -14,7 +14,7 @@ public:
 
 	void loadProjects();
 
-	QEchoXProject* createProject(QString inName, QEchoXProject::Type inType);
+	QEchoXProject* createProject(QString inName);
 	void removeProject(QEchoXProject* inProject);
 
 	QDir getProjectsDir() const;

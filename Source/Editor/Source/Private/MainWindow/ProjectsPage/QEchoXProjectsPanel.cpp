@@ -118,7 +118,7 @@ void QEchoXProjectsPanel::removeProject(QEchoXProject* inProject)
 
 void QEchoXProjectsPanel::onCreateNewProject()
 {
-	QProjectsManager::Get().createProject("NewProject", QEchoXProject::Type::Unknown);
+	QProjectsManager::Get().createProject("NewProject");
 }
 
 void QEchoXProjectsPanel::onItemDoubleClicked(QListWidgetItem* inItem)

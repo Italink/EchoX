@@ -17,11 +17,11 @@ void QProjectsManager::loadProjects()
 	}
 }
 
-QEchoXProject* QProjectsManager::createProject(QString inName, QEchoXProject::Type inType)
+QEchoXProject* QProjectsManager::createProject(QString inName)
 {
 	if (inName.isEmpty())
 		inName = "NewProject";
-	QEchoXProject* project = new QEchoXProject(makeUniqueName(inName), inType);
+	QEchoXProject* project = new QEchoXProject(makeUniqueName(inName));
 	addProject(project);
 	project->makeProjectDir();
 	Q_EMIT asProjectCreated(project);

@@ -1,8 +1,7 @@
 #include "QEchoXProject.h"
 #include "QProjectsManager.h"
 
-QEchoXProject::QEchoXProject(QString inName, Type inType)
-	: mType(inType)
+QEchoXProject::QEchoXProject(QString inName)
 {
 	setObjectName(inName);
 }

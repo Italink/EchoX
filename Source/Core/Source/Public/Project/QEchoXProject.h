@@ -10,12 +10,7 @@ class ECHOXCORE_API QEchoXProject : public QObject {
 	Q_OBJECT
 public:
 	inline static QString ConfgiFileName = "Project.echox";
-	enum class Type {
-		Unknown,
-		Wallpaper,
-		Widget
-	};
-	QEchoXProject(QString inName, Type inType = Type::Unknown);
+	QEchoXProject(QString inName);
 
 	QString getProjectName() const;
 	bool rename(QString inNewName);
@@ -29,8 +24,8 @@ public:
 	QPixmap getThumbnail();
 
 	bool saveProject();
+
  private:
-	Type mType;
 	QPixmap mThumbnail;
 };
 
