@@ -49,12 +49,12 @@ static QDebug operator<<(QDebug debug, const std::shared_ptr<TestInlineGadget>& 
 class TestObject :public QObject {
 	Q_OBJECT
 public:
-	//enum TestEnum {
-	//	One,
-	//	Two,
-	//	Three
-	//};
-	//Q_ENUM(TestEnum);
+	enum TestEnum {
+		One,
+		Two,
+		Three
+	};
+	Q_ENUM(TestEnum);
 
 	//Q_PROPERTY_VAR(int, Int) = 0;
 	//Q_PROPERTY_VAR(float, Float) = 1.23f;
@@ -67,6 +67,8 @@ public:
 	//Q_PROPERTY_VAR(QVector2D, Vec2);
 	//Q_PROPERTY_VAR(QVector3D, Vec3);
 	//Q_PROPERTY_VAR(QVector4D, Vec4);
+	//Q_PROPERTY_VAR(QImage, Image);
+	Q_PROPERTY_VAR(QPixmap, Pixmap);
 	//Q_PROPERTY_VAR(QColor, Color);
 	//Q_PROPERTY_VAR(QList<QColor>, ColorList) = { Qt::red,Qt::green,Qt::blue };
 	//Q_PROPERTY_VAR(std::vector<QColor>, StdColorList) = { Qt::red,Qt::green,Qt::blue };
@@ -80,9 +82,9 @@ public:
 	//}
 	//QMap<QString, QColor> ColorMap = { {"Red",Qt::red},{"Green",Qt::green},{"Blue",Qt::blue} };
 
-	Q_PROPERTY_VAR(TestInlineGadget, InlineGadget);
+	//Q_PROPERTY_VAR(TestInlineGadget, InlineGadget);
 	//Q_PROPERTY_VAR(TestInlineGadget*, InlineGadgetPtr) = new TestInlineGadget;
-	//Q_PROPERTY_VAR(QSharedPointer<TestInlineGadget>, InlineGadgetSPtr) = QSharedPointer<TestInlineGadget>::create();
+	////Q_PROPERTY_VAR(QSharedPointer<TestInlineGadget>, InlineGadgetSPtr) = QSharedPointer<TestInlineGadget>::create();
 	//Q_PROPERTY_VAR(TestInlineObject*, InlineObject) = new TestInlineObject;
 	//Q_PROPERTY_VAR(QSharedPointer<TestInlineObject>, InlineObjectSPtr) = QSharedPointer<TestInlineObject>::create();
 	//Q_PROPERTY_VAR(QList<TestInlineObject*>, InlineObjectList) = { };

@@ -4,37 +4,40 @@
 #include <QObject>
 #include <QHash>
 #include <QMap>
-#include "QEchoXProject.h"
+#include "IEchoXProject.h"
 #include "EchoXCoreAPI.h"
 
 class ECHOXCORE_API QProjectsManager : public QObject {
 	Q_OBJECT
 public:
+	inline static QString ProjectSuffix = ".echox";
 	static QProjectsManager& Get();
-
 	void loadProjects();
 
-	QEchoXProject* createProject(QString inName);
-	void removeProject(QEchoXProject* inProject);
+	IEchoXProject* createProject(QString inName);
+	void removeProject(IEchoXProject* inProject);
 
 	QDir getProjectsDir() const;
 	QString makeUniqueName(QString inName) const;
-	const QList<QEchoXProject*>& getProjectList();
+	const QList<IEchoXProject*>& getProjectList();
 
-	void setCurrentProject(QEchoXProject* inProject);
-	QEchoXProject* getCurrentProject();
+	void setCurrentProject(IEchoXProject* inProject);
+	IEchoXProject* getCurrentProject();
+
+	void saveProject(IEchoXProject* inProject);
+	void loadProject(QFile file);
 Q_SIGNALS:
-	void asProjectCreated(QEchoXProject*);
-	void asProjectRemoved(QEchoXProject*);
-	void asCurrrentProjectChanged(QEchoXProject*);
+	void asProjectCreated(IEchoXProject*);
+	void asProjectRemoved(IEchoXProject*);
+	void asCurrrentProjectChanged(IEchoXProject*);
 private:
 	QProjectsManager();
-	void addProject(QEchoXProject* inProject);
+	void addProject(IEchoXProject* inProject);
 private:
 	QDir mProjectDir = QDir("./Projects");
-	QList<QEchoXProject*> mProjectList;
-	QMap<QString, QEchoXProject*> mProjectsMap;
-	QEchoXProject* mCurrentProject = nullptr;
+	QList<IEchoXProject*> mProjectList;
+	QMap<QString, IEchoXProject*> mProjectsMap;
+	IEchoXProject* mCurrentProject = nullptr;
 };
 
 #endif // QProjectsManager_h__

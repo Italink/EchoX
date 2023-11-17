@@ -30,7 +30,7 @@ QEchoXProjectsPanel::QEchoXProjectsPanel()
 
 void QEchoXProjectsPanel::refreshProjects()
 {
-	const QList<QEchoXProject*>& projects = QProjectsManager::Get().getProjectList();
+	const QList<IEchoXProject*>& projects = QProjectsManager::Get().getProjectList();
 	for (auto key : mProjectItemMap.keys()) {
 		if (!projects.contains(key)) {
 			removeProject(key);
@@ -38,7 +38,7 @@ void QEchoXProjectsPanel::refreshProjects()
 	}
 
 	for (int i = 0; i < projects.size(); i++) {
-		 QEchoXProject* project = projects[i];
+		 IEchoXProject* project = projects[i];
 		 if (!mProjectItemMap.contains(project)) {
 			 addProject(i, project);
 		 }
@@ -63,14 +63,14 @@ void QEchoXProjectsPanel::refreshIconSize()
 	mListWidget->setIconSize(iconSize);
 	for (int i = 0; i < mListWidget->count(); i++) {
 		QListWidgetItem* item = mListWidget->item(i);
-		QEchoXProject* project = item->data(Qt::StatusTipRole).value<QEchoXProject* >();
+		IEchoXProject* project = item->data(Qt::StatusTipRole).value<IEchoXProject* >();
 		QPixmap thumbnail = project->getThumbnail();
 		item->setIcon(thumbnail.scaled(iconSize));
 		item->setSizeHint(iconSize + QSize(0, mTextHeight));
 	}
 }
 
-QRect QEchoXProjectsPanel::getProjectGemotry(QEchoXProject* inProject)
+QRect QEchoXProjectsPanel::getProjectGemotry(IEchoXProject* inProject)
 {
 	const QListWidgetItem* item = mProjectItemMap.value(inProject);
 	if (item) {
@@ -83,12 +83,12 @@ QRect QEchoXProjectsPanel::getProjectGemotry(QEchoXProject* inProject)
 	return QRect();
 }
 
-QListWidgetItem* QEchoXProjectsPanel::getProjectItem(QEchoXProject* inProject)
+QListWidgetItem* QEchoXProjectsPanel::getProjectItem(IEchoXProject* inProject)
 {
 	return mProjectItemMap.value(inProject);
 }
 
-void QEchoXProjectsPanel::updateProjectItem(QEchoXProject* inProject)
+void QEchoXProjectsPanel::updateProjectItem(IEchoXProject* inProject)
 {
 	if (QListWidgetItem* item = getProjectItem(inProject)) {
 		QSize iconSize = QSize() * mIconScaleFactor;
@@ -99,7 +99,7 @@ void QEchoXProjectsPanel::updateProjectItem(QEchoXProject* inProject)
 	}
 }
 
-void QEchoXProjectsPanel::addProject(int index, QEchoXProject* inProject)
+void QEchoXProjectsPanel::addProject(int index, IEchoXProject* inProject)
 {
 	QListWidgetItem* item = new QListWidgetItem;
 	item->setData(Qt::StatusTipRole, QVariant::fromValue(inProject));
@@ -108,7 +108,7 @@ void QEchoXProjectsPanel::addProject(int index, QEchoXProject* inProject)
 	mListWidget->insertItem(index, item);
 }
 
-void QEchoXProjectsPanel::removeProject(QEchoXProject* inProject)
+void QEchoXProjectsPanel::removeProject(IEchoXProject* inProject)
 {
 	if (QListWidgetItem* item = getProjectItem(inProject)) {
 		mListWidget->takeItem(mListWidget->row(item));
@@ -123,7 +123,7 @@ void QEchoXProjectsPanel::onCreateNewProject()
 
 void QEchoXProjectsPanel::onItemDoubleClicked(QListWidgetItem* inItem)
 {
-	QEchoXProject* project = mProjectItemMap.key(inItem,nullptr);
+	IEchoXProject* project = mProjectItemMap.key(inItem,nullptr);
 	Q_EMIT asProjectDoubleClicked(project);
 }
 

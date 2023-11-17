@@ -14,12 +14,12 @@ class QEchoXProjectPanel: public QWidget {
 	Q_OBJECT
 public:
 	QEchoXProjectPanel();
-	void setProject(QEchoXProject* inProject);
-	QEchoXProject* getProject() const;
+	void setProject(IEchoXProject* inProject);
+	IEchoXProject* getProject() const;
 Q_SIGNALS:
 	void asReturnBack();
 private:
-	QEchoXProject* mProject;
+	IEchoXProject* mProject;
 	QPushButton* mBtReturn;
 	QDetailView* mDetailView;
 	QWidget* mAssetView;

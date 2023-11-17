@@ -2,19 +2,15 @@
 #define Serialization_h__
 
 #include "EchoXCoreAPI.h"
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QCborArray>
 #include <QCborMap>
+#include <QDir>
 
 class ECHOXCORE_API Serialization {
 public:
-	struct Context{
-	};
-
 	static void registerBuiltinType();
-	static QCborValue toCborValue(const QVariant& var, const Context& context);
-	static QCborMap toCbor(QObject* object, const Context& context);
+	static QCborValue toCborValue(const QVariant& var);
+	static QCborMap toCbor(QObject* object);
 	static void fromCbor(QObject* object, QCborMap cbor);
 };
 

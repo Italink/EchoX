@@ -24,7 +24,7 @@ QEchoXProjectsPage::QEchoXProjectsPage()
 	});
 }
 
-void QEchoXProjectsPage::onEnterProject(QEchoXProject* inProject)
+void QEchoXProjectsPage::onEnterProject(IEchoXProject* inProject)
 {
 	mProjectsPanel->close();
 	mProjectsPanel->setParent(nullptr);

@@ -8,22 +8,21 @@ QProjectsManager& QProjectsManager::Get()
 
 void QProjectsManager::loadProjects()
 {
-	for (const QFileInfo& dirEntry : getProjectsDir().entryInfoList(QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot)) {
-		QDir dir(dirEntry.filePath());
-		if (QFile::exists(dir.filePath(QEchoXProject::ConfgiFileName))) {
-			QEchoXProject* project = new QEchoXProject(dirEntry.fileName());
+	for (const QFileInfo& fileInfo : getProjectsDir().entryInfoList(QDir::Filter::Files | QDir::Filter::NoDotAndDotDot)) {
+		if (fileInfo.suffix().compare(ProjectSuffix, Qt::CaseInsensitive) == 0) {
+			IEchoXProject* project = new IEchoXProject(fileInfo.fileName());
 			addProject(project);
 		}
 	}
 }
 
-QEchoXProject* QProjectsManager::createProject(QString inName)
+IEchoXProject* QProjectsManager::createProject(QString inName)
 {
 	if (inName.isEmpty())
 		inName = "NewProject";
-	QEchoXProject* project = new QEchoXProject(makeUniqueName(inName));
+	IEchoXProject* project = new IEchoXProject(makeUniqueName(inName));
 	addProject(project);
-	project->makeProjectDir();
+	project->saveProject();
 	Q_EMIT asProjectCreated(project);
 	return project;
 }
@@ -33,13 +32,13 @@ QProjectsManager::QProjectsManager()
 
 }
 
-void QProjectsManager::addProject(QEchoXProject* inProject)
+void QProjectsManager::addProject(IEchoXProject* inProject)
 {
 	mProjectList << inProject;
 	mProjectsMap.insert(inProject->objectName(), inProject);
 }
 
-void QProjectsManager::removeProject(QEchoXProject* inProject)
+void QProjectsManager::removeProject(IEchoXProject* inProject)
 {
 	mProjectList.removeOne(inProject);
 	mProjectsMap.remove(inProject->objectName());
@@ -63,12 +62,12 @@ QString QProjectsManager::makeUniqueName(QString inName) const
 	return newName;
 }
 
-const QList<QEchoXProject*>& QProjectsManager::getProjectList()
+const QList<IEchoXProject*>& QProjectsManager::getProjectList()
 {
 	return mProjectList;
 }
 
-void QProjectsManager::setCurrentProject(QEchoXProject* inProject)
+void QProjectsManager::setCurrentProject(IEchoXProject* inProject)
 {
 	if (mCurrentProject != inProject) {
 		mCurrentProject = inProject;
@@ -76,8 +75,18 @@ void QProjectsManager::setCurrentProject(QEchoXProject* inProject)
 	}
 }
 
-QEchoXProject* QProjectsManager::getCurrentProject()
+IEchoXProject* QProjectsManager::getCurrentProject()
 {
 	return mCurrentProject;
+}
+
+void QProjectsManager::saveProject(IEchoXProject* inProject)
+{
+
+}
+
+void QProjectsManager::loadProject(QFile file)
+{
+
 }
 

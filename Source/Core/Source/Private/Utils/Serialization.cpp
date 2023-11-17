@@ -4,7 +4,8 @@
 #include <QSequentialIterable>
 #include <QAssociativeIterable>
 #include "qvectornd.h"
-
+#include <QImage>
+#include <QPixmap>
 
 template<typename From, typename To>
 void registerType(std::function<To(const From&)> convertor) {
@@ -13,7 +14,7 @@ void registerType(std::function<To(const From&)> convertor) {
 			To* t = static_cast<To*>(to);
 			*t = convertor(*f);
 			return true;
-			}
+		}
 		, QMetaType::fromType<From>()
 		, QMetaType::fromType<To>()
 	);
@@ -21,6 +22,36 @@ void registerType(std::function<To(const From&)> convertor) {
 
 void Serialization::registerBuiltinType()
 {
+	registerType<QImage, QCborValue>([](const QImage& var)->QCborValue {
+		QByteArray data;
+		QDataStream stream(&data,QDataStream::OpenModeFlag::WriteOnly);
+		stream << var;
+		return data;
+	});
+
+	registerType<QCborValue, QImage>([](const QCborValue& var)->QImage {
+		QByteArray data = var.toByteArray();
+		QDataStream stream(&data, QDataStream::OpenModeFlag::ReadOnly);
+		QImage image;
+		stream >> image;
+		return image;
+	});
+
+	//registerType<QPixmap, QCborValue>([](const QPixmap& var)->QCborValue {
+	//	QByteArray data;
+	//	QDataStream stream(&data,QDataStream::OpenModeFlag::WriteOnly);
+	//	stream << var;
+	//	return data;
+	//});
+
+	//registerType<QCborValue, QPixmap>([](const QCborValue& var)->QPixmap {
+	//	QByteArray data = var.toByteArray();
+	//	QDataStream stream(&data, QDataStream::OpenModeFlag::ReadOnly);
+	//	QPixmap image;
+	//	stream >> image;
+	//	return image;
+	//});
+
 	registerType<QVector2D, QCborValue>([](const QVector2D& var)->QCborValue {
 		QCborArray array;
 		array << var.x();
@@ -77,9 +108,11 @@ void Serialization::registerBuiltinType()
 		}
 		return vec;
 	});
+
+
 }
 
-QCborValue Serialization::toCborValue(const QVariant& var, const Context& context)
+QCborValue Serialization::toCborValue(const QVariant& var)
 {
 	if (var.isNull()) {
 		return QCborValue();
@@ -97,7 +130,7 @@ QCborValue Serialization::toCborValue(const QVariant& var, const Context& contex
 		QCborArray array;
 		QSequentialIterable iterable = var.value<QSequentialIterable>();
 		for (int index = 0; index < iterable.size(); index++) {
-			array << toCborValue(iterable.at(index), context);
+			array << toCborValue(iterable.at(index));
 		}
 		return array;
 	}
@@ -105,7 +138,7 @@ QCborValue Serialization::toCborValue(const QVariant& var, const Context& contex
 		QCborMap object;
 		QAssociativeIterable iterable = var.value<QAssociativeIterable>();
 		for (auto iter = iterable.begin(); iter != iterable.end(); ++iter) {
-			object.insert(iter.key().toString(), toCborValue(iter.value(), context));
+			object.insert(iter.key().toString(), toCborValue(iter.value()));
 		}
 		return object;
 	}
@@ -131,7 +164,7 @@ QCborValue Serialization::toCborValue(const QVariant& var, const Context& contex
 		}
 		else {
 			metaObject = metaType.metaObject();
-			if (metaObject->inherits(&QObject::staticMetaObject)) {
+			if (metaObject && metaObject->inherits(&QObject::staticMetaObject)) {
 				QObject* objectPtr = var.value<QObject*>();
 				if (objectPtr) {
 					metaObject = objectPtr->metaObject();
@@ -142,32 +175,39 @@ QCborValue Serialization::toCborValue(const QVariant& var, const Context& contex
 			QCborMap object;
 			for (int i = 0; i < metaObject->propertyCount(); i++) {
 				QMetaProperty prop = metaObject->property(i);
+				QString propName = prop.name();
 				QCborValue value;
 				if (metaObject->inherits(&QObject::staticMetaObject)) {
 					QObject* objectPtr = var.value<QObject*>();
 					if (objectPtr) {
-						value = toCborValue(prop.read((QObject*)objectPtr), context);
+						value = toCborValue(prop.read((QObject*)objectPtr));
 					}
 				}
 				else {
 					const void* ptr = var.data();
 					if (metaType.flags().testFlag(QMetaType::IsPointer))
 						ptr = *(void**)var.data();
-					value = toCborValue(prop.readOnGadget(ptr), context);
+					value = toCborValue(prop.readOnGadget(ptr));
 				}
 				if (!value.isNull()) {
-					object.insert(QString(prop.name()), value);
+					object.insert(QString(propName), value);
 				}
 			}
 			return object;
+		}
+		else if (metaType.hasRegisteredDataStreamOperators()) {
+			QByteArray data;
+			QDataStream stream(&data, QDataStream::OpenModeFlag::WriteOnly);
+			stream << var;
+			return data;
 		}
 	}
 	return QCborValue("Invalid Type");
 }
 
-QCborMap Serialization::toCbor(QObject* object, const Context& context)
+QCborMap Serialization::toCbor(QObject* object)
 {
-	return toCborValue(QVariant::fromValue(object), context).toMap();
+	return toCborValue(QVariant::fromValue(object)).toMap();
 }
 
 struct ExternalRefCountWithMetaType : public QtSharedPointer::ExternalRefCountData {
@@ -302,6 +342,13 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 			}
 			return newObject;
 		}
+		else if (value.isByteArray() && metaType.hasRegisteredDataStreamOperators()) {
+			QByteArray data = value.toByteArray();
+			QDataStream stream(&data, QDataStream::OpenModeFlag::ReadOnly);
+			QVariant var(metaType);
+			stream >> var;
+			return var;
+		}
 	}
 	return QVariant();
 }
@@ -316,7 +363,6 @@ void Serialization::fromCbor(QObject* object, QCborMap cbor)
 			if (cbor.contains(name)) {
 				QCborValue value = cbor.value(QString(prop.name()));
 				QVariant var = fromCborValue(value, prop.metaType());
-				qDebug() << var;
 				if (var.isValid()) {
 					prop.write(object, var);
 				}

@@ -9,7 +9,7 @@ class QEchoXProjectsPanel;
 class QEchoXProjectPanel;
 class QHBoxLayout;
 class QVariantAnimation;
-class QEchoXProject;
+class IEchoXProject;
 
 
 class QEchoXProjectsPage: public QWidget {
@@ -17,7 +17,7 @@ class QEchoXProjectsPage: public QWidget {
 public:
 	QEchoXProjectsPage();
 private:
-	void onEnterProject(QEchoXProject* inProject);
+	void onEnterProject(IEchoXProject* inProject);
 	void onLeaveProject();
 	void paintEvent(QPaintEvent* event) override;
 private:

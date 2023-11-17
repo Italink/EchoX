@@ -13,14 +13,14 @@ public:
 	QEchoXProjectsPanel();
 	void refreshProjects();
 	void setIconScaleFactor(float inVar);
-	QRect getProjectGemotry(QEchoXProject* inProject);
+	QRect getProjectGemotry(IEchoXProject* inProject);
 Q_SIGNALS:
-	void asProjectDoubleClicked(QEchoXProject*);
+	void asProjectDoubleClicked(IEchoXProject*);
 private:
-	QListWidgetItem* getProjectItem(QEchoXProject* inProject);
-	void updateProjectItem(QEchoXProject* inProject);
-	void addProject(int index, QEchoXProject* inProject);
-	void removeProject(QEchoXProject* inProject);
+	QListWidgetItem* getProjectItem(IEchoXProject* inProject);
+	void updateProjectItem(IEchoXProject* inProject);
+	void addProject(int index, IEchoXProject* inProject);
+	void removeProject(IEchoXProject* inProject);
 	void onCreateNewProject();
 	void onItemDoubleClicked(QListWidgetItem* inItem);
 	void refreshIconSize();
@@ -30,7 +30,7 @@ protected:
 private:
 	QPushButton* mBtCreateNew;
 	QListWidget* mListWidget;
-	QMap<QEchoXProject*, QListWidgetItem*> mProjectItemMap;
+	QMap<IEchoXProject*, QListWidgetItem*> mProjectItemMap;
 	float mTextHeight = 20;
 	float mIconWdith = 80;
 	float mIconAspectRatio = 1.0f;

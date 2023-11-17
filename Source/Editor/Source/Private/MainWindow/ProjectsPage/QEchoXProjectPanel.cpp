@@ -20,12 +20,12 @@ QEchoXProjectPanel::QEchoXProjectPanel()
 	connect(mBtReturn, &QPushButton::clicked, this, &QEchoXProjectPanel::asReturnBack);
 }
 
-void QEchoXProjectPanel::setProject(QEchoXProject* inProject)
+void QEchoXProjectPanel::setProject(IEchoXProject* inProject)
 {
 	mProject = inProject;
 }
 
-QEchoXProject* QEchoXProjectPanel::getProject() const
+IEchoXProject* QEchoXProjectPanel::getProject() const
 {
 	return mProject;
 }
