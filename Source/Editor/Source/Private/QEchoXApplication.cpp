@@ -12,6 +12,7 @@
 #include "Project/QProjectsManager.h"
 #include "QEchoXProjectsPanel.h"
 #include "QEchoXProjectsPage.h"
+#include "DetailView/QDetailView.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
@@ -43,9 +44,12 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 
 	////QSmtcView* sview = new QSmtcView;
 	////sview->show();
-	//qRegisterMetaType<TestInlineGadget>();
-	//qRegisterMetaType<TestInlineObject>();
-	//TestObject to;
+	qRegisterMetaType<TestInlineGadget>();
+	qRegisterMetaType<TestInlineObject>();
+	TestObject to;
+	QDetailView* view = new QDetailView;
+	view->setObject(new TestObject);
+	view->show();
 	//to.Pixmap = QPixmap(5,5);
 	//QCborMap data  = Serialization::toCbor(&to);
 	//qDebug() << data;

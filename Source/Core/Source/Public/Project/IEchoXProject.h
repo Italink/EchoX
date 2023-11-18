@@ -9,14 +9,17 @@
 class ECHOXCORE_API IEchoXProject : public QObject {
 	Q_OBJECT
 public:
-	IEchoXProject(QString inName);
+	IEchoXProject();
 	QString getProjectName() const;
 	bool rename(QString inNewName);
 
 	QFile getProjectFile() const;
-	bool saveProject();
+	bool save();
 
+	void setThumbnail(QPixmap inPixmap);
 	QPixmap getThumbnail();
+
+	virtual QWidget* createProjectPanel();
  private:
 	QPixmap mThumbnail;
 };

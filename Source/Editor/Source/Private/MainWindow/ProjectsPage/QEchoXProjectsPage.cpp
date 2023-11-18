@@ -26,6 +26,7 @@ QEchoXProjectsPage::QEchoXProjectsPage()
 
 void QEchoXProjectsPage::onEnterProject(IEchoXProject* inProject)
 {
+	QProjectsManager::Get().setCurrentProject(inProject);
 	mProjectsPanel->close();
 	mProjectsPanel->setParent(nullptr);
 	mLayout->removeWidget(mProjectsPanel);

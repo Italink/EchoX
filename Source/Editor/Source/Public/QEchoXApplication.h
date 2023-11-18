@@ -56,38 +56,38 @@ public:
 	};
 	Q_ENUM(TestEnum);
 
-	//Q_PROPERTY_VAR(int, Int) = 0;
-	//Q_PROPERTY_VAR(float, Float) = 1.23f;
-	//Q_PROPERTY_VAR(double, LimitedDouble) = 5;
-	//Q_PROPERTY_VAR(TestEnum, Enum) = TestEnum::Two;
-	//Q_PROPERTY_VAR(QString, QtString);
-	//Q_PROPERTY_VAR(QString, AsMultiLineString);
-	//Q_PROPERTY_VAR(QString, AsPath);
-	//Q_PROPERTY_VAR(QString, AsCombo) = "A";
-	//Q_PROPERTY_VAR(QVector2D, Vec2);
-	//Q_PROPERTY_VAR(QVector3D, Vec3);
-	//Q_PROPERTY_VAR(QVector4D, Vec4);
-	//Q_PROPERTY_VAR(QImage, Image);
+	Q_PROPERTY_VAR(int, Int) = 0;
+	Q_PROPERTY_VAR(float, Float) = 1.23f;
+	Q_PROPERTY_VAR(double, LimitedDouble) = 5;
+	Q_PROPERTY_VAR(TestEnum, Enum) = TestEnum::Two;
+	Q_PROPERTY_VAR(QString, QtString);
+	Q_PROPERTY_VAR(QString, AsMultiLineString);
+	Q_PROPERTY_VAR(QString, AsPath);
+	Q_PROPERTY_VAR(QString, AsCombo) = "A";
+	Q_PROPERTY_VAR(QVector2D, Vec2);
+	Q_PROPERTY_VAR(QVector3D, Vec3);
+	Q_PROPERTY_VAR(QVector4D, Vec4);
+	Q_PROPERTY_VAR(QImage, Image);
 	Q_PROPERTY_VAR(QPixmap, Pixmap);
-	//Q_PROPERTY_VAR(QColor, Color);
-	//Q_PROPERTY_VAR(QList<QColor>, ColorList) = { Qt::red,Qt::green,Qt::blue };
-	//Q_PROPERTY_VAR(std::vector<QColor>, StdColorList) = { Qt::red,Qt::green,Qt::blue };
+	Q_PROPERTY_VAR(QColor, Color);
+	Q_PROPERTY_VAR(QList<QColor>, ColorList) = { Qt::red,Qt::green,Qt::blue };
+	Q_PROPERTY_VAR(std::vector<QColor>, StdColorList) = { Qt::red,Qt::green,Qt::blue };
 
-	//Q_PROPERTY(QMap<QString, QColor> ColorMap READ GetColorMap WRITE SetColorMap)
+	Q_PROPERTY(QMap<QString, QColor> ColorMap READ GetColorMap WRITE SetColorMap)
 
-	//	QMap<QString, QColor> GetColorMap() const { return ColorMap; }
-	//void SetColorMap(QMap<QString, QColor> val) {
-	//	ColorMap = val;
-	//	qDebug() << "ColorMap: " << ColorMap;
-	//}
-	//QMap<QString, QColor> ColorMap = { {"Red",Qt::red},{"Green",Qt::green},{"Blue",Qt::blue} };
+		QMap<QString, QColor> GetColorMap() const { return ColorMap; }
+	void SetColorMap(QMap<QString, QColor> val) {
+		ColorMap = val;
+		qDebug() << "ColorMap: " << ColorMap;
+	}
+	QMap<QString, QColor> ColorMap = { {"Red",Qt::red},{"Green",Qt::green},{"Blue",Qt::blue} };
 
-	//Q_PROPERTY_VAR(TestInlineGadget, InlineGadget);
-	//Q_PROPERTY_VAR(TestInlineGadget*, InlineGadgetPtr) = new TestInlineGadget;
-	////Q_PROPERTY_VAR(QSharedPointer<TestInlineGadget>, InlineGadgetSPtr) = QSharedPointer<TestInlineGadget>::create();
-	//Q_PROPERTY_VAR(TestInlineObject*, InlineObject) = new TestInlineObject;
-	//Q_PROPERTY_VAR(QSharedPointer<TestInlineObject>, InlineObjectSPtr) = QSharedPointer<TestInlineObject>::create();
-	//Q_PROPERTY_VAR(QList<TestInlineObject*>, InlineObjectList) = { };
+	Q_PROPERTY_VAR(TestInlineGadget, InlineGadget);
+	Q_PROPERTY_VAR(TestInlineGadget*, InlineGadgetPtr) = new TestInlineGadget;
+	//Q_PROPERTY_VAR(QSharedPointer<TestInlineGadget>, InlineGadgetSPtr) = QSharedPointer<TestInlineGadget>::create();
+	Q_PROPERTY_VAR(TestInlineObject*, InlineObject) = new TestInlineObject;
+	Q_PROPERTY_VAR(QSharedPointer<TestInlineObject>, InlineObjectSPtr) = QSharedPointer<TestInlineObject>::create();
+	Q_PROPERTY_VAR(QList<TestInlineObject*>, InlineObjectList) = { };
 };
 
 Q_DECLARE_METATYPE(TestInlineGadget*);

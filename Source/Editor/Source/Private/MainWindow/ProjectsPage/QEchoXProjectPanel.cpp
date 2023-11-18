@@ -3,29 +3,35 @@
 
 QEchoXProjectPanel::QEchoXProjectPanel()
 	: mBtReturn(new QPushButton("Return"))
-	, mDetailView(new QDetailView)
-	, mAssetView(new QPushButton("AssetView"))
-	, mOutline(new QPushButton("Outline"))
-	, mSplitter(new QSplitter)
 {
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setContentsMargins(0, 0, 0, 0);
 	vLayout->addWidget(mBtReturn);
-	vLayout->addWidget(mSplitter);
 
-	mSplitter->addWidget(mAssetView);
-	mSplitter->addWidget(mOutline);
-	mSplitter->addWidget(mDetailView);
+	//mSplitter->addWidget(mAssetView);
+	//mSplitter->addWidget(mOutline);
+	//mSplitter->addWidget(mDetailView);
 
 	connect(mBtReturn, &QPushButton::clicked, this, &QEchoXProjectPanel::asReturnBack);
 }
 
 void QEchoXProjectPanel::setProject(IEchoXProject* inProject)
 {
+	if (mCurrProjectWidget) {
+		layout()->removeWidget(mCurrProjectWidget);
+		mCurrProjectWidget->deleteLater();
+	}
+	mCurrProjectWidget = inProject->createProjectPanel();
+	layout()->addWidget(mCurrProjectWidget);
 	mProject = inProject;
 }
 
 IEchoXProject* QEchoXProjectPanel::getProject() const
 {
 	return mProject;
+}
+
+void QEchoXProjectPanel::closeEvent(QCloseEvent* e)
+{
+	mProject->save();
 }

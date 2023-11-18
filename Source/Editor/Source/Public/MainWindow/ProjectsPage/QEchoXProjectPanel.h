@@ -19,12 +19,11 @@ public:
 Q_SIGNALS:
 	void asReturnBack();
 private:
+	void closeEvent(QCloseEvent* e) override;
+private:
 	IEchoXProject* mProject;
 	QPushButton* mBtReturn;
-	QDetailView* mDetailView;
-	QWidget* mAssetView;
-	QWidget* mOutline;
-	QSplitter* mSplitter;
+	QWidget* mCurrProjectWidget = nullptr;
 };
 
 #endif // QEchoXProjectPanel_h__

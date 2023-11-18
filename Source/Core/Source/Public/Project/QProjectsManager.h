@@ -10,7 +10,7 @@
 class ECHOXCORE_API QProjectsManager : public QObject {
 	Q_OBJECT
 public:
-	inline static QString ProjectSuffix = ".echox";
+	inline static QString ProjectSuffix = "echox";
 	static QProjectsManager& Get();
 	void loadProjects();
 
@@ -24,8 +24,12 @@ public:
 	void setCurrentProject(IEchoXProject* inProject);
 	IEchoXProject* getCurrentProject();
 
-	void saveProject(IEchoXProject* inProject);
-	void loadProject(QFile file);
+	bool saveProject(IEchoXProject* inProject);
+	IEchoXProject* loadProjectOnlyHeader(QFile file);
+	bool loadProjectFull(IEchoXProject* inProject);
+
+	void registerProjectType(const QMetaObject* inMetaObject);
+	void unregisterProjectType(const QMetaObject* inMetaObject);
 Q_SIGNALS:
 	void asProjectCreated(IEchoXProject*);
 	void asProjectRemoved(IEchoXProject*);
@@ -34,9 +38,9 @@ private:
 	QProjectsManager();
 	void addProject(IEchoXProject* inProject);
 private:
+	QMap<QString, const QMetaObject*> mProjectTypeMap;
 	QDir mProjectDir = QDir("./Projects");
 	QList<IEchoXProject*> mProjectList;
-	QMap<QString, IEchoXProject*> mProjectsMap;
 	IEchoXProject* mCurrentProject = nullptr;
 };
 

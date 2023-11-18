@@ -59,7 +59,7 @@ void QEchoXProjectsPanel::setIconScaleFactor(float inVar)
 
 void QEchoXProjectsPanel::refreshIconSize()
 {
-	QSize iconSize = QSize(mIconWdith * mIconScaleFactor, mIconWdith * mIconScaleFactor/ mIconAspectRatio) ;
+	QSize iconSize = QSize(mIconWdith * mIconScaleFactor, mIconWdith * mIconScaleFactor) ;
 	mListWidget->setIconSize(iconSize);
 	for (int i = 0; i < mListWidget->count(); i++) {
 		QListWidgetItem* item = mListWidget->item(i);

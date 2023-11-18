@@ -1,10 +1,10 @@
 #include "IEchoXProject.h"
 #include "QProjectsManager.h"
 #include "Serialization.h"
+#include "DetailView/QDetailView.h"
 
-IEchoXProject::IEchoXProject(QString inName)
+IEchoXProject::IEchoXProject()
 {
-	setObjectName(inName);
 }
 
 QString IEchoXProject::getProjectName() const
@@ -15,12 +15,12 @@ QString IEchoXProject::getProjectName() const
 bool IEchoXProject::rename(QString inNewName)
 {
 	QString name = QProjectsManager::Get().makeUniqueName(inNewName);
-	return getProjectFile().rename(QProjectsManager::Get().getProjectsDir().filePath(name + QProjectsManager::ProjectSuffix));
+	return getProjectFile().rename(QProjectsManager::Get().getProjectsDir().filePath(name + "." + QProjectsManager::ProjectSuffix));
 }
 
 QFile IEchoXProject::getProjectFile() const
 {
-	return QProjectsManager::Get().getProjectsDir().filePath(getProjectName() + QProjectsManager::ProjectSuffix);
+	return QProjectsManager::Get().getProjectsDir().filePath(getProjectName() + "." + QProjectsManager::ProjectSuffix);
 }
 
 QPixmap IEchoXProject::getThumbnail()
@@ -33,13 +33,19 @@ QPixmap IEchoXProject::getThumbnail()
 	return mThumbnail.isNull() ? EmptyThumbnail: mThumbnail;
 }
 
-bool IEchoXProject::saveProject()
+QWidget* IEchoXProject::createProjectPanel()
 {
-	QFile file = getProjectFile();
-	if (file.open(QFile::WriteOnly)) {
-		QDataStream stream(&file);
-		stream << Serialization::toCbor(this);
-		return true;
-	}
-	return false;
+	QDetailView* detailView = new QDetailView;
+	detailView->setObject(this);
+	return detailView;
+}
+
+bool IEchoXProject::save()
+{
+	return QProjectsManager::Get().saveProject(this);
+}
+
+void IEchoXProject::setThumbnail(QPixmap inPixmap)
+{
+	mThumbnail = inPixmap.scaled(QSize(400, 400));
 }
