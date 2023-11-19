@@ -5,11 +5,14 @@
 #include "standardtitlebar.h"
 #include "framelesswidgetshelper.h"
 #include "framelesshelpercore_global.h"
+#include "QEchoXNavigationBar.h"
+#include "framelessconfig_p.h"
 
 using namespace FRAMELESSHELPER_NAMESPACE;
 
 QEchoXMainWindow::QEchoXMainWindow()
-	:mTitleBar(new StandardTitleBar(this))
+	: mTitleBar(new StandardTitleBar(this))
+	, mNavigationBar (new QEchoXNavigationBar)
 {
 	initialize();
 	mTimerId = startTimer(100);
@@ -24,18 +27,26 @@ QEchoXMainWindow::~QEchoXMainWindow()
 void QEchoXMainWindow::initialize()
 {
 	setWindowTitle(tr("EchoX"));
-	setWindowIcon(QFileIconProvider().icon(QFileIconProvider::Desktop));
+	setWindowIcon(QFileIconProvider().icon(QFileIconProvider::Network));
 
 	mTitleBar->setWindowIconVisible(true);
+	mNavigationBar->addItem("Project", ":/Resources/projects.png", nullptr);
+	mNavigationBar->addItem("Plugin", ":/Resources/plugin.png", nullptr);
+	mNavigationBar->addItem("Setting", ":/Resources/setting-fill.png", nullptr);
 
-	const auto mainLayout = new QVBoxLayout(this);
+	auto mainLayout = new QHBoxLayout(this);
 	mainLayout->setSpacing(0);
 	mainLayout->setContentsMargins(0, 0, 0, 0);
-	mainLayout->addWidget(mTitleBar);
-	mainLayout->addStretch();
+	mainLayout->addWidget(mNavigationBar);
+
+	const auto subLayout = new QVBoxLayout();
+	subLayout->addWidget(mTitleBar);
+	subLayout->addStretch();
+	mainLayout->addLayout(subLayout);
 
 	FramelessWidgetsHelper* helper = FramelessWidgetsHelper::get(this);
 	helper->setTitleBarWidget(mTitleBar);
+	//helper->setHitTestVisible(mNavigationBar, true);
 	helper->setSystemButton(mTitleBar->minimizeButton(), Global::SystemButtonType::Minimize);
 	helper->setSystemButton(mTitleBar->maximizeButton(), Global::SystemButtonType::Maximize);
 	helper->setSystemButton(mTitleBar->closeButton(), Global::SystemButtonType::Close);

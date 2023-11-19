@@ -1,4 +1,5 @@
 #include "QSettingsManager.h"
+#include "IEchoXSettings.h"
 
 QSettingsManager& QSettingsManager::Get()
 {

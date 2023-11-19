@@ -13,6 +13,8 @@
 #include "QEchoXProjectsPanel.h"
 #include "QEchoXProjectsPage.h"
 #include "DetailView/QDetailView.h"
+#include "Settings/QSettingsManager.h"
+#include "Settings/QEchoXStyleSettings.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
@@ -44,12 +46,12 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 
 	////QSmtcView* sview = new QSmtcView;
 	////sview->show();
-	qRegisterMetaType<TestInlineGadget>();
-	qRegisterMetaType<TestInlineObject>();
-	TestObject to;
-	QDetailView* view = new QDetailView;
-	view->setObject(new TestObject);
-	view->show();
+	//qRegisterMetaType<TestInlineGadget>();
+	//qRegisterMetaType<TestInlineObject>();
+	//TestObject to;
+	//QDetailView* view = new QDetailView;
+	//view->setObject(new TestObject);
+	//view->show();
 	//to.Pixmap = QPixmap(5,5);
 	//QCborMap data  = Serialization::toCbor(&to);
 	//qDebug() << data;
@@ -65,7 +67,20 @@ QEchoXApplication::~QEchoXApplication() {
 
 void QEchoXApplication::preInitialize()
 {
+	qputenv("FRAMELESSHELPER_FORCE_HIDE_WINDOW_FRAME_BORDER", "1");
+	//FramelessConfigEntry{ "FRAMELESSHELPER_USE_CROSS_PLATFORM_QT_IMPLEMENTATION", "Options/UseCrossPlatformQtImplementation" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_FORCE_HIDE_WINDOW_FRAME_BORDER", "Options/ForceHideWindowFrameBorder" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_FORCE_SHOW_WINDOW_FRAME_BORDER", "Options/ForceShowWindowFrameBorder" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_DISABLE_WINDOWS_SNAP_LAYOUT", "Options/DisableWindowsSnapLayout" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_WINDOW_USE_ROUND_CORNERS", "Options/WindowUseRoundCorners" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_CENTER_WINDOW_BEFORE_SHOW", "Options/CenterWindowBeforeShow" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_ENABLE_BLUR_BEHIND_WINDOW", "Options/EnableBlurBehindWindow" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_FORCE_NON_NATIVE_BACKGROUND_BLUR", "Options/ForceNonNativeBackgroundBlur" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_DISABLE_LAZY_INITIALIZATION_FOR_MICA_MATERIAL", "Options/DisableLazyInitializationForMicaMaterial" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_FORCE_NATIVE_BACKGROUND_BLUR", "Options/ForceNativeBackgroundBlur" },
+	//	FramelessConfigEntry{ "FRAMELESSHELPER_WINDOW_USE_SQUARE_CORNERS", "Options/WindowUseSquareCorners" }
 	FRAMELESSHELPER_NAMESPACE::FramelessHelper::Widgets::initialize();
+
 }
 
 QRhi* QEchoXApplication::getGlobalRhi() const

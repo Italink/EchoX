@@ -4,7 +4,10 @@
 #include <QWidget>
 #include <FramelessHelper/Widgets/framelesswidget.h>
 #include "EchoXEditorAPI.h"
+#include "QProperty"
 
+
+class QEchoXNavigationBar;
 FRAMELESSHELPER_BEGIN_NAMESPACE
 class StandardTitleBar;
 FRAMELESSHELPER_END_NAMESPACE
@@ -16,11 +19,11 @@ public:
 protected:
 	void initialize();
 	void waitReady();
-
 private Q_SLOTS:
 	void updateStyleSheet();
 private:
 	FRAMELESSHELPER_PREPEND_NAMESPACE(StandardTitleBar)* mTitleBar = nullptr;
+	QEchoXNavigationBar* mNavigationBar = nullptr;
 	int mTimerId = -1;
 };
 

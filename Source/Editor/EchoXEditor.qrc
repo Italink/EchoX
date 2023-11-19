@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>Resources/SystemTrayIcon.png</file>
+        <file>Resources/eye.png</file>
+        <file>Resources/no_eye.png</file>
+        <file>Resources/plugin.png</file>
+        <file>Resources/projects.png</file>
+        <file>Resources/return.png</file>
+        <file>Resources/setting-fill.png</file>
     </qresource>
 </RCC>

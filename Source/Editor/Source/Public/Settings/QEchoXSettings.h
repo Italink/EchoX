@@ -6,8 +6,8 @@
 
 class ECHOXEDITOR_API QEchoXSettings : public IEchoXSettings {
 	Q_OBJECT
-	Q_CONF_VAR(QString, ProjectsDir) = QString("./Projects");
-	Q_CONF_VAR(QString, PluginsDir) = QString("./Plugins");
+	ECHOX_CONF_VAR(QString, ProjectsDir) = QString("./Projects");
+	ECHOX_CONF_VAR(QString, PluginsDir) = QString("./Plugins");
 };
 
 
