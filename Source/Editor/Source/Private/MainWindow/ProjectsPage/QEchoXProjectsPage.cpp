@@ -75,8 +75,9 @@ int interpolate(const qreal& from, const qreal& to, qreal progress)
 
 void QEchoXProjectsPage::paintEvent(QPaintEvent* event)
 {
+	QPainter painter(this);
 	if (mSwitchAnimation->state() == QAbstractAnimation::State::Running) {
-		QPainter painter(this);
+		
 		float progress = mSwitchAnimation->currentValue().toFloat();
 
 		QRectF animationArea;

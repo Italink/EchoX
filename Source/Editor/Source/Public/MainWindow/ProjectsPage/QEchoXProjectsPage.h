@@ -26,10 +26,8 @@ private:
 	QHBoxLayout* mLayout;
 	QVariantAnimation* mSwitchAnimation;
 	QMetaObject::Connection mFinishedConnection;
-
 	QRectF mSrcRect;
 	QImage mSrcPixmap;
-
 	QRectF mDestRect;
 	QImage mDestPixmap;
 };

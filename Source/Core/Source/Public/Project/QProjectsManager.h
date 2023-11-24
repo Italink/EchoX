@@ -31,6 +31,7 @@ public:
 	void registerProjectType(const QMetaObject* inMetaObject);
 	void unregisterProjectType(const QMetaObject* inMetaObject);
 Q_SIGNALS:
+	void asProjectsChanged();
 	void asProjectCreated(IEchoXProject*);
 	void asProjectRemoved(IEchoXProject*);
 	void asCurrrentProjectChanged(IEchoXProject*);

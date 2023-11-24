@@ -15,6 +15,7 @@
 #include "DetailView/QDetailView.h"
 #include "Settings/QSettingsManager.h"
 #include "Settings/QEchoXStyleSettings.h"
+#include "Plugin/QEnginePluginManager.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
@@ -38,9 +39,10 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QAudioAnalyseManager::Get().startup();
 	QSmtcManager::Get().startup();
 	QProjectsManager::Get().loadProjects();
+	QEnginePluginManager::Get().loadPlugins();
 
-	QEchoXProjectsPage* panel = new QEchoXProjectsPage;
-	panel->show();
+	//QEchoXProjectsPage* panel = new QEchoXProjectsPage;
+	//panel->show();
 	//QAudioAnalyseView* view = new QAudioAnalyseView;
 	//view->show();
 

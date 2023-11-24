@@ -20,7 +20,8 @@ public: \
 private: \
     Type m##Name
 
-#define ECHOX_DECLARE_SETTINGS(SettingsType) \
+#define ECHOX_DECLARE_SETTINGS(SettingsType,SettingName) \
+        Q_CLASSINFO("ClassName",#SettingName) \
         static 	SettingsType* Get() {  \
             return QSettingsManager::Get().GetSettings<SettingsType>(); \
         }  \
@@ -38,6 +39,7 @@ public:
         view->setObject(this);
         return view; 
     }
+    virtual QString category() const { return "QEchoX"; }
 };
 
 #endif // IEchoXSettings_h__

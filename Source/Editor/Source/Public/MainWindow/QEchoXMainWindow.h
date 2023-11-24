@@ -4,10 +4,11 @@
 #include <QWidget>
 #include <FramelessHelper/Widgets/framelesswidget.h>
 #include "EchoXEditorAPI.h"
-#include "QProperty"
-
+#include <QVBoxLayout>
+#include <QStackedWidget>
 
 class QEchoXNavigationBar;
+class QEchoXNavigationItem;
 FRAMELESSHELPER_BEGIN_NAMESPACE
 class StandardTitleBar;
 FRAMELESSHELPER_END_NAMESPACE
@@ -18,13 +19,18 @@ public:
 	~QEchoXMainWindow();
 protected:
 	void initialize();
+	void addNavigationItem(const QString & inName, const QString & inIconPath, QWidget * inPage);
 	void waitReady();
+private:
+	void paintEvent(QPaintEvent * e) override;
 private Q_SLOTS:
 	void updateStyleSheet();
 private:
 	FRAMELESSHELPER_PREPEND_NAMESPACE(StandardTitleBar)* mTitleBar = nullptr;
 	QEchoXNavigationBar* mNavigationBar = nullptr;
 	int mTimerId = -1;
+	QWidget* mPlaceholderPage = nullptr;
+	QStackedWidget* mBody = nullptr;
 };
 
 #endif

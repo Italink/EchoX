@@ -7,16 +7,25 @@
 #include "framelesshelpercore_global.h"
 #include "QEchoXNavigationBar.h"
 #include "framelessconfig_p.h"
+#include "QEchoXProjectsPage.h"
+#include "QEchoXStyleSettings.h"
+#include "SettingsPage/QEchoXSettingsPage.h"
+#include "PluginsPage/QEchoXPluginsPage.h"
 
 using namespace FRAMELESSHELPER_NAMESPACE;
 
 QEchoXMainWindow::QEchoXMainWindow()
 	: mTitleBar(new StandardTitleBar(this))
 	, mNavigationBar (new QEchoXNavigationBar)
+	, mPlaceholderPage(new QWidget)
+	, mBody(new QStackedWidget)
 {
 	initialize();
 	mTimerId = startTimer(100);
 	connect(FramelessManager::instance(), &FramelessManager::systemThemeChanged, this, &QEchoXMainWindow::updateStyleSheet);
+	connect(mNavigationBar, &QEchoXNavigationBar::asCurrentItemChanged, this, [this](QEchoXNavigationItem* item) {
+		mBody->setCurrentWidget(item ? item->getPage() : mPlaceholderPage);
+	});
 }
 
 QEchoXMainWindow::~QEchoXMainWindow()
@@ -29,20 +38,31 @@ void QEchoXMainWindow::initialize()
 	setWindowTitle(tr("EchoX"));
 	setWindowIcon(QFileIconProvider().icon(QFileIconProvider::Network));
 
-	mTitleBar->setWindowIconVisible(true);
-	mNavigationBar->addItem("Project", ":/Resources/projects.png", nullptr);
-	mNavigationBar->addItem("Plugin", ":/Resources/plugin.png", nullptr);
-	mNavigationBar->addItem("Setting", ":/Resources/setting-fill.png", nullptr);
+	mTitleBar->setWindowIconVisible(false);
+	mTitleBar->setTitleLabelVisible(false);
+	mTitleBar->chromePalette()->setTitleBarActiveBackgroundColor(Qt::transparent);
+	mTitleBar->chromePalette()->setTitleBarInactiveBackgroundColor(Qt::transparent);
+
+	addNavigationItem("Project", ":/Resources/projects.png", new QEchoXProjectsPage);
+	addNavigationItem("Plugin", ":/Resources/plugin.png", new QEchoXPluginsPage);
+	addNavigationItem("Setting", ":/Resources/setting-fill.png", new QEchoXSettingsPage);
 
 	auto mainLayout = new QHBoxLayout(this);
 	mainLayout->setSpacing(0);
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	mainLayout->addWidget(mNavigationBar);
 
-	const auto subLayout = new QVBoxLayout();
-	subLayout->addWidget(mTitleBar);
-	subLayout->addStretch();
-	mainLayout->addLayout(subLayout);
+	QVBoxLayout* vLayout = new QVBoxLayout;
+	vLayout->setAlignment(Qt::AlignTop);
+	vLayout->setSpacing(0);
+	vLayout->setContentsMargins(0, 0, 0, 0);
+	vLayout->addWidget(mTitleBar);
+	vLayout->addWidget(mBody);
+	mainLayout->addLayout(vLayout);
+
+	QPalette pal = palette();
+	pal.setColor(QPalette::ColorRole::Window, Qt::white);
+	setPalette(pal);
 
 	FramelessWidgetsHelper* helper = FramelessWidgetsHelper::get(this);
 	helper->setTitleBarWidget(mTitleBar);
@@ -52,11 +72,34 @@ void QEchoXMainWindow::initialize()
 	helper->setSystemButton(mTitleBar->closeButton(), Global::SystemButtonType::Close);
 }
 
+void QEchoXMainWindow::addNavigationItem(const QString& inName, const QString& inIconPath, QWidget* inPage)
+{
+	mNavigationBar->addItem(inName, inIconPath, inPage);
+	mBody->addWidget(inPage);
+	QPalette pal = inPage->palette();
+	pal.setColor(QPalette::ColorRole::Base, Qt::transparent);
+	inPage->setPalette(pal);
+}
+
 void QEchoXMainWindow::waitReady()
 {
 	FramelessWidgetsHelper* helper = FramelessWidgetsHelper::get(this);
 	helper->waitForReady();
 	helper->moveWindowToDesktopCenter();
+}
+
+void QEchoXMainWindow::paintEvent(QPaintEvent* e)
+{
+	QPainter painter(this);
+	float ShadowWidth = QEchoXStyleSettings::Get()->getShadowWidth();
+	QColor shadowColor = QColor(150, 150, 150);
+	QRect shadowRect(mNavigationBar->width(), 0, ShadowWidth, height());
+	QLinearGradient shadowLinearGradient;
+	shadowLinearGradient.setStart(shadowRect.topLeft());
+	shadowLinearGradient.setFinalStop(shadowRect.topRight());
+	shadowLinearGradient.setColorAt(0, QColor(shadowColor.red(), shadowColor.green(), shadowColor.blue()));
+	shadowLinearGradient.setColorAt(1, QColor(shadowColor.red(), shadowColor.green(), shadowColor.blue(), 0));
+	painter.fillRect(shadowRect, shadowLinearGradient);
 }
 
 void QEchoXMainWindow::updateStyleSheet()

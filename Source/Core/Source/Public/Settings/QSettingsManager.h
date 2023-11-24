@@ -8,6 +8,7 @@
 class IEchoXSettings;
 
 class ECHOXCORE_API QSettingsManager : public QObject {
+	Q_OBJECT
 public:
 	static QSettingsManager& Get();
 	template<typename SettingsType>
@@ -20,6 +21,7 @@ public:
 		SettingsType* settings = new SettingsType();
 		settings->setParent(this);
 		mSettings.insert(&SettingsType::staticMetaObject, settings);
+		Q_EMIT asSettingsChanged();
 	}
 
 	template<typename SettingsType>
@@ -28,7 +30,11 @@ public:
 		if (settings) {
 			settings->deleteLater();
 		}
+		Q_EMIT asSettingsChanged();
 	}
+	QList<IEchoXSettings*> getAllSettings();
+Q_SIGNALS:
+	void asSettingsChanged();
 private:
 	QSettingsManager();
 private:

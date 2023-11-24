@@ -7,6 +7,11 @@ QSettingsManager& QSettingsManager::Get()
 	return Instance;
 }
 
+QList<IEchoXSettings*> QSettingsManager::getAllSettings()
+{
+	return mSettings.values();
+}
+
 QSettingsManager::QSettingsManager()
 {
 

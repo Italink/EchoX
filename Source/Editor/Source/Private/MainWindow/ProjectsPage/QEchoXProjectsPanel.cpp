@@ -1,31 +1,42 @@
 #include "QEchoXProjectsPanel.h"
 #include "Project/QProjectsManager.h"
 #include <QVBoxLayout>
+#include <QPainter>
+#include <QLabel>
+#include <QRadioButton>
+#include <QPushButton>
+#include <QCheckBox>
+#include "QEchoXStyleSettings.h"
 
 QEchoXProjectsPanel::QEchoXProjectsPanel()
-	: mBtCreateNew(new QPushButton("Create New"))
-	, mListWidget(new QListWidget)
+	: mHeader(new QEchoXProjectsHeader)
+	, mProjectListWidget(new QListWidget)
 {
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setContentsMargins(0, 0, 0, 0);
-	vLayout->addWidget(mBtCreateNew);
-	vLayout->addWidget(mListWidget);
+	vLayout->setAlignment(Qt::AlignTop);
+	vLayout->addWidget(mHeader);
+	vLayout->addWidget(mProjectListWidget);
 
-	mListWidget->setViewMode(QListView::IconMode);
-	mListWidget->setFrameShape(QFrame::NoFrame);
-	mListWidget->setFlow(QListView::LeftToRight);
-	mListWidget->setTextElideMode(Qt::ElideRight);
-	mListWidget->setResizeMode(QListView::Adjust);
-	mListWidget->setSelectionMode(QListView::SingleSelection);
-	mListWidget->setDragDropMode(QAbstractItemView::NoDragDrop);
+	mProjectListWidget->setViewMode(QListView::IconMode);
+	mProjectListWidget->setFrameShape(QFrame::NoFrame);
+	mProjectListWidget->setFlow(QListView::LeftToRight);
+	mProjectListWidget->setTextElideMode(Qt::ElideRight);
+	mProjectListWidget->setResizeMode(QListView::Adjust);
+	mProjectListWidget->setSelectionMode(QListView::SingleSelection);
+	mProjectListWidget->setDragDropMode(QAbstractItemView::NoDragDrop);
+	QPalette palette = mProjectListWidget->palette();
+	palette.setColor(QPalette::ColorRole::Base, Qt::transparent);
+	mProjectListWidget->setPalette(palette);
+	mProjectListWidget->setSpacing(10);
 
-	mListWidget->setSpacing(10);
 	refreshProjects();
 
-	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectCreated, this, [this]() {refreshProjects(); });
-	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectRemoved, this, [this]() {refreshProjects(); });
-	connect(mBtCreateNew, &QPushButton::clicked, this, &QEchoXProjectsPanel::onCreateNewProject);
-	connect(mListWidget, &QListWidget::itemDoubleClicked, this, &QEchoXProjectsPanel::onItemDoubleClicked);
+	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectsChanged, this, [this]() { refreshProjects(); });
+	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectCreated, this, [this]() { refreshProjects(); });
+	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectRemoved, this, [this]() { refreshProjects(); });
+	//connect(mBtCreateNew, &QPushButton::clicked, this, &QEchoXProjectsPanel::onCreateNewProject);
+	connect(mProjectListWidget, &QListWidget::itemDoubleClicked, this, &QEchoXProjectsPanel::onItemDoubleClicked);
 }
 
 void QEchoXProjectsPanel::refreshProjects()
@@ -43,10 +54,11 @@ void QEchoXProjectsPanel::refreshProjects()
 			 addProject(i, project);
 		 }
 		 else {
-			 QListWidgetItem* item = mListWidget->takeItem(mListWidget->row(mProjectItemMap[project]));
-			 mListWidget->insertItem(i, item);
+			 QListWidgetItem* item = mProjectListWidget->takeItem(mProjectListWidget->row(mProjectItemMap[project]));
+			 mProjectListWidget->insertItem(i, item);
 		 }
 	}
+	refreshIconSize();
 }
 
 void QEchoXProjectsPanel::setIconScaleFactor(float inVar)
@@ -60,9 +72,9 @@ void QEchoXProjectsPanel::setIconScaleFactor(float inVar)
 void QEchoXProjectsPanel::refreshIconSize()
 {
 	QSize iconSize = QSize(mIconWdith * mIconScaleFactor, mIconWdith * mIconScaleFactor) ;
-	mListWidget->setIconSize(iconSize);
-	for (int i = 0; i < mListWidget->count(); i++) {
-		QListWidgetItem* item = mListWidget->item(i);
+	mProjectListWidget->setIconSize(iconSize);
+	for (int i = 0; i < mProjectListWidget->count(); i++) {
+		QListWidgetItem* item = mProjectListWidget->item(i);
 		IEchoXProject* project = item->data(Qt::StatusTipRole).value<IEchoXProject* >();
 		QPixmap thumbnail = project->getThumbnail();
 		item->setIcon(thumbnail.scaled(iconSize));
@@ -74,8 +86,8 @@ QRect QEchoXProjectsPanel::getProjectGemotry(IEchoXProject* inProject)
 {
 	const QListWidgetItem* item = mProjectItemMap.value(inProject);
 	if (item) {
-		QRect rect = mListWidget->visualItemRect(item);
-		QPoint pos = mListWidget->mapToParent(rect.topLeft());
+		QRect rect = mProjectListWidget->visualItemRect(item);
+		QPoint pos = mProjectListWidget->mapToParent(rect.topLeft());
 		rect.moveTopLeft(pos);
 		rect.setHeight(rect.height() - mTextHeight);
 		return rect;
@@ -105,13 +117,13 @@ void QEchoXProjectsPanel::addProject(int index, IEchoXProject* inProject)
 	item->setData(Qt::StatusTipRole, QVariant::fromValue(inProject));
 	mProjectItemMap[inProject] = item;
 	updateProjectItem(inProject);
-	mListWidget->insertItem(index, item);
+	mProjectListWidget->insertItem(index, item);
 }
 
 void QEchoXProjectsPanel::removeProject(IEchoXProject* inProject)
 {
 	if (QListWidgetItem* item = getProjectItem(inProject)) {
-		mListWidget->takeItem(mListWidget->row(item));
+		mProjectListWidget->takeItem(mProjectListWidget->row(item));
 		delete item;
 	}
 }
@@ -143,4 +155,47 @@ void QEchoXProjectsPanel::resizeEvent(QResizeEvent* event)
 {
 	mIconAspectRatio = event->size().width() /(float) event->size().height();
 	refreshIconSize();
+}
+
+QEchoXProjectsHeader::QEchoXProjectsHeader()
+	: mBtCreateProject(new QPushButton("Create Project"))
+	, mSearchEdit(new QLineEdit)
+{
+	setFixedHeight(100);
+	mBtCreateProject->setFixedWidth(100);
+
+	QPalette pal = palette();
+	pal.setColor(QPalette::ColorRole::WindowText, QColor(100, 100, 100));
+	setPalette(pal);
+
+	QGridLayout* layout = new QGridLayout(this);
+
+	layout->addWidget(mSearchEdit, 0, 0, 1, 6);
+
+	layout->addWidget(new QLabel("Type:"), 1, 0);
+	layout->addWidget(new QCheckBox("All"), 1, 1);
+	layout->addWidget(new QCheckBox("Widget"), 1, 2);
+	layout->addWidget(new QCheckBox("Wallpaper"), 1, 3);
+	layout->addWidget(new QCheckBox("Scene"), 1, 4);
+
+	layout->addWidget(new QLabel("Order:"), 2, 0);
+	layout->addWidget(new QRadioButton("Name"), 2, 1);
+	layout->addWidget(new QRadioButton("Create Time"), 2, 2);
+	layout->addWidget(new QRadioButton("Modify Time"), 2, 3);
+
+	layout->addWidget(mBtCreateProject, 1, 5, 2, 1);
+}
+
+void QEchoXProjectsHeader::paintEvent(QPaintEvent* e)
+{
+	QPainter painter(this);
+	float ShadowWidth = QEchoXStyleSettings::Get()->getShadowWidth();
+	QColor shadowColor = QColor(150, 150, 150);
+	QRect shadowRect(0, height() - ShadowWidth, width(), ShadowWidth);
+	QLinearGradient shadowLinearGradient;
+	shadowLinearGradient.setStart(shadowRect.topLeft());
+	shadowLinearGradient.setFinalStop(shadowRect.bottomLeft());
+	shadowLinearGradient.setColorAt(0, QColor(shadowColor.red(), shadowColor.green(), shadowColor.blue()));
+	shadowLinearGradient.setColorAt(1, QColor(shadowColor.red(), shadowColor.green(), shadowColor.blue(), 0));
+	painter.fillRect(shadowRect, shadowLinearGradient);
 }

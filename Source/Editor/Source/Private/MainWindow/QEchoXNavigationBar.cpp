@@ -1,6 +1,5 @@
 #include "QEchoXNavigationBar.h"
 #include <QLabel>
-#include <QPushButton>
 #include <QPainter>
 #include "QEchoXStyleSettings.h"
 
@@ -25,6 +24,13 @@ QEchoXNavigationItem::QEchoXNavigationItem(const QString& inName, QString inIcon
 	h->addWidget(lbName);
 }
 
+void QEchoXNavigationItem::mousePressEvent(QMouseEvent* e)
+{
+	if (e->buttons() & Qt::LeftButton) {
+		Q_EMIT asMousePressed(this);
+	}
+}
+
 void QEchoXNavigationItem::paintEvent(QPaintEvent* event)
 {
 	if (mHoverd && mHoverEnabled) {
@@ -36,22 +42,35 @@ void QEchoXNavigationItem::paintEvent(QPaintEvent* event)
 QEchoXNavigationBar::QEchoXNavigationBar()
 	: mLayout(new QVBoxLayout(this))
 	, mLogo(new QSvgIcon(":/Resources/expand.png", "Navigation"))
+	, mInnerShadow(":/Resources/inner_shadow.png")
 {
 	setFixedWidth(150);
+	mAnimTimer.setInterval(15);
+	connect(&mAnimTimer , &QTimer::timeout, this, [this]() {
+		mAnimOffset += mAnimSpeed;
+		if (qAbs(mAnimOffset - mCurrentItem->geometry().top()) <= qAbs(mAnimSpeed)) {
+			mAnimOffset = mCurrentItem->geometry().top();
+			mAnimTimer.stop();
+		}
+		update();
+	});
+
 	mLayout->setContentsMargins(0, 0, 0, 0);
 	mLayout->setAlignment(Qt::AlignTop|Qt::AlignLeft);
-
 	QLabel* label = new QLabel;
 	label->setMinimumHeight(35);
 	label->setPixmap(mLogo->getIcon().pixmap(QSize(80, 35)));
 	mLayout->addWidget(label);
+
 }
 
-void QEchoXNavigationBar::addItem(const QString& inName, QString inIconPath, QWidget* inPage)
+QEchoXNavigationItem* QEchoXNavigationBar::addItem(const QString& inName, QString inIconPath, QWidget* inPage)
 {
 	QEchoXNavigationItem* item = new QEchoXNavigationItem(inName, inIconPath, inPage);
-	item->setFixedWidth(width() - mShadowWidth);
+	connect(item, &QEchoXNavigationItem::asMousePressed, this, &QEchoXNavigationBar::setCurrentItem);
+	item->setFixedWidth(width());
 	mLayout->addWidget(item);
+	return item;
 }
 
 void QEchoXNavigationBar::removeItem(QString inName)
@@ -66,16 +85,29 @@ void QEchoXNavigationBar::removeItem(QString inName)
 	}
 }
 
+void QEchoXNavigationBar::setCurrentItem(QEchoXNavigationItem* inItem)
+{
+	if (inItem != mCurrentItem) {
+		mCurrentItem = inItem;
+		if (mCurrentItem) {
+			mAnimSpeed = (mCurrentItem->geometry().top() - mAnimOffset) / 5;
+			mAnimTimer.start();
+		}
+		Q_EMIT asCurrentItemChanged(mCurrentItem);
+		update();
+	}
+}
+
 void QEchoXNavigationBar::paintEvent(QPaintEvent* e)
 {
 	QPainter painter(this);
-	painter.fillRect(rect().adjusted(-1, -1, -mShadowWidth, 1), QEchoXStyleSettings::Get()->getThemeColor());
-	QColor shadowColor = QColor(150, 150, 150);
-	QRect shadowRect(width() - mShadowWidth, 0 , mShadowWidth, height());
-	QLinearGradient shadowLinearGradient;
-	shadowLinearGradient.setStart(shadowRect.topLeft());
-	shadowLinearGradient.setFinalStop(shadowRect.topRight());
-	shadowLinearGradient.setColorAt(0, QColor(shadowColor.red(), shadowColor.green(), shadowColor.blue()));
-	shadowLinearGradient.setColorAt(1, QColor(shadowColor.red(), shadowColor.green(), shadowColor.blue(), 0));
-	painter.fillRect(shadowRect, shadowLinearGradient);
+	painter.fillRect(rect().adjusted(-1, -1, 1, 1), QEchoXStyleSettings::Get()->getThemeColor());
+	if (mCurrentItem) {
+		QRect itemGeom = mCurrentItem->geometry();
+		itemGeom.moveTop(mAnimOffset);
+		const int WhiteLineWidth = 4;
+		painter.fillRect(QRect(itemGeom.width() - WhiteLineWidth, itemGeom.y(), WhiteLineWidth, itemGeom.height()), Qt::white);
+		painter.setOpacity(0.7);
+		painter.fillRect(itemGeom.adjusted(0, 0, -WhiteLineWidth, 0), mInnerShadow);
+	}
 }

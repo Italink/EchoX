@@ -5,7 +5,18 @@
 #include <QListWidget>
 #include <QWheelEvent>
 #include <QPushButton>
+#include <QLineEdit>
 #include "Project/QProjectsManager.h"
+
+class QEchoXProjectsHeader : public QWidget {
+public:
+	QEchoXProjectsHeader();
+private:
+	void paintEvent(QPaintEvent* e) override;
+private:
+	QPushButton* mBtCreateProject;
+	QLineEdit* mSearchEdit;
+};
 
 class QEchoXProjectsPanel : public QWidget {
 	Q_OBJECT
@@ -28,8 +39,8 @@ protected:
 	void wheelEvent(QWheelEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 private:
-	QPushButton* mBtCreateNew;
-	QListWidget* mListWidget;
+	QEchoXProjectsHeader* mHeader;
+	QListWidget* mProjectListWidget;
 	QMap<IEchoXProject*, QListWidgetItem*> mProjectItemMap;
 	float mTextHeight = 20;
 	float mIconWdith = 80;

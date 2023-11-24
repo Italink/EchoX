@@ -19,6 +19,7 @@ void QProjectsManager::loadProjects()
 			addProject(project);
 		}
 	}
+	Q_EMIT asProjectsChanged();
 }
 
 IEchoXProject* QProjectsManager::createProject(QString inName)
