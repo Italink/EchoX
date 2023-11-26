@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QHash>
 #include <QMap>
-#include "IEchoXProject.h"
+#include "QEchoXProject.h"
 #include "EchoXCoreAPI.h"
 
 class ECHOXCORE_API QProjectsManager : public QObject {
@@ -14,35 +14,39 @@ public:
 	static QProjectsManager& Get();
 	void loadProjects();
 
-	IEchoXProject* createProject(QString inName);
-	void removeProject(IEchoXProject* inProject);
+	QEchoXProject* createProject(QString inName);
+	void removeProject(QEchoXProject* inProject);
 
 	QDir getProjectsDir() const;
 	QString makeUniqueName(QString inName) const;
-	const QList<IEchoXProject*>& getProjectList();
+	const QList<QEchoXProject*>& getProjectList();
 
-	void setCurrentProject(IEchoXProject* inProject);
-	IEchoXProject* getCurrentProject();
+	void setCurrentProject(QEchoXProject* inProject);
+	QEchoXProject* getCurrentProject();
 
-	bool saveProject(IEchoXProject* inProject);
-	IEchoXProject* loadProjectOnlyHeader(QFile file);
-	bool loadProjectFull(IEchoXProject* inProject);
+	bool saveProject(QEchoXProject* inProject);
+	QEchoXProject* loadProjectOnlyHeader(QFile file);
+	bool loadProjectFull(QEchoXProject* inProject);
 
-	void registerProjectType(const QMetaObject* inMetaObject);
-	void unregisterProjectType(const QMetaObject* inMetaObject);
+	IEchoXItem* createItemByName(const QString& inItemTypeName);
+	const QMap<QString, const QMetaObject*>& getItemsMap();
+	void registerItemType(const QMetaObject* inMetaObject);
+	void unregisterItemType(const QMetaObject* inMetaObject);
 Q_SIGNALS:
+	void asItemTypesChanged();
 	void asProjectsChanged();
-	void asProjectCreated(IEchoXProject*);
-	void asProjectRemoved(IEchoXProject*);
-	void asCurrrentProjectChanged(IEchoXProject*);
+	void asProjectCreated(QEchoXProject*);
+	void asProjectRemoved(QEchoXProject*);
+	void asCurrrentProjectChanged(QEchoXProject*);
 private:
 	QProjectsManager();
-	void addProject(IEchoXProject* inProject);
+	void ensureProjectDir();
+	void addProject(QEchoXProject* inProject);
 private:
-	QMap<QString, const QMetaObject*> mProjectTypeMap;
+	QMap<QString, const QMetaObject*> mItemTypeMap;
 	QDir mProjectDir = QDir("./Projects");
-	QList<IEchoXProject*> mProjectList;
-	IEchoXProject* mCurrentProject = nullptr;
+	QList<QEchoXProject*> mProjectList;
+	QEchoXProject* mCurrentProject = nullptr;
 };
 
 #endif // QProjectsManager_h__

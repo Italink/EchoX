@@ -9,12 +9,15 @@
 #include "Project/QProjectsManager.h"
 
 class QEchoXProjectsHeader : public QWidget {
+	Q_OBJECT
 public:
 	QEchoXProjectsHeader();
+Q_SIGNALS:
+	void asRequestCreateNew();
 private:
 	void paintEvent(QPaintEvent* e) override;
 private:
-	QPushButton* mBtCreateProject;
+	QPushButton* mBtCreateNew;
 	QLineEdit* mSearchEdit;
 };
 
@@ -24,14 +27,14 @@ public:
 	QEchoXProjectsPanel();
 	void refreshProjects();
 	void setIconScaleFactor(float inVar);
-	QRect getProjectGemotry(IEchoXProject* inProject);
+	QRect getProjectGemotry(QEchoXProject* inProject);
 Q_SIGNALS:
-	void asProjectDoubleClicked(IEchoXProject*);
+	void asProjectDoubleClicked(QEchoXProject*);
 private:
-	QListWidgetItem* getProjectItem(IEchoXProject* inProject);
-	void updateProjectItem(IEchoXProject* inProject);
-	void addProject(int index, IEchoXProject* inProject);
-	void removeProject(IEchoXProject* inProject);
+	QListWidgetItem* getProjectItem(QEchoXProject* inProject);
+	void updateProjectItem(QEchoXProject* inProject);
+	void addProject(int index, QEchoXProject* inProject);
+	void removeProject(QEchoXProject* inProject);
 	void onCreateNewProject();
 	void onItemDoubleClicked(QListWidgetItem* inItem);
 	void refreshIconSize();
@@ -41,7 +44,7 @@ protected:
 private:
 	QEchoXProjectsHeader* mHeader;
 	QListWidget* mProjectListWidget;
-	QMap<IEchoXProject*, QListWidgetItem*> mProjectItemMap;
+	QMap<QEchoXProject*, QListWidgetItem*> mProjectItemMap;
 	float mTextHeight = 20;
 	float mIconWdith = 80;
 	float mIconAspectRatio = 1.0f;

@@ -6,6 +6,7 @@
 #include "qvectornd.h"
 #include <QImage>
 #include <QPixmap>
+#include "LoggingCategory.h"
 
 template<typename From, typename To>
 void registerType(std::function<To(const From&)> convertor) {
@@ -173,6 +174,9 @@ QCborValue Serialization::toCborValue(const QVariant& var)
 		}
 		if (metaObject) {
 			QCborMap object;
+			if (metaObject != metaType.metaObject()) {
+				object.insert(QString("OverrideMetaTypeName"), QString(metaObject->metaType().name()));
+			}
 			for (int i = 0; i < metaObject->propertyCount(); i++) {
 				QMetaProperty prop = metaObject->property(i);
 				QString propName = prop.name();
@@ -253,6 +257,7 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantList>())) {
 		QCborArray array = value.toArray();
 		QVariant varList(metaType);
+		qDebug() << varList;
 		QSequentialIterable iterable = varList.value<QSequentialIterable>();
 		void* containterPtr = const_cast<void*>(iterable.constIterable());
 		auto metaContainer = iterable.metaContainer();
@@ -263,6 +268,7 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 			const void* dataPtr = coercer.coerce(var, var.metaType());
 			metaContainer.addValueAtEnd(containterPtr, dataPtr);
 		}
+		qDebug() << varList;
 		return varList;
 	}
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantMap>())) {
@@ -306,6 +312,17 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 		else {
 			metaObject = metaType.metaObject();
 			bIsPointer = metaType.flags().testFlag(QMetaType::IsPointer);
+			if (object.contains(QString("OverrideMetaTypeName"))) {
+				QString overrideMetaTypeName = object.value(QString("OverrideMetaTypeName")).toString();
+				QMetaType overrideMetaType = QMetaType::fromName(overrideMetaTypeName.toLocal8Bit());
+				if (overrideMetaType.isRegistered() && overrideMetaType.metaObject()) {
+					metaObject = overrideMetaType.metaObject();
+				}
+				else {
+					qCWarning(EchoX) << "override meta type is invalid";
+				}
+			}
+
 			if (metaObject) {
 				if (metaObject->inherits(&QObject::staticMetaObject)) {
 					QObject* obj = metaObject->newInstance();
@@ -332,6 +349,7 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 				if (object.contains(QString(prop.name()))) {
 					QCborValue value = object.value(QString(prop.name()));
 					QVariant var = fromCborValue(value, prop.metaType());
+					qDebug() << prop.name() << var;
 					if (metaObject->inherits(&QObject::staticMetaObject)) {
 						prop.write((QObject*)objectPtr, var);
 					}

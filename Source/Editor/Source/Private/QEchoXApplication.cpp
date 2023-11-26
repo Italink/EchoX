@@ -16,6 +16,7 @@
 #include "Settings/QSettingsManager.h"
 #include "Settings/QEchoXStyleSettings.h"
 #include "Plugin/QEnginePluginManager.h"
+#include "Project/Item/QEchoXWidgetItem_Button.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
@@ -39,7 +40,18 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QAudioAnalyseManager::Get().startup();
 	QSmtcManager::Get().startup();
 	QProjectsManager::Get().loadProjects();
+
+	QEchoXStyleSettings::Register();
+
+	QProjectsManager::Get().registerItemType(&QEchoXWidgetItem_Button::staticMetaObject);
+
 	QEnginePluginManager::Get().loadPlugins();
+	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {
+		pluginHandler.startup();
+	}
+
+
+
 
 	//QEchoXProjectsPage* panel = new QEchoXProjectsPage;
 	//panel->show();
@@ -63,6 +75,12 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 }
 
 QEchoXApplication::~QEchoXApplication() {
+	QEchoXStyleSettings::Unregister();
+
+	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {
+		pluginHandler.shutdown();
+	}
+
 	QAudioAnalyseManager::Get().shutdown();
 	QSmtcManager::Get().shutdown();
 }

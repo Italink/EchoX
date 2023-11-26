@@ -24,7 +24,7 @@ QEchoXProjectsPage::QEchoXProjectsPage()
 	});
 }
 
-void QEchoXProjectsPage::onEnterProject(IEchoXProject* inProject)
+void QEchoXProjectsPage::onEnterProject(QEchoXProject* inProject)
 {
 	QProjectsManager::Get().setCurrentProject(inProject);
 	mProjectsPanel->close();

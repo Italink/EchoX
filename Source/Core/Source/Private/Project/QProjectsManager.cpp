@@ -2,7 +2,6 @@
 #include "Serialization.h"
 #include <QMetaMethod>
 #include "LoggingCategory.h"
-#include "QEchoXWidgetsProject.h"
 
 QProjectsManager& QProjectsManager::Get()
 {
@@ -15,18 +14,18 @@ void QProjectsManager::loadProjects()
 	for (const QFileInfo& fileInfo : getProjectsDir().entryInfoList(QDir::Filter::Files | QDir::Filter::NoDotAndDotDot)) {
 		QString suffix = fileInfo.suffix();
 		if (suffix.compare(ProjectSuffix, Qt::CaseInsensitive) == 0) {
-			IEchoXProject* project = loadProjectOnlyHeader(fileInfo.filePath());
+			QEchoXProject* project = loadProjectOnlyHeader(fileInfo.filePath());
 			addProject(project);
 		}
 	}
 	Q_EMIT asProjectsChanged();
 }
 
-IEchoXProject* QProjectsManager::createProject(QString inName)
+QEchoXProject* QProjectsManager::createProject(QString inName)
 {
 	if (inName.isEmpty())
 		inName = "NewProject";
-	IEchoXProject* project = new QEchoXWidgetsProject();
+	QEchoXProject* project = new QEchoXProject();
 	project->setObjectName(makeUniqueName(inName));
 	addProject(project);
 	project->save();
@@ -36,17 +35,23 @@ IEchoXProject* QProjectsManager::createProject(QString inName)
 
 QProjectsManager::QProjectsManager()
 {
-	registerProjectType(&QEchoXWidgetsProject::staticMetaObject);
 }
 
-void QProjectsManager::addProject(IEchoXProject* inProject)
+void QProjectsManager::ensureProjectDir()
+{
+	QDir dir = getProjectsDir();
+	if (!dir.exists())
+		dir.mkpath(".");
+}
+
+void QProjectsManager::addProject(QEchoXProject* inProject)
 {
 	if (inProject) {
 		mProjectList << inProject;
 	}
 }
 
-void QProjectsManager::removeProject(IEchoXProject* inProject)
+void QProjectsManager::removeProject(QEchoXProject* inProject)
 {
 	mProjectList.removeOne(inProject);
 	Q_EMIT asProjectRemoved(inProject);
@@ -75,12 +80,12 @@ QString QProjectsManager::makeUniqueName(QString inName) const
 	return newName;
 }
 
-const QList<IEchoXProject*>& QProjectsManager::getProjectList()
+const QList<QEchoXProject*>& QProjectsManager::getProjectList()
 {
 	return mProjectList;
 }
 
-void QProjectsManager::setCurrentProject(IEchoXProject* inProject)
+void QProjectsManager::setCurrentProject(QEchoXProject* inProject)
 {
 	if (mCurrentProject != inProject) {
 		mCurrentProject = inProject;
@@ -89,19 +94,19 @@ void QProjectsManager::setCurrentProject(IEchoXProject* inProject)
 	}
 }
 
-IEchoXProject* QProjectsManager::getCurrentProject()
+QEchoXProject* QProjectsManager::getCurrentProject()
 {
 	return mCurrentProject;
 }
 
-bool QProjectsManager::saveProject(IEchoXProject* inProject)
+bool QProjectsManager::saveProject(QEchoXProject* inProject)
 {
 	Q_ASSERT(inProject);
+	ensureProjectDir();
 	QFile file = inProject->getProjectFile();
 	if (file.open(QFile::WriteOnly)) {
 		QDataStream stream(&file);
 		QCborMap header;
-		header.insert(QString("ProjectType"), inProject->metaObject()->className());
 		QByteArray thumbnail;
 		QDataStream imageStream(&thumbnail, QDataStream::WriteOnly);
 		imageStream << inProject->getThumbnail();
@@ -113,31 +118,27 @@ bool QProjectsManager::saveProject(IEchoXProject* inProject)
 	return false;
 }
 
-IEchoXProject* QProjectsManager::loadProjectOnlyHeader(QFile file)
+QEchoXProject* QProjectsManager::loadProjectOnlyHeader(QFile file)
 {
 	if (file.open(QFile::ReadOnly)) {
 		QDataStream stream(&file);
 		QCborMap header;
 		stream >> header;
-		QString projectType = header.value(QString("ProjectType")).toString();
 		QByteArray thumbnail = header.value(QString("Thumbnail")).toByteArray();
 		QDataStream imageStream(&thumbnail, QDataStream::ReadOnly);
 		QPixmap pixmap;
 		imageStream >> pixmap;
-		if (const QMetaObject* metaObject = mProjectTypeMap.value(projectType, nullptr)) {
-			QObject* object = metaObject->newInstance();
-			if (IEchoXProject* project = qobject_cast<IEchoXProject*>(object)) {
-				QFileInfo fileInfo(file);
-				project->setObjectName(fileInfo.fileName());
-				project->setThumbnail(pixmap);
-				return project;
-			}
-		}
+
+		QEchoXProject* project = new QEchoXProject;
+		QFileInfo fileInfo(file);
+		project->setObjectName(fileInfo.baseName());
+		project->setThumbnail(pixmap);
+		return project;
 	}
 	return nullptr;
 }
 
-bool QProjectsManager::loadProjectFull(IEchoXProject* inProject)
+bool QProjectsManager::loadProjectFull(QEchoXProject* inProject)
 {
 	if (!inProject)
 		return false;
@@ -154,9 +155,23 @@ bool QProjectsManager::loadProjectFull(IEchoXProject* inProject)
 	return false;
 }
 
-void QProjectsManager::registerProjectType(const QMetaObject* inMetaObject)
+IEchoXItem* QProjectsManager::createItemByName(const QString& inItemTypeName)
 {
-	mProjectTypeMap.insert(inMetaObject->className(), inMetaObject);
+	if (auto meteObject = mItemTypeMap.value(inItemTypeName)) {
+		return qobject_cast<IEchoXItem*>(meteObject->newInstance());
+	}
+	return nullptr;
+}
+
+const QMap<QString, const QMetaObject*>& QProjectsManager::getItemsMap()
+{
+	return mItemTypeMap;
+}
+
+void QProjectsManager::registerItemType(const QMetaObject* inMetaObject)
+{
+	qRegisterMetaType(inMetaObject->metaType());;
+	mItemTypeMap.insert(inMetaObject->className(), inMetaObject);
 	bool isInvaild = false;
 	for (int i = 0; i < inMetaObject->constructorCount(); i++) {
 		QMetaMethod method = inMetaObject->constructor(i);
@@ -167,10 +182,10 @@ void QProjectsManager::registerProjectType(const QMetaObject* inMetaObject)
 	if (!isInvaild) {
 		qCFatal(EchoX) << "must use Q_INVOKABLE";
 	}
+	Q_EMIT asItemTypesChanged();
 }
 
-void QProjectsManager::unregisterProjectType(const QMetaObject* inMetaObject)
+void QProjectsManager::unregisterItemType(const QMetaObject* inMetaObject)
 {
-	mProjectTypeMap.remove(inMetaObject->className());
+	mItemTypeMap.remove(inMetaObject->className());
 }
-

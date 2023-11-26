@@ -22,15 +22,15 @@ private: \
 
 #define ECHOX_DECLARE_SETTINGS(SettingsType,SettingName) \
         Q_CLASSINFO("ClassName",#SettingName) \
-        static 	SettingsType* Get() {  \
+        static SettingsType* Get() {  \
             return QSettingsManager::Get().GetSettings<SettingsType>(); \
         }  \
-		struct __SettingsRegister {\
-			__SettingsRegister() {\
-				QSettingsManager::Get().registerSettings<SettingsType>();\
-			}\
-		};\
-		inline static __SettingsRegister __register;
+        static void Register() {  \
+            QSettingsManager::Get().registerSettings<SettingsType>(); \
+        }  \
+        static void Unregister() {  \
+            QSettingsManager::Get().unregisterSettings<SettingsType>(); \
+        }  \
 
 class ECHOXCORE_API IEchoXSettings: public QObject {
 public:

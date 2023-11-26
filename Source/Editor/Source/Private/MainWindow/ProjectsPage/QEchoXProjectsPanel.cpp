@@ -35,13 +35,13 @@ QEchoXProjectsPanel::QEchoXProjectsPanel()
 	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectsChanged, this, [this]() { refreshProjects(); });
 	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectCreated, this, [this]() { refreshProjects(); });
 	connect(&QProjectsManager::Get(), &QProjectsManager::asProjectRemoved, this, [this]() { refreshProjects(); });
-	//connect(mBtCreateNew, &QPushButton::clicked, this, &QEchoXProjectsPanel::onCreateNewProject);
+	connect(mHeader, &QEchoXProjectsHeader::asRequestCreateNew, this, &QEchoXProjectsPanel::onCreateNewProject);
 	connect(mProjectListWidget, &QListWidget::itemDoubleClicked, this, &QEchoXProjectsPanel::onItemDoubleClicked);
 }
 
 void QEchoXProjectsPanel::refreshProjects()
 {
-	const QList<IEchoXProject*>& projects = QProjectsManager::Get().getProjectList();
+	const QList<QEchoXProject*>& projects = QProjectsManager::Get().getProjectList();
 	for (auto key : mProjectItemMap.keys()) {
 		if (!projects.contains(key)) {
 			removeProject(key);
@@ -49,7 +49,7 @@ void QEchoXProjectsPanel::refreshProjects()
 	}
 
 	for (int i = 0; i < projects.size(); i++) {
-		 IEchoXProject* project = projects[i];
+		 QEchoXProject* project = projects[i];
 		 if (!mProjectItemMap.contains(project)) {
 			 addProject(i, project);
 		 }
@@ -75,14 +75,14 @@ void QEchoXProjectsPanel::refreshIconSize()
 	mProjectListWidget->setIconSize(iconSize);
 	for (int i = 0; i < mProjectListWidget->count(); i++) {
 		QListWidgetItem* item = mProjectListWidget->item(i);
-		IEchoXProject* project = item->data(Qt::StatusTipRole).value<IEchoXProject* >();
+		QEchoXProject* project = item->data(Qt::StatusTipRole).value<QEchoXProject* >();
 		QPixmap thumbnail = project->getThumbnail();
 		item->setIcon(thumbnail.scaled(iconSize));
 		item->setSizeHint(iconSize + QSize(0, mTextHeight));
 	}
 }
 
-QRect QEchoXProjectsPanel::getProjectGemotry(IEchoXProject* inProject)
+QRect QEchoXProjectsPanel::getProjectGemotry(QEchoXProject* inProject)
 {
 	const QListWidgetItem* item = mProjectItemMap.value(inProject);
 	if (item) {
@@ -95,12 +95,12 @@ QRect QEchoXProjectsPanel::getProjectGemotry(IEchoXProject* inProject)
 	return QRect();
 }
 
-QListWidgetItem* QEchoXProjectsPanel::getProjectItem(IEchoXProject* inProject)
+QListWidgetItem* QEchoXProjectsPanel::getProjectItem(QEchoXProject* inProject)
 {
 	return mProjectItemMap.value(inProject);
 }
 
-void QEchoXProjectsPanel::updateProjectItem(IEchoXProject* inProject)
+void QEchoXProjectsPanel::updateProjectItem(QEchoXProject* inProject)
 {
 	if (QListWidgetItem* item = getProjectItem(inProject)) {
 		QSize iconSize = QSize() * mIconScaleFactor;
@@ -111,7 +111,7 @@ void QEchoXProjectsPanel::updateProjectItem(IEchoXProject* inProject)
 	}
 }
 
-void QEchoXProjectsPanel::addProject(int index, IEchoXProject* inProject)
+void QEchoXProjectsPanel::addProject(int index, QEchoXProject* inProject)
 {
 	QListWidgetItem* item = new QListWidgetItem;
 	item->setData(Qt::StatusTipRole, QVariant::fromValue(inProject));
@@ -120,7 +120,7 @@ void QEchoXProjectsPanel::addProject(int index, IEchoXProject* inProject)
 	mProjectListWidget->insertItem(index, item);
 }
 
-void QEchoXProjectsPanel::removeProject(IEchoXProject* inProject)
+void QEchoXProjectsPanel::removeProject(QEchoXProject* inProject)
 {
 	if (QListWidgetItem* item = getProjectItem(inProject)) {
 		mProjectListWidget->takeItem(mProjectListWidget->row(item));
@@ -135,7 +135,7 @@ void QEchoXProjectsPanel::onCreateNewProject()
 
 void QEchoXProjectsPanel::onItemDoubleClicked(QListWidgetItem* inItem)
 {
-	IEchoXProject* project = mProjectItemMap.key(inItem,nullptr);
+	QEchoXProject* project = mProjectItemMap.key(inItem,nullptr);
 	Q_EMIT asProjectDoubleClicked(project);
 }
 
@@ -158,11 +158,11 @@ void QEchoXProjectsPanel::resizeEvent(QResizeEvent* event)
 }
 
 QEchoXProjectsHeader::QEchoXProjectsHeader()
-	: mBtCreateProject(new QPushButton("Create Project"))
+	: mBtCreateNew(new QPushButton("Create Project"))
 	, mSearchEdit(new QLineEdit)
 {
 	setFixedHeight(100);
-	mBtCreateProject->setFixedWidth(100);
+	mBtCreateNew->setFixedWidth(100);
 
 	QPalette pal = palette();
 	pal.setColor(QPalette::ColorRole::WindowText, QColor(100, 100, 100));
@@ -183,7 +183,9 @@ QEchoXProjectsHeader::QEchoXProjectsHeader()
 	layout->addWidget(new QRadioButton("Create Time"), 2, 2);
 	layout->addWidget(new QRadioButton("Modify Time"), 2, 3);
 
-	layout->addWidget(mBtCreateProject, 1, 5, 2, 1);
+	layout->addWidget(mBtCreateNew, 1, 5, 2, 1);
+
+	connect(mBtCreateNew, &QPushButton::clicked, this, &QEchoXProjectsHeader::asRequestCreateNew);
 }
 
 void QEchoXProjectsHeader::paintEvent(QPaintEvent* e)

@@ -2,8 +2,9 @@
 #define LoggingCategory_h__
 
 #include <QLoggingCategory>
+#include "EchoXCoreAPI.h"
 
-Q_DECLARE_LOGGING_CATEGORY(EchoX)
+ECHOXCORE_API const QLoggingCategory& EchoX();
 
 
 #endif // LoggingCategory_h__
