@@ -48,6 +48,7 @@ void QProjectsManager::addProject(QEchoXProject* inProject)
 {
 	if (inProject) {
 		mProjectList << inProject;
+		inProject->setParent(this);
 	}
 }
 
@@ -56,6 +57,7 @@ void QProjectsManager::removeProject(QEchoXProject* inProject)
 	mProjectList.removeOne(inProject);
 	Q_EMIT asProjectRemoved(inProject);
 	inProject->getProjectFile().remove();
+	inProject->setParent(nullptr);
 	inProject->deleteLater();
 }
 

@@ -10,4 +10,12 @@ find_package(Qt6 COMPONENTS Core Widgets Gui Multimedia ShaderTools REQUIRED)
 add_subdirectory(3rdParty)
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Editor)
-add_subdirectory(Source/App)
+
+file(GLOB PLUGIN_DIR_LIST RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} Plugins/*)
+foreach(PLUGIN_DIR ${PLUGIN_DIR_LIST})
+    if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_DIR})
+        add_subdirectory(${PLUGIN_DIR})
+    endif()
+endforeach()
+
+add_subdirectory(Source/Launch)
