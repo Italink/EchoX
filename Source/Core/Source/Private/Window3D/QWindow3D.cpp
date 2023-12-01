@@ -7,42 +7,36 @@
 #include <private/qwidgetrepaintmanager_p.h>
 #include <QResizeEvent>
 
+QList<QWindow3D*> QWindow3D::Instances;
+
+void QWindow3D::showEditor()
+{
+	QWindow3DEditor* editor = new QWindow3DEditor;
+	editor->show();
+}
+
 QWindow3D::QWindow3D()
 	: mEffect(new QWindow3DEffect())
 {
 	setWindowFlag(Qt::FramelessWindowHint);
-	setAttribute(Qt::WA_TranslucentBackground);
+	Instances << this;
+	//setAttribute(Qt::WA_TranslucentBackground);
+}
+
+QWindow3D::~QWindow3D()
+{
+	Instances.removeOne(this);
 }
 
 void QWindow3D::setupBody(QWidget* widget)
 {
 	mBody = widget;
 	mBody->updateGeometry();
+	qDebug() << mBody->geometry();
 	mGlobalQuad = mBody->geometry();
 	mBody->setParent(this);
 	mBody->setGraphicsEffect(mEffect);
 	mEffect->setupWidget(this, widget);
-}
-
-void QWindow3D::showEvent(QShowEvent* event)
-{
-	if (mEditor) {
-		mEditor->setQuad(getGlobalQuad());
-	}
-}
-
-void QWindow3D::resizeEvent(QResizeEvent* event)
-{
-	if (mEditor) {
-		mEditor->setGeometry(geometry().adjusted(-10, -10, 10, 10));
-	}
-}
-
-QWindow3D* QWindow3D::create(QWidget* widget)
-{
-	QWindow3D* containter = new QWindow3D;
-	containter->setupBody(widget);
-	return containter;
 }
 
 void QWindow3D::setGlobalQuad(QQuadF quad)
@@ -64,20 +58,6 @@ void QWindow3D::updateQuad()
 {
 	QRectF rect = mGlobalQuad.boundGemotry();
 	setGeometry(rect.toRect());
-}
-
-void QWindow3D::showEditor()
-{
-	if (!mEditor) {
-		mEditor = new QWindow3DEditor;
-		mEditor->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
-		mEditor->setAttribute(Qt::WA_TranslucentBackground);
-		mEditor->show();
-		connect(mEditor, &QWindow3DEditor::quadChanged, this, &QWindow3D::setGlobalQuad);
-	}
-	if (this->isVisible()) {
-		mEditor->show();
-	}
 }
 
 QQuadF QWindow3D::getGlobalQuad()
@@ -185,3 +165,4 @@ bool QWindow3D::notify(QObject* o, QEvent* e)
 	//}
 	return false;
 }
+

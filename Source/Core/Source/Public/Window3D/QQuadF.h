@@ -4,9 +4,9 @@
 #include <QPointF>
 #include <QMatrix3x3>
 #include <QRect>
-#include "EchoXEditorAPI.h"
+#include "EchoXCoreAPI.h"
 
-struct ECHOXEDITOR_API QQuadF {
+struct ECHOXCORE_API QQuadF {
 	QQuadF(QPointF topLeft = QPointF{0,0}, QPointF topRight = QPointF{ 1,0 }, QPointF bottomRight = QPointF{ 1,1 }, QPointF bottomLeft = QPointF{ 0,1 })
 		: topLeft(topLeft)
 		, topRight(topRight)

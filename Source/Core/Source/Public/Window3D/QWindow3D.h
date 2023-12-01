@@ -4,32 +4,30 @@
 #include <QWidget>
 #include <QMatrix3x3>
 #include "QQuadF.h"
-#include "EchoXEditorAPI.h"
+#include "EchoXCoreAPI.h"
 
 class QWindow3DEditor;
 class QWindow3DEffect;
 
-class ECHOXEDITOR_API QWindow3D : public QWidget {
+class ECHOXCORE_API QWindow3D : public QWidget {
 	Q_OBJECT
 public:
-	static QWindow3D* create(QWidget* widget);
+	QWindow3D();
+	~QWindow3D();
+	void setupBody(QWidget* widget);
 	void setGlobalQuad(QQuadF quad);
 	QMatrix3x3 getTransform();
 	void updateQuad();
-	void showEditor();
 	QQuadF getGlobalQuad();
 	QQuadF getLocalQuad();
 	QQuadF getLoaclNDCQuad();
 	QPointF mapGlobalPos(QPointF point);
 	static bool notify(QObject* o, QEvent* e);
-private:
-	QWindow3D();
-	void setupBody(QWidget* widget);
-	void showEvent(QShowEvent* event) override;
-	void resizeEvent(QResizeEvent* event) override;
+	static QList<QWindow3D*> Instances;
+	static void showEditor();
+
 private:
 	QWidget* mBody = nullptr;
-	QWindow3DEditor* mEditor = nullptr;
 	QQuadF mGlobalQuad;
 	QMatrix3x3 mGlobalRectToQuad;
 	QMatrix3x3 mGlobalQuadToRect;

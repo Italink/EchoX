@@ -7,6 +7,8 @@
 class ECHOXCORE_API IEchoXItem : public QObject {
 	Q_OBJECT
 public:
+	virtual void activate() {};
+	virtual void deactivate() {};
 	virtual QSize desiredSize() = 0;
 };
 

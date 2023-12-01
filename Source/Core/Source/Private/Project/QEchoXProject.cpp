@@ -12,6 +12,20 @@ QString QEchoXProject::getProjectName() const
 	return objectName();
 }
 
+void QEchoXProject::activate()
+{
+	bActivated = true;
+	for (auto& item : mItems)
+		item->activate();
+}
+
+void QEchoXProject::deactivate()
+{
+	for (auto& item : mItems)
+		item->deactivate();
+	bActivated = false;
+}
+
 bool QEchoXProject::rename(QString inNewName)
 {
 	QString name = QProjectsManager::Get().makeUniqueName(inNewName);
@@ -58,6 +72,9 @@ void QEchoXProject::addItem(IEchoXItem* inItem)
 	mItems << inItem;
 	inItem->setParent(this);
 	Q_EMIT asItemsChanged();
+	if (bActivated) {
+		inItem->activate();
+	}
 }
 
 void QEchoXProject::removeItem(IEchoXItem* inItem)

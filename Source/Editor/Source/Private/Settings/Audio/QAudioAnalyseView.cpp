@@ -151,7 +151,7 @@ QAudioAnalyseView::QAudioAnalyseView()
 	, mMelFrequencySpectrum(new QAudioSpectrogram("Mel Frequency Spectrum"))
 	, mHighFrequencyContent(new QHighFrequencyContentOscillogram("High Frequency Content"))
 {
-	mDebugInformant->setCqtSetting(64, 128, 1);
+	mDebugInformant->setCqtSetting(16, 128, 1);
 
 	QPalette palette(this->palette());
 	palette.setColor(QPalette::Window, Qt::white);
@@ -200,7 +200,8 @@ void QAudioAnalyseView::updateView()
 	mMagnitudeSpectrum->updateData(mDebugInformant->getMagnitudeSpectrum());
 	auto cqtSchedule = mDebugInformant->getCqtSchedule();
 	if (!cqtSchedule.empty()) {
-		mConstantQTransformSpectrum->updateData(mDebugInformant->getCqtMagnitudeSpectrum(cqtSchedule.front()));
+		Cqt::ScheduleElement schedule;
+		mConstantQTransformSpectrum->updateData(mDebugInformant->getCqtMagnitudeSpectrum(schedule));
 	}
 	mMelFrequencySpectrum->updateData(mDebugInformant->getMelFrequencySpectrum());
 	mHighFrequencyContent->addFreq(mDebugInformant->getHighFrequencyContent() / mDebugInformant->getSampleRate());

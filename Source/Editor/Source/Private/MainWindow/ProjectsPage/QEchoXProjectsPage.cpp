@@ -5,6 +5,7 @@
 #include "Project/QProjectsManager.h"
 #include "QEchoXProjectsPanel.h"
 #include "QEchoXProjectPanel.h"
+#include <Window3D/QWindow3D.h>
 
 QEchoXProjectsPage::QEchoXProjectsPage()
 	: mProjectsPanel(new QEchoXProjectsPanel)
@@ -22,6 +23,7 @@ QEchoXProjectsPage::QEchoXProjectsPage()
 	connect(mSwitchAnimation, &QVariantAnimation::valueChanged, this, [this](QVariant var) {
 		update();
 	});
+	QWindow3D::showEditor();
 }
 
 void QEchoXProjectsPage::onEnterProject(QEchoXProject* inProject)

@@ -5,11 +5,11 @@
 
 QEchoXSettingsPage::QEchoXSettingsPage()
 	: mSettingsOutliner(new QTreeWidget())
-	, mSettingsView(new QDetailView)
+	, mStackWidget(new QStackedWidget)
 {
 	QHBoxLayout* hLayout = new QHBoxLayout(this);
 	hLayout->addWidget(mSettingsOutliner,3);
-	hLayout->addWidget(mSettingsView,7);
+	hLayout->addWidget(mStackWidget,7);
 	mSettingsOutliner->setHeaderHidden(true);
 	connect(&QSettingsManager::Get(), &QSettingsManager::asSettingsChanged, this, &QEchoXSettingsPage::refreshSettings);
 	connect(mSettingsOutliner, &QTreeWidget::currentItemChanged, this, &QEchoXSettingsPage::onCurrentItemChanged);
@@ -31,6 +31,10 @@ void QEchoXSettingsPage::refreshSettings()
 		QTreeWidgetItem* settingsItem = new QTreeWidgetItem({ settings->metaObject()->classInfo(settings->metaObject()->indexOfClassInfo("ClassName")).value()});
 		settingsItem->setData(0, Qt::ItemDataRole::UserRole, QVariant::fromValue(settings));
 		categoryMap[category]->addChild(settingsItem);
+		if (!mSettingsWidgetMap.contains(settings)) {
+			mSettingsWidgetMap[settings] = settings->createWidget();
+			mStackWidget->addWidget(mSettingsWidgetMap[settings]);
+		}
 	}
 	mSettingsOutliner->expandAll();
 }
@@ -41,10 +45,9 @@ void QEchoXSettingsPage::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWid
 		QVariant var = current->data(0, Qt::ItemDataRole::UserRole);
 		IEchoXSettings* settings = var.value<IEchoXSettings*>();
 		if (settings) {
-			mSettingsView->setObject(settings);
+			mStackWidget->setCurrentWidget(mSettingsWidgetMap[settings]);
 			return;
 		}
 	}
-	mSettingsView->setObject(nullptr);
 }
 

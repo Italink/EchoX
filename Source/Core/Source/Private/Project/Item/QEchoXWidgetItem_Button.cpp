@@ -1,10 +1,6 @@
-#ifndef IEchoXWidgetItem_h__
-#define IEchoXWidgetItem_h__
+#include "QEchoXWidgetItem_Button.h"
 
-#include "IEchoXItem.h"
-
-class ECHOXCORE_API IEchoXWidgetItem : public IEchoXItem {
-
-};
-
-#endif // IEchoXWidgetItem_h__
+QEchoXWidgetItem_Button::QEchoXWidgetItem_Button()
+	: mButton(new QPushButton(""))
+{
+}

@@ -1,5 +1,5 @@
 #include "QEchoXApplication.h"
-#include "QWindow3D.h"
+#include "Window3D/QWindow3D.h"
 #include "framelesshelperwidgets_global.h"
 #include "framelesswidgetshelper.h"
 #include "QEchoXTrayMenu.h"
@@ -17,10 +17,11 @@
 #include "Settings/QEchoXStyleSettings.h"
 #include "Plugin/QEnginePluginManager.h"
 #include "Project/Item/QEchoXWidgetItem_Button.h"
+#include "QAudioAnalyseSettings.h"
+#include "QSmtcSettings.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
-	: QApplication(argc, argv)
-	, mRhi(QRhiHelper::create())
+	: QEchoXCoreApplication(argc, argv)
 	, mMainWindow(new QEchoXMainWindow)
 	, mSysIcon(new QSystemTrayIcon(this))
 	, mSysTrayMenu(new QEchoXMenu(nullptr))
@@ -42,6 +43,8 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QProjectsManager::Get().loadProjects();
 
 	QEchoXStyleSettings::Register();
+	QAudioAnalyseSettings::Register();
+	QSmtcSettings::Register();
 
 	QProjectsManager::Get().registerItemType(&QEchoXWidgetItem_Button::staticMetaObject);
 
@@ -49,7 +52,6 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {
 		pluginHandler.startup();
 	}
-
 
 
 
@@ -100,12 +102,8 @@ void QEchoXApplication::preInitialize()
 	//	FramelessConfigEntry{ "FRAMELESSHELPER_FORCE_NATIVE_BACKGROUND_BLUR", "Options/ForceNativeBackgroundBlur" },
 	//	FramelessConfigEntry{ "FRAMELESSHELPER_WINDOW_USE_SQUARE_CORNERS", "Options/WindowUseSquareCorners" }
 	FRAMELESSHELPER_NAMESPACE::FramelessHelper::Widgets::initialize();
-
-}
-
-QRhi* QEchoXApplication::getGlobalRhi() const
-{
-	return mRhi.get();
+	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 }
 
 QEchoXMainWindow* QEchoXApplication::getMainEditor() const
@@ -116,13 +114,6 @@ QEchoXMainWindow* QEchoXApplication::getMainEditor() const
 QSystemTrayIcon* QEchoXApplication::getSystemTrayIcon() const
 {
 	return mSysIcon;
-}
-
-bool QEchoXApplication::notify(QObject* o, QEvent* e)
-{
-	if(QWindow3D::notify(o, e))
-		return false;
-	return QApplication::notify(o, e);
 }
 
 void QEchoXApplication::onActivatedSysTrayIcon(QSystemTrayIcon::ActivationReason reason)

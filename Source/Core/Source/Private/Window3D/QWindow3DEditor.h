@@ -31,16 +31,15 @@ class QWindow3DEditor : public QWidget
 {
 	Q_OBJECT
 private:
-	QScopedPointer<QWindow3DEditorVertex> mVertex[4];
+	//QScopedPointer<QWindow3DEditorVertex> mVertex[4];
 	QPoint mClickPos;
 public:
 	QWindow3DEditor();
 	void setQuad(QQuadF inQuad);
 	QQuadF getQuad();
-Q_SIGNALS:
-	void quadChanged(QQuadF);
 protected:
 	void notifyQuadChanged();
+	virtual void showEvent(QShowEvent* event) override;
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
 	virtual void mouseMoveEvent(QMouseEvent* event) override;

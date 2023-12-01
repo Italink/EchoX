@@ -90,8 +90,11 @@ const QList<QEchoXProject*>& QProjectsManager::getProjectList()
 void QProjectsManager::setCurrentProject(QEchoXProject* inProject)
 {
 	if (mCurrentProject != inProject) {
+		if (mCurrentProject) 
+			mCurrentProject->deactivate();
 		mCurrentProject = inProject;
 		loadProjectFull(mCurrentProject);
+		mCurrentProject->activate();
 		Q_EMIT asCurrrentProjectChanged(mCurrentProject);
 	}
 }

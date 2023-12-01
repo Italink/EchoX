@@ -2,11 +2,12 @@
 #include "private/qvulkandefaultinstance_p.h"
 #include <QPainter>
 #include <QVulkanInstance>
-#include "QEchoXApplication.h"
+#include <QApplication>
 #include "QWindow3D.h"
 #include <private/qwidgetwindow_p.h>
 #include <private/qwidgetrepaintmanager_p.h>
 #include <qpaintengine.h>
+#include "QEchoXCoreApplication.h"
 
 QWindow3DEffect::QWindow3DEffect(QObject* parent)
 	: QGraphicsEffect(parent)
@@ -24,7 +25,7 @@ QRectF QWindow3DEffect::boundingRectFor(const QRectF& rect) const{
 }
 
 void QWindow3DEffect::draw(QPainter* painter){
-	QRhi* rhi = qApp->getGlobalRhi();
+	QRhi* rhi = static_cast<QEchoXCoreApplication*>(QCoreApplication::instance())->getGlobalRhi();
 	PixmapPadMode mode = PadToEffectiveBoundingRect;
 	QPoint pos;
 	QPixmap widgetImage = sourcePixmap(Qt::DeviceCoordinates, &pos, mode);

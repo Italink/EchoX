@@ -12,13 +12,13 @@ public:
 	QEchoXDropWidget() {
 		QRect fullscreens;
 		for (auto screen : qApp->screens()) {
-			fullscreens |= screen->geometry();
+			QRect localRect = screen->geometry();
+			localRect.setSize(localRect.size() * screen->devicePixelRatio());
+			fullscreens |= localRect;
 		}
-		setWindowFlag(Qt::FramelessWindowHint);
-		//setAttribute(Qt::WA_)
-
 		this->setGeometry(fullscreens);
 		this->setAcceptDrops(true);
+		this->setWindowFlag(Qt::FramelessWindowHint);
 	}
 private:
 	void dragEnterEvent(QDragEnterEvent* e) {

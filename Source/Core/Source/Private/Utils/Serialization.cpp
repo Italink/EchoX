@@ -344,12 +344,13 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 			void* objectPtr = newObject.data();
 			if (bIsPointer)
 				objectPtr = *(void**)objectPtr;
+			if (!objectPtr)
+				return QVariant();
 			for (int i = 0; i < metaObject->propertyCount(); i++) {
 				QMetaProperty prop = metaObject->property(i);
 				if (object.contains(QString(prop.name()))) {
 					QCborValue value = object.value(QString(prop.name()));
 					QVariant var = fromCborValue(value, prop.metaType());
-					qDebug() << prop.name() << var;
 					if (metaObject->inherits(&QObject::staticMetaObject)) {
 						prop.write((QObject*)objectPtr, var);
 					}

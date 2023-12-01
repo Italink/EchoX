@@ -18,6 +18,8 @@ public:
 	QList<IEchoXItem*> getItems() const;
 	QPixmap getThumbnail();
 
+	void activate();
+	void deactivate();
 	bool rename(QString inNewName);
 	bool save();
 	void setItems(QList<IEchoXItem*> val);
@@ -27,6 +29,7 @@ public:
 Q_SIGNALS:
 	void asItemsChanged();
 private:
+	bool bActivated = false;
 	QPixmap mThumbnail;
 	QList<IEchoXItem*> mItems;
 };
