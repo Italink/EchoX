@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QHash>
 #include "EchoXCoreAPI.h"
+#include <QDir>
 
 class IEchoXSettings;
 
@@ -20,7 +21,7 @@ public:
 	void registerSettings() {
 		SettingsType* settings = new SettingsType();
 		settings->setParent(this);
-		mSettings.insert(&SettingsType::staticMetaObject, settings);
+		addSettings(&SettingsType::staticMetaObject, settings);
 		Q_EMIT asSettingsChanged();
 	}
 
@@ -32,12 +33,15 @@ public:
 		}
 		Q_EMIT asSettingsChanged();
 	}
+	void addSettings(const QMetaObject* inMetaObject, IEchoXSettings* inSettings);
 	QList<IEchoXSettings*> getAllSettings();
+	QDir getSettingsDir() const;
 Q_SIGNALS:
 	void asSettingsChanged();
 private:
 	QSettingsManager();
 private:
+	QDir mSettingsDir = QDir("./Settings");
 	QHash<const QMetaObject*, IEchoXSettings*> mSettings;
 };
 

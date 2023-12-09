@@ -43,8 +43,8 @@ private:
 	void ensureProjectDir();
 	void addProject(QEchoXProject* inProject);
 private:
-	QMap<QString, const QMetaObject*> mItemTypeMap;
 	QDir mProjectDir = QDir("./Projects");
+	QMap<QString, const QMetaObject*> mItemTypeMap;
 	QList<QEchoXProject*> mProjectList;
 	QEchoXProject* mCurrentProject = nullptr;
 };

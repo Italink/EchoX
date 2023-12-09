@@ -4,13 +4,18 @@
 #include <QMetaClassInfo>
 
 QEchoXSettingsPage::QEchoXSettingsPage()
-	: mSettingsOutliner(new QTreeWidget())
-	, mStackWidget(new QStackedWidget)
+	: mSplitter(new QSplitter)
+	, mSettingsOutliner(new QTreeWidget())
+	, mSettingsViewBox(new QWidget)
 {
 	QHBoxLayout* hLayout = new QHBoxLayout(this);
-	hLayout->addWidget(mSettingsOutliner,3);
-	hLayout->addWidget(mStackWidget,7);
+	hLayout->addWidget(mSplitter);
+	mSplitter->addWidget(mSettingsOutliner);
+	mSplitter->addWidget(mSettingsViewBox);
+	mSplitter->setSizes({ 300,500 });
+	QHBoxLayout* viewLayout = new QHBoxLayout(mSettingsViewBox);
 	mSettingsOutliner->setHeaderHidden(true);
+	mSettingsOutliner->setIndentation(8);
 	connect(&QSettingsManager::Get(), &QSettingsManager::asSettingsChanged, this, &QEchoXSettingsPage::refreshSettings);
 	connect(mSettingsOutliner, &QTreeWidget::currentItemChanged, this, &QEchoXSettingsPage::onCurrentItemChanged);
 	refreshSettings();
@@ -28,13 +33,9 @@ void QEchoXSettingsPage::refreshSettings()
 			mSettingsOutliner->addTopLevelItem(categoryItem);
 			categoryMap[category] = categoryItem;
 		}
-		QTreeWidgetItem* settingsItem = new QTreeWidgetItem({ settings->metaObject()->classInfo(settings->metaObject()->indexOfClassInfo("ClassName")).value()});
+		QTreeWidgetItem* settingsItem = new QTreeWidgetItem({ settings->getName() });
 		settingsItem->setData(0, Qt::ItemDataRole::UserRole, QVariant::fromValue(settings));
 		categoryMap[category]->addChild(settingsItem);
-		if (!mSettingsWidgetMap.contains(settings)) {
-			mSettingsWidgetMap[settings] = settings->createWidget();
-			mStackWidget->addWidget(mSettingsWidgetMap[settings]);
-		}
 	}
 	mSettingsOutliner->expandAll();
 }
@@ -45,7 +46,14 @@ void QEchoXSettingsPage::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWid
 		QVariant var = current->data(0, Qt::ItemDataRole::UserRole);
 		IEchoXSettings* settings = var.value<IEchoXSettings*>();
 		if (settings) {
-			mStackWidget->setCurrentWidget(mSettingsWidgetMap[settings]);
+			while (QLayoutItem* item = mSettingsViewBox->layout()->takeAt(0)){
+				if (QWidget* widget = item->widget())
+					widget->deleteLater();
+				delete item;
+			}
+			QWidget* view = settings->createWidget();
+			connect(view, &QObject::destroyed, settings, &IEchoXSettings::save);
+			mSettingsViewBox->layout()->addWidget(view);
 			return;
 		}
 	}

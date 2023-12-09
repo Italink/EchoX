@@ -1,6 +1,6 @@
 #include "QEchoXWidgetItem_Button.h"
 
 QEchoXWidgetItem_Button::QEchoXWidgetItem_Button()
-	: mButton(new QPushButton(""))
+	: mButton(new QPushButton("Hello"))
 {
 }

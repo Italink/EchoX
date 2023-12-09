@@ -30,9 +30,6 @@ QSmtcView::QSmtcView()
 
 {
 	setStyleSheet("QWidget{color: #ffffff;}");
-	setMinimumSize(600, 400);
-	mLbThumbnail->setFixedSize(400, 400);
-
 	auto effect = new QNeumorphicEffect();
 	mLbThumbnail->setGraphicsEffect(effect);
 

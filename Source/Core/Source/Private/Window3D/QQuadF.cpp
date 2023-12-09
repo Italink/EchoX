@@ -102,3 +102,19 @@ QPointF QQuadF::transPoint(const QMatrix3x3& mat, const QPointF& src)
 	ret.setY((src.x() * mat(1, 0) + src.y() * mat(1, 1) + mat(1, 2)) / z);
 	return ret;
 }
+
+QDataStream& operator<<(QDataStream& out, const QQuadF& var)
+{
+	return out << var.topLeft
+		<< var.topRight
+		<< var.bottomRight
+		<< var.bottomLeft;
+}
+
+QDataStream& operator>>(QDataStream& in, QQuadF& var)
+{
+	return in >> var.topLeft
+		>> var.topRight
+		>> var.bottomRight
+		>> var.bottomLeft;
+}

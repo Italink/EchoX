@@ -25,7 +25,8 @@ public:
 	static bool notify(QObject* o, QEvent* e);
 	static QList<QWindow3D*> Instances;
 	static void showEditor();
-
+protected:
+	void showEvent(QShowEvent* e) override;
 private:
 	QWidget* mBody = nullptr;
 	QQuadF mGlobalQuad;
@@ -33,6 +34,5 @@ private:
 	QMatrix3x3 mGlobalQuadToRect;
 	QWindow3DEffect* mEffect = nullptr;
 };
-
 
 #endif // QWindow3D_h__

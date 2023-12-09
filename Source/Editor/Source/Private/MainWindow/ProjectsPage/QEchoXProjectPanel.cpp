@@ -6,6 +6,7 @@
 #include <QDrag>
 #include <QScreen>
 #include "Utils/LoggingCategory.h"
+#include "Project/Item/IEchoXWidgetItem.h"
 
 class QEchoXDropWidget :public QWidget {
 public:
@@ -18,7 +19,8 @@ public:
 		}
 		this->setGeometry(fullscreens);
 		this->setAcceptDrops(true);
-		this->setWindowFlag(Qt::FramelessWindowHint);
+		this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+		this->setAttribute(Qt::WA_TranslucentBackground);
 	}
 private:
 	void dragEnterEvent(QDragEnterEvent* e) {
@@ -35,6 +37,10 @@ private:
 	void dragMoveEvent(QDragMoveEvent* e) override {
 		e->accept();
 	}
+	void paintEvent(QPaintEvent* event) override {
+		QPainter painter(this);
+		painter.fillRect(rect(), QColor(0, 0, 0, 50));
+	}
 };
 
 void QEchoXProjectItemListWidget::startDrag(Qt::DropActions supportedActions)
@@ -49,13 +55,28 @@ void QEchoXProjectItemListWidget::startDrag(Qt::DropActions supportedActions)
 		if (IEchoXItem* item = QProjectsManager::Get().createItemByName(itemTypename)) {
 			QDrag drag(this);
 			drag.setMimeData(model()->mimeData(indexes));
-			QPixmap pixmap(item->desiredSize());
-			pixmap.fill(Qt::red);
+			QPixmap pixmap;
+			IEchoXWidgetItem* widgetItem = qobject_cast<IEchoXWidgetItem*>(item);
+			if (widgetItem) {
+				QWidget* widget = widgetItem->widget();
+				widget->resize(widgetItem->desiredSize());
+				pixmap = QPixmap(widget->size());
+				widget->render(&pixmap);
+			}
+			else {
+				pixmap = QPixmap(20, 20);
+				pixmap.fill(Qt::red);
+			}
 			drag.setPixmap(pixmap);
 			drag.setHotSpot(QPoint(pixmap.width()/2, pixmap.height() / 2));
 			QEchoXDropWidget droper;
 			droper.show();
 			if (drag.exec(Qt::MoveAction) == Qt::MoveAction) {
+				if (widgetItem) {
+					QRect destRect(0, 0, pixmap.width(), pixmap.height());
+					destRect.moveCenter(QCursor::pos());
+					widgetItem->setQuad(destRect);
+				}
 				Q_EMIT asItemDropped(QCursor::pos(), item);
 			}
 			else {

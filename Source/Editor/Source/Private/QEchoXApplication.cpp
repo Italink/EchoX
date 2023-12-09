@@ -48,6 +48,10 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 
 	QProjectsManager::Get().registerItemType(&QEchoXWidgetItem_Button::staticMetaObject);
 
+	connect(QEchoXStyleSettings::Get(), &QEchoXStyleSettings::asStyleChanged, mMainWindow, [this]() { 
+		mMainWindow->update();
+	});
+
 	QEnginePluginManager::Get().loadPlugins();
 	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {
 		pluginHandler.startup();

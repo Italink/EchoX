@@ -154,6 +154,7 @@ bool QProjectsManager::loadProjectFull(QEchoXProject* inProject)
 		QCborMap body;
 		stream >> header;
 		stream >> body;
+		qCDebug(EchoX) << body;
 		Serialization::fromCbor(inProject, body);
 		return true;
 	}

@@ -79,10 +79,9 @@ QWindow3DEditor::QWindow3DEditor()
 	}
 	fullscreens.setSize(fullscreens.size() * this->devicePixelRatioF());
 	this->setGeometry(fullscreens);
-	this->setWindowFlags(Qt::FramelessWindowHint);
-	qDebug() << geometry();
-	//this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-	//this->setAttribute(Qt::WA_TranslucentBackground);
+
+	this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+	this->setAttribute(Qt::WA_TranslucentBackground);
 
 	//mVertex[0].reset(new QWindow3DEditorVertex("A", Qt::white, Qt::black));
 	//mVertex[1].reset(new QWindow3DEditorVertex("B", Qt::white, Qt::black));
@@ -135,7 +134,6 @@ void QWindow3DEditor::showEvent(QShowEvent* event)
 
 void QWindow3DEditor::paintEvent(QPaintEvent* event)
 {
-	qDebug() << geometry();
 	//mVertex[0]->updateGeometry();
 	//mVertex[1]->updateGeometry();
 	//mVertex[2]->updateGeometry();
@@ -143,18 +141,13 @@ void QWindow3DEditor::paintEvent(QPaintEvent* event)
 
 	QPainter painter(this);
 	//painter.setRenderHint(QPainter::Antialiasing);
-	//painter.setPen(Qt::black);
-	//painter.setBrush(QColor(255, 0, 0));
+	painter.setPen(Qt::black);
+	painter.setBrush(QColor(255, 0, 0));
 
 	auto drawQuadF = [&painter,this](const QQuadF& quad) {
 		painter.drawPolygon(QPolygonF({ mapFromGlobal(quad.topLeft),mapFromGlobal(quad.topRight),mapFromGlobal(quad.bottomRight),mapFromGlobal(quad.bottomLeft)}));
 	};	
-	qDebug() << geometry();
-	QRect geom = geometry();
-	QPointF ps = mapFromGlobal(QPointF(1, 1));
-	const qreal factor = QHighDpiScaling::factor(this->windowHandle());
-	QPointF newPs  = QHighDpi::fromNative(ps, factor);
-	painter.fillRect(QRect(ps.x(),ps.y(), 100, 100), Qt::red);
+
 	for (auto instance : QWindow3D::Instances) {
 		drawQuadF(instance->getGlobalQuad());
 	}

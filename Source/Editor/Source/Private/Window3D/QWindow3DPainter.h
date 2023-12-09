@@ -2,7 +2,7 @@
 #define QWindow3DPainter_h__
 
 #include "rhi/qrhi.h"
-#include "QQuadF.h"
+#include "Window3D/QQuadF.h"
 
 class QWindow3DPainter {
 public:

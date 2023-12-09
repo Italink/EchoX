@@ -15,12 +15,22 @@ void QWindow3D::showEditor()
 	editor->show();
 }
 
+void QWindow3D::showEvent(QShowEvent* e)
+{
+	QWidget::showEvent(e);
+	if (mBody) {
+		QRect globalRect = QRect(mBody->mapToGlobal(QPoint(0, 0)), mBody->size());
+		mGlobalQuadToRect = QQuadF::calcTranfrom(mGlobalQuad, globalRect);
+		mGlobalRectToQuad = QQuadF::calcTranfrom(globalRect, mGlobalQuad);
+	}
+}
+
 QWindow3D::QWindow3D()
 	: mEffect(new QWindow3DEffect())
 {
-	setWindowFlag(Qt::FramelessWindowHint);
 	Instances << this;
-	//setAttribute(Qt::WA_TranslucentBackground);
+	setWindowFlag(Qt::FramelessWindowHint);
+	setAttribute(Qt::WA_TranslucentBackground);
 }
 
 QWindow3D::~QWindow3D()
@@ -31,9 +41,6 @@ QWindow3D::~QWindow3D()
 void QWindow3D::setupBody(QWidget* widget)
 {
 	mBody = widget;
-	mBody->updateGeometry();
-	qDebug() << mBody->geometry();
-	mGlobalQuad = mBody->geometry();
 	mBody->setParent(this);
 	mBody->setGraphicsEffect(mEffect);
 	mEffect->setupWidget(this, widget);
@@ -42,9 +49,11 @@ void QWindow3D::setupBody(QWidget* widget)
 void QWindow3D::setGlobalQuad(QQuadF quad)
 {
 	mGlobalQuad = quad;
-	QRect globalRect = QRect(mBody->mapToGlobal(QPoint(0, 0)), mBody->size());
-	mGlobalQuadToRect = QQuadF::calcTranfrom(mGlobalQuad, globalRect);
-	mGlobalRectToQuad = QQuadF::calcTranfrom(globalRect, mGlobalQuad);
+	if (mBody) {
+		QRect globalRect = QRect(mBody->mapToGlobal(QPoint(0, 0)), mBody->size());
+		mGlobalQuadToRect = QQuadF::calcTranfrom(mGlobalQuad, globalRect);
+		mGlobalRectToQuad = QQuadF::calcTranfrom(globalRect, mGlobalQuad);
+	}
 	updateQuad();
 	update();
 }

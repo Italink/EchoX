@@ -4,6 +4,7 @@
 #include <QPainterPath>
 #include <QQueue>
 #include <QLabel>
+#include "QEchoXStyleSettings.h"
 
 const int gOscillogramQueueCapacity = 50;
 const int gDiagramHeight = 150;
@@ -34,7 +35,8 @@ protected:
 		}
 		path.lineTo(width(), maxHeight);
 
-		QPen pen(QColor(34, 147, 66), 1);
+		QColor themeColor = QEchoXStyleSettings::Get()->getThemeColor();
+		QPen pen(QColor(themeColor), 1);
 		painter.setPen(pen);
 		painter.drawPath(path);
 
@@ -43,8 +45,8 @@ protected:
 		QLinearGradient linear;
 		linear.setStart(0, maxHeight);
 		linear.setFinalStop(0, 0);
-		linear.setColorAt(0, QColor(30, 207, 159, 50));
-		linear.setColorAt(0.2, QColor(30, 207, 159));
+		linear.setColorAt(0, QColor(themeColor.red(), themeColor.green(), themeColor.blue(), 50));
+		linear.setColorAt(0.2, QColor(themeColor.red(), themeColor.green(), themeColor.blue()));
 		painter.fillPath(path, linear);
 
 		painter.setPen(QPen(QColor(30, 30, 30), 1));
@@ -78,15 +80,16 @@ protected:
 		QPoint src(mSrcFreq * width(), maxHeight / 2);
 		QPoint dst(mDstFreq * width(), maxHeight / 2);
 
+		QColor themeColor = QEchoXStyleSettings::Get()->getThemeColor();
 		QLinearGradient linear;
 		linear.setStart(src);
 		linear.setFinalStop(dst);
-		linear.setColorAt(0, QColor(30, 207, 159, 50));
-		linear.setColorAt(1, QColor(30, 207, 159));
+		linear.setColorAt(0, QColor(themeColor.red(), themeColor.green(), themeColor.blue(),60));
+		linear.setColorAt(1, themeColor);
 
 		QPen pen(linear, 10);
 		painter.setPen(pen);
-		painter.fillRect(QRect(0,0,width(),maxHeight), QColor(30, 207, 159, 20));
+		painter.fillRect(QRect(0,0,width(),maxHeight), QColor(themeColor.red(), themeColor.green(), themeColor.blue(), 20));
 		painter.drawLine(src, dst);
 
 		painter.setPen(QPen(QColor(30, 30, 30), 1));
@@ -117,14 +120,14 @@ protected:
 		painter.translate(0, height() - fontHeight);
 		painter.scale(1, -1);
 
-
+		QColor themeColor = QEchoXStyleSettings::Get()->getThemeColor();
 		QLinearGradient linear;
 		linear.setStart(0, 0);
 		linear.setFinalStop(0, height());
-		linear.setColorAt(0, QColor(30, 207, 159, 50));
-		linear.setColorAt(0.2, QColor(30, 207, 159));
+		linear.setColorAt(0, QColor(themeColor.red(), themeColor.green(), themeColor.blue(), 50));
+		linear.setColorAt(0.2, QColor(themeColor.red(), themeColor.green(), themeColor.blue()));
 
-		QPen pen(QColor(30, 207, 159), offset);
+		QPen pen(QColor(themeColor.red(), themeColor.green(), themeColor.blue()), offset);
 		painter.setPen(pen);
 		for (int i = 0; i < mData.size(); i++) {
 			painter.drawLine(QPointF(i * offset, offset/2), QPointF(i * offset, qBound(0.0f, mData[i], 1.0f) * maxHeight + offset/2));
@@ -158,13 +161,13 @@ QAudioAnalyseView::QAudioAnalyseView()
 	this->setPalette(palette);
 
 	QGridLayout* gLayout = new QGridLayout(this);
-	gLayout->addWidget(new QLabel("Time Domain Features"), 0, 0, 2, 1);
+	//gLayout->addWidget(new QLabel("Time Domain Features"), 0, 0, 2, 1);
 	gLayout->addWidget(mRootMeanSquare, 0, 1, 1, 2);
 	gLayout->addWidget(mPeakEnergy, 0, 3, 1, 2);
 	gLayout->addWidget(mEnergyDifference, 1, 1, 1, 2);
 	gLayout->addWidget(mSpectralDifference, 1, 3, 1, 2);
 
-	gLayout->addWidget(new QLabel("Frequency Domain Features"), 2, 0, 3, 1);
+	//gLayout->addWidget(new QLabel("Frequency Domain Features"), 2, 0, 3, 1);
 
 	gLayout->addWidget(mMagnitudeSpectrum, 2, 1, 1, 4);
 

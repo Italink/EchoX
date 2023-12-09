@@ -29,7 +29,8 @@ void QWindow3DEffect::draw(QPainter* painter){
 	PixmapPadMode mode = PadToEffectiveBoundingRect;
 	QPoint pos;
 	QPixmap widgetImage = sourcePixmap(Qt::DeviceCoordinates, &pos, mode);
-	widgetImage = widgetImage.copy(mWidget->rect());
+	QRect dpiRect(mWidget->x() * mWidget->devicePixelRatioF(), mWidget->y() * mWidget->devicePixelRatioF(), mWidget->width() * mWidget->devicePixelRatioF(), mWidget->height() * mWidget->devicePixelRatioF());
+	widgetImage = widgetImage.copy(dpiRect);
 	if (mRenderTargetTexture.isNull() || widgetImage.size() != mRenderTargetTexture->pixelSize()) {
 		mWidgetTexutre.reset(rhi->newTexture(QRhiTexture::RGBA8, widgetImage.size(), 1, QRhiTexture::UsedAsTransferSource));
 		mWidgetTexutre->create();
@@ -41,6 +42,7 @@ void QWindow3DEffect::draw(QPainter* painter){
 		mRenderTarget->create();
 		mPainter.reset(new QWindow3DPainter);
 		mPainter->setupRhi(rhi);
+		mPainter->setupSampleCount(mRenderTarget->sampleCount());
 		mPainter->setupRenderPassDesc(mRenderTargetDesc.get());
 		mPainter->setupTexture(mWidgetTexutre.get());
 		mPainter->compile();
@@ -51,7 +53,7 @@ void QWindow3DEffect::draw(QPainter* painter){
 		return;
 	auto resourceUpdates = rhi->nextResourceUpdateBatch();
 	resourceUpdates->uploadTexture(mWidgetTexutre.get(), widgetImage.toImage().convertedTo(QImage::Format_RGBA8888));
-
+	widgetImage.toImage().convertedTo(QImage::Format_RGBA8888).save("ased.png");
 	mPainter->setupNDCQuad(mContainter->getLoaclNDCQuad());
 	mPainter->updateResource(resourceUpdates);
 

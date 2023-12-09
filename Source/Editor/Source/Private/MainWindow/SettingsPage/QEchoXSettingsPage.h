@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTreeWidget>
+#include <QSplitter>
 #include <QStackedWidget>
 #include <QMap>
 #include "DetailView/QDetailView.h"
@@ -16,9 +17,9 @@ public:
 	void refreshSettings();
 	void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 private:
+	QSplitter* mSplitter;
 	QTreeWidget* mSettingsOutliner;
-	QStackedWidget* mStackWidget;
-	QMap<IEchoXSettings*, QWidget*> mSettingsWidgetMap;
+	QWidget* mSettingsViewBox;
 };
 
 #endif // QEchoXSettingsPage_h__

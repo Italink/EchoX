@@ -5,6 +5,7 @@
 #include <QMatrix3x3>
 #include <QRect>
 #include "EchoXCoreAPI.h"
+#include "qmetatype.h"
 
 struct ECHOXCORE_API QQuadF {
 	QQuadF(QPointF topLeft = QPointF{0,0}, QPointF topRight = QPointF{ 1,0 }, QPointF bottomRight = QPointF{ 1,1 }, QPointF bottomLeft = QPointF{ 0,1 })
@@ -35,5 +36,10 @@ struct ECHOXCORE_API QQuadF {
 	static QMatrix3x3 calcTranfrom(const QQuadF& src,const QQuadF& dst);
 	static QPointF transPoint(const QMatrix3x3& mat, const QPointF& src);
 };
+
+QDataStream& operator<<(QDataStream& out, const QQuadF& var);
+QDataStream& operator>>(QDataStream& in, QQuadF& var);
+
+Q_DECLARE_METATYPE(QQuadF);
 
 #endif // QQuadF_h__

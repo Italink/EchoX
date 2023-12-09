@@ -206,6 +206,7 @@ QCborValue Serialization::toCborValue(const QVariant& var)
 			return data;
 		}
 	}
+	qCWarning(EchoX) << "Serialization Invalid Type:" << var;
 	return QCborValue("Invalid Type");
 }
 
@@ -257,7 +258,6 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantList>())) {
 		QCborArray array = value.toArray();
 		QVariant varList(metaType);
-		qDebug() << varList;
 		QSequentialIterable iterable = varList.value<QSequentialIterable>();
 		void* containterPtr = const_cast<void*>(iterable.constIterable());
 		auto metaContainer = iterable.metaContainer();
@@ -268,7 +268,6 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 			const void* dataPtr = coercer.coerce(var, var.metaType());
 			metaContainer.addValueAtEnd(containterPtr, dataPtr);
 		}
-		qDebug() << varList;
 		return varList;
 	}
 	else if (QMetaType::canConvert(metaType, QMetaType::fromType<QVariantMap>())) {

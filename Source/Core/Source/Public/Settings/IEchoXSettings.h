@@ -40,6 +40,11 @@ public:
         return view; 
     }
     virtual QString category() const { return "QEchoX"; }
+
+    QString getName();
+    QFile getSettingsFile();
+    bool save();
+    bool reload();
 };
 
 #endif // IEchoXSettings_h__

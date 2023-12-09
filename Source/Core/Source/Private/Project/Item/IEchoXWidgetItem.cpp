@@ -12,6 +12,7 @@ void IEchoXWidgetItem::initialize()
 
 void IEchoXWidgetItem::activate()
 {
+	widget()->resize(desiredSize());
 	mWindow->setupBody(widget());
 	mWindow->show();
 }
@@ -19,5 +20,15 @@ void IEchoXWidgetItem::activate()
 void IEchoXWidgetItem::deactivate()
 {
 	mWindow->close();
+}
+
+QQuadF IEchoXWidgetItem::getQuad() const
+{
+	return mWindow->getGlobalQuad();
+}
+
+void IEchoXWidgetItem::setQuad(QQuadF inQuad)
+{
+	mWindow->setGlobalQuad(inQuad);
 }
 
