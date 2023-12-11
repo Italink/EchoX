@@ -9,12 +9,6 @@
 
 QList<QWindow3D*> QWindow3D::Instances;
 
-void QWindow3D::showEditor()
-{
-	QWindow3DEditor* editor = new QWindow3DEditor;
-	editor->show();
-}
-
 void QWindow3D::showEvent(QShowEvent* e)
 {
 	QWidget::showEvent(e);

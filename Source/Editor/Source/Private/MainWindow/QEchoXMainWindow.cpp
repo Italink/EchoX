@@ -11,6 +11,7 @@
 #include "QEchoXStyleSettings.h"
 #include "SettingsPage/QEchoXSettingsPage.h"
 #include "PluginsPage/QEchoXPluginsPage.h"
+#include "Window3D/QWindow3DEditor.h"
 
 using namespace FRAMELESSHELPER_NAMESPACE;
 
@@ -22,10 +23,12 @@ QEchoXMainWindow::QEchoXMainWindow()
 {
 	initialize();
 	mTimerId = startTimer(100);
+
 	connect(FramelessManager::instance(), &FramelessManager::systemThemeChanged, this, &QEchoXMainWindow::updateStyleSheet);
 	connect(mNavigationBar, &QEchoXNavigationBar::asCurrentItemChanged, this, [this](QEchoXNavigationItem* item) {
 		mBody->setCurrentWidget(item ? item->getPage() : mPlaceholderPage);
 	});
+	connect(QWindow3DEditor::Instance(), &QWindow3DEditor::asClicked, this, &QWidget::activateWindow);
 }
 
 QEchoXMainWindow::~QEchoXMainWindow()
@@ -37,6 +40,7 @@ void QEchoXMainWindow::initialize()
 {
 	setWindowTitle(tr("EchoX"));
 	setWindowIcon(QFileIconProvider().icon(QFileIconProvider::Network));
+	setWindowFlags(Qt::WindowStaysOnTopHint);
 
 	mTitleBar->setWindowIconVisible(false);
 	mTitleBar->setTitleLabelVisible(false);
@@ -86,6 +90,16 @@ void QEchoXMainWindow::waitReady()
 	FramelessWidgetsHelper* helper = FramelessWidgetsHelper::get(this);
 	helper->waitForReady();
 	helper->moveWindowToDesktopCenter();
+}
+
+void QEchoXMainWindow::showEvent(QShowEvent* e)
+{
+	QWindow3DEditor::Instance()->show();
+}
+
+void QEchoXMainWindow::closeEvent(QCloseEvent* e)
+{
+	QWindow3DEditor::Instance()->hide();
 }
 
 void QEchoXMainWindow::paintEvent(QPaintEvent* e)

@@ -7,15 +7,15 @@
 
 QString IEchoXSettings::getName()
 {
-	return 	metaObject()->classInfo(metaObject()->indexOfClassInfo("ClassName")).value();
+	return metaObject()->classInfo(metaObject()->indexOfClassInfo("ClassName")).value();
 }
 
 QFile IEchoXSettings::getSettingsFile()
 {
-	return QSettingsManager::Get().getSettingsDir().filePath(getName() + ".es");
+	return QSettingsManager::Get().getSettingsDir().filePath(getName() + ".json");
 }
 
-bool IEchoXSettings::save()
+bool IEchoXSettings::save()  
 {
 	QFile file = getSettingsFile();
 	if (file.open(QFile::WriteOnly)) {

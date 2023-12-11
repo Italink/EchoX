@@ -1,5 +1,7 @@
 #include "QEchoXStyleSettings.h"
 #include "QEngineEditorStyleManager.h"
+#include "QEchoXApplication.h"
+#include "MainWindow/QEchoXMainWindow.h"
 
 QEchoXStyleSettings::QEchoXStyleSettings()
 {
@@ -56,9 +58,15 @@ void QEchoXStyleSettings::refreshDetailViewStyle()
 			color:%1;
 		}
 		QWidget{
-			font-size: 8pt;
 			color:%1;
-			background-color:%2;
+			border:none;
+		}
+		QLabel{
+			background-color: transparent;
+		}
+		QDetailView, QDetailView * {
+			font-size: 8pt;
+			background-color: %2;
 		}
 		QtColorDialog,QNotificationBlock{
 			border: 1px solid %3;
@@ -120,11 +128,11 @@ void QEchoXStyleSettings::refreshDetailViewStyle()
 		QScrollBar:vertical,
 		QScrollBar:horizontal  {
 			width: 8px;
-			background: %3;
+			background: %2;
 		}
 		QScrollBar::tryDo:vertical,
 		QScrollBar::tryDo:horizontal {
-			background:  %2;
+			background:  %3;
 			min-height: 30px;
 		}
 		QScrollBar::tryDo:vertical:hover,
@@ -140,9 +148,8 @@ void QEchoXStyleSettings::refreshDetailViewStyle()
 		QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 			background: none;
 		}
-
 		QScrollBar::handle:vertical {
-			background: Gainsboro;
+			background: %3;
 			min-height: 20px;
 			border-radius: 2px;
 			border: none;
@@ -157,5 +164,6 @@ void QEchoXStyleSettings::refreshDetailViewStyle()
 		.toLocal8Bit();
 	qDebug() << mDetailViewPalette.mStyleSheet;
 	QEngineEditorStyleManager::Instance()->setPalette(mDetailViewPalette);
+	qApp->getMainEditor()->setStyleSheet(mDetailViewPalette.mStyleSheet);
 }
 

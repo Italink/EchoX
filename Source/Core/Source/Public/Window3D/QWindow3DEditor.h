@@ -2,7 +2,9 @@
 #define QWindow3DEditor_h__
 
 #include <QWidget>
-#include "QQuadF.h"
+#include "Window3D/QQuadF.h"
+
+class QWindow3D;
 
 class QWindow3DEditorVertex : public QWidget{
 	Q_OBJECT
@@ -19,6 +21,7 @@ public:
 	void setGlobalPos(QPointF pos);
 	void setId(const QString& value);
 protected:
+	virtual void mousePressEvent(QMouseEvent* event) override;
 	virtual void mouseMoveEvent(QMouseEvent* event)override;
 	virtual void paintEvent(QPaintEvent*) override;
 	virtual void enterEvent(QEnterEvent*) override;
@@ -27,16 +30,22 @@ Q_SIGNALS:
 	void moved(QPointF);
 };
 
-class QWindow3DEditor : public QWidget
+class ECHOXCORE_API QWindow3DEditor : public QWidget
 {
 	Q_OBJECT
+Q_SIGNALS:
+	void asClicked();
 private:
-	//QScopedPointer<QWindow3DEditorVertex> mVertex[4];
+	QScopedPointer<QWindow3DEditorVertex> mVertex[4];
 	QPoint mClickPos;
+	QWindow3D* mHitWindow = nullptr;
+	QWindow3D* mCurrentWindow = nullptr;
 public:
+	static QWindow3DEditor* Instance();
+private:
 	QWindow3DEditor();
-	void setQuad(QQuadF inQuad);
 	QQuadF getQuad();
+	void setCurrentWindow(QWindow3D* inWindow);
 protected:
 	void notifyQuadChanged();
 	virtual void showEvent(QShowEvent* event) override;

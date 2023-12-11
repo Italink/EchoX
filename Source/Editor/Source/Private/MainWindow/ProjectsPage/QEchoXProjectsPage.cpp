@@ -23,7 +23,6 @@ QEchoXProjectsPage::QEchoXProjectsPage()
 	connect(mSwitchAnimation, &QVariantAnimation::valueChanged, this, [this](QVariant var) {
 		update();
 	});
-	QWindow3D::showEditor();
 }
 
 void QEchoXProjectsPage::onEnterProject(QEchoXProject* inProject)

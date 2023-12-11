@@ -48,36 +48,14 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 
 	QProjectsManager::Get().registerItemType(&QEchoXWidgetItem_Button::staticMetaObject);
 
-	connect(QEchoXStyleSettings::Get(), &QEchoXStyleSettings::asStyleChanged, mMainWindow, [this]() { 
-		mMainWindow->update();
-	});
-
 	QEnginePluginManager::Get().loadPlugins();
 	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {
 		pluginHandler.startup();
 	}
 
-
-
-	//QEchoXProjectsPage* panel = new QEchoXProjectsPage;
-	//panel->show();
-	//QAudioAnalyseView* view = new QAudioAnalyseView;
-	//view->show();
-
-	////QSmtcView* sview = new QSmtcView;
-	////sview->show();
-	//qRegisterMetaType<TestInlineGadget>();
-	//qRegisterMetaType<TestInlineObject>();
-	//TestObject to;
-	//QDetailView* view = new QDetailView;
-	//view->setObject(new TestObject);
-	//view->show();
-	//to.Pixmap = QPixmap(5,5);
-	//QCborMap data  = Serialization::toCbor(&to);
-	//qDebug() << data;
-	//TestObject from;
-	//Serialization::fromCbor(&from, data);
-	//qDebug() << Serialization::toCbor(&from);
+	connect(QEchoXStyleSettings::Get(), &QEchoXStyleSettings::asStyleChanged, mMainWindow, [this]() {
+		mMainWindow->update();
+	});
 }
 
 QEchoXApplication::~QEchoXApplication() {

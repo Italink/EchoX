@@ -1,5 +1,19 @@
 #include "QQuadF.h"
 
+bool QQuadF::contains(QPointF point)
+{
+	float a = (topLeft.x() - bottomLeft.x()) * (point.y() - bottomLeft.y()) - (topLeft.y() - bottomLeft.y()) * (point.x() - bottomLeft.x());
+	float b = (topRight.x() - topLeft.x()) * (point.y() - topLeft.y()) - (topRight.y() - topLeft.y()) * (point.x() - topLeft.x());
+	float c = (bottomRight.x() - topRight.x()) * (point.y() - topRight.y()) - (bottomRight.y() - topRight.y()) * (point.x() - topRight.x());
+	float d = (bottomLeft.x() - bottomRight.x()) * (point.y() - bottomRight.y()) - (bottomLeft.y() - bottomRight.y()) * (point.x() - bottomRight.x());
+	return (a > 0 && b > 0 && c > 0 && d > 0) || (a < 0 && b < 0 && c < 0 && d < 0);
+}
+
+bool QQuadF::contains(QPoint point)
+{
+	return contains(point.toPointF());
+}
+
 void QQuadF::transform(const QMatrix3x3& mat)
 {
 	topLeft = transPoint(mat, topLeft);
@@ -52,7 +66,7 @@ QMatrix3x3 QQuadF::calcTranfrom(const QQuadF& src, const QQuadF& dst)
 	float u0 = dstGeomtry3D[0].x(), u1 = dstGeomtry3D[1].x(), u2 = dstGeomtry3D[3].x(), u3 = dstGeomtry3D[2].x();
 	float v0 = dstGeomtry3D[0].y(), v1 = dstGeomtry3D[1].y(), v2 = dstGeomtry3D[3].y(), v3 = dstGeomtry3D[2].y();
 
-	float A[8][9] = {
+	float bottomLeft[8][9] = {
 		   { x0, y0, 1, 0, 0, 0, -x0 * u0, -y0 * u0, u0 },
 		   { x1, y1, 1, 0, 0, 0, -x1 * u1, -y1 * u1, u1 },
 		   { x2, y2, 1, 0, 0, 0, -x2 * u2, -y2 * u2, u2 },
@@ -66,19 +80,19 @@ QMatrix3x3 QQuadF::calcTranfrom(const QQuadF& src, const QQuadF& dst)
 	for (int row = 0, col = 0; col < 8 && row < 8; col++, row++) {      //高斯消元
 		int max_r = row;
 		for (int i = row + 1; i < 8; i++) {
-			if ((1e-12) < qAbs(A[i][col]) - qAbs(A[max_r][col])) {
+			if ((1e-12) < qAbs(bottomLeft[i][col]) - qAbs(bottomLeft[max_r][col])) {
 				max_r = i;
 			}
 		}
 		if (max_r != row)
 			for (int j = 0; j < 9; j++)
-				qSwap(A[row][j], A[max_r][j]);
+				qSwap(bottomLeft[row][j], bottomLeft[max_r][j]);
 		for (int i = row + 1; i < 8; i++) {
-			if (fabs(A[i][col]) < (1e-12))
+			if (fabs(bottomLeft[i][col]) < (1e-12))
 				continue;
-			float tmp = -A[i][col] / A[row][col];
+			float tmp = -bottomLeft[i][col] / bottomLeft[row][col];
 			for (int j = col; j < 9; j++) {
-				A[i][j] += tmp * A[row][j];
+				bottomLeft[i][j] += tmp * bottomLeft[row][j];
 			}
 		}
 
@@ -86,9 +100,9 @@ QMatrix3x3 QQuadF::calcTranfrom(const QQuadF& src, const QQuadF& dst)
 	for (int i = 7; i >= 0; i--) { //计算唯一解。
 		float tmp = 0;
 		for (int j = i + 1; j < 8; j++) {
-			tmp += A[i][j] * mat(j / 3, j % 3);
+			tmp += bottomLeft[i][j] * mat(j / 3, j % 3);
 		}
-		mat(i / 3, i % 3) = (A[i][8] - tmp) / A[i][i];
+		mat(i / 3, i % 3) = (bottomLeft[i][8] - tmp) / bottomLeft[i][i];
 	}
 	mat(2, 2) = 1;
 	return mat;

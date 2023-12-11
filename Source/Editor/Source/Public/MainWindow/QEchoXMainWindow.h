@@ -22,6 +22,8 @@ protected:
 	void addNavigationItem(const QString & inName, const QString & inIconPath, QWidget * inPage);
 	void waitReady();
 private:
+	void showEvent(QShowEvent * e) override;
+	void closeEvent(QCloseEvent * e) override;
 	void paintEvent(QPaintEvent * e) override;
 private Q_SLOTS:
 	void updateStyleSheet();

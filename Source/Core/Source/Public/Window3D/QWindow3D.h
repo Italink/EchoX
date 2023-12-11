@@ -11,6 +11,7 @@ class QWindow3DEffect;
 
 class ECHOXCORE_API QWindow3D : public QWidget {
 	Q_OBJECT
+	Q_PROPERTY(QQuadF Quad READ getGlobalQuad WRITE setGlobalQuad)
 public:
 	QWindow3D();
 	~QWindow3D();
@@ -24,7 +25,6 @@ public:
 	QPointF mapGlobalPos(QPointF point);
 	static bool notify(QObject* o, QEvent* e);
 	static QList<QWindow3D*> Instances;
-	static void showEditor();
 protected:
 	void showEvent(QShowEvent* e) override;
 private:

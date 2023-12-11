@@ -27,6 +27,8 @@ struct ECHOXCORE_API QQuadF {
 	QPointF bottomRight;
 	QPointF bottomLeft;
 
+	bool contains(QPoint point);
+	bool contains(QPointF point);
 	void transform(const QMatrix3x3& mat);
 	QRectF boundGemotry();
 
@@ -37,8 +39,8 @@ struct ECHOXCORE_API QQuadF {
 	static QPointF transPoint(const QMatrix3x3& mat, const QPointF& src);
 };
 
-QDataStream& operator<<(QDataStream& out, const QQuadF& var);
-QDataStream& operator>>(QDataStream& in, QQuadF& var);
+ECHOXCORE_API QDataStream& operator<<(QDataStream& out, const QQuadF& var);
+ECHOXCORE_API QDataStream& operator>>(QDataStream& in, QQuadF& var);
 
 Q_DECLARE_METATYPE(QQuadF);
 

@@ -32,3 +32,8 @@ void IEchoXWidgetItem::setQuad(QQuadF inQuad)
 	mWindow->setGlobalQuad(inQuad);
 }
 
+QWindow3D* IEchoXWidgetItem::getWindow() const
+{
+	return mWindow.get();
+}
+

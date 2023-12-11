@@ -7,9 +7,10 @@
 
 class ECHOXCORE_API IEchoXWidgetItem : public IEchoXItem {
 	Q_OBJECT
-	Q_PROPERTY(QQuadF Quad READ getQuad WRITE setQuad)
+	Q_PROPERTY(QWindow3D* Window READ getWindow)
 public:
 	IEchoXWidgetItem();
+
 	virtual QWidget* widget() = 0;
 	virtual QSize desiredSize() = 0;
 
@@ -19,6 +20,7 @@ public:
 
 	QQuadF getQuad() const;
 	void setQuad(QQuadF inQuad);
+	QWindow3D* getWindow() const;
 private:
 	QSharedPointer<QWindow3D> mWindow;
 };

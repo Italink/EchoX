@@ -100,7 +100,6 @@ QEchoXProjectPanel::QEchoXProjectPanel()
 
 	mItemResouceList->setSelectionMode(QAbstractItemView::SingleSelection);
 	mItemResouceList->setDragEnabled(true);
-	//mItemResouceList->setAcceptDrops(true);
 	mItemResouceList->setDropIndicatorShown(false);
 	mItemResouceList->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
 
