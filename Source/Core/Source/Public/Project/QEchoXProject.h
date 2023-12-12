@@ -4,34 +4,34 @@
 #include <QObject>
 #include <QPixmap>
 #include <QDir>
-#include "IEchoXItem.h"
+#include "IEchoXComponent.h"
 #include "EchoXCoreAPI.h"
 
 class ECHOXCORE_API QEchoXProject : public QObject {
 	Q_OBJECT
-	Q_PROPERTY(QList<IEchoXItem*> Items READ getItems WRITE setItems)
+	Q_PROPERTY(QList<IEchoXComponent*> Items READ getItems WRITE setItems)
 public:
 	QEchoXProject();
 
 	QString getProjectName() const;
 	QFile getProjectFile() const;
-	QList<IEchoXItem*> getItems() const;
+	QList<IEchoXComponent*> getItems() const;
 	QPixmap getThumbnail();
 
 	void activate();
 	void deactivate();
 	bool rename(QString inNewName);
 	bool save();
-	void setItems(QList<IEchoXItem*> val);
+	void setItems(QList<IEchoXComponent*> val);
 	void setThumbnail(QPixmap inPixmap);
-	void addItem(IEchoXItem* inItem);
-	void removeItem(IEchoXItem* inItem);
+	void addItem(IEchoXComponent* inItem);
+	void removeItem(IEchoXComponent* inItem);
 Q_SIGNALS:
 	void asItemsChanged();
 private:
 	bool bActivated = false;
 	QPixmap mThumbnail;
-	QList<IEchoXItem*> mItems;
+	QList<IEchoXComponent*> mItems;
 };
 
 #endif // QEchoXProject_h__

@@ -1,5 +1,4 @@
 #include "QWindow3DEditor.h"
-#include "Window3D/QWindow3D.h"
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPolygon>

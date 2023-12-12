@@ -5,7 +5,6 @@
 #include "Project/QProjectsManager.h"
 #include "QEchoXProjectsPanel.h"
 #include "QEchoXProjectPanel.h"
-#include <Window3D/QWindow3D.h>
 
 QEchoXProjectsPage::QEchoXProjectsPage()
 	: mProjectsPanel(new QEchoXProjectsPanel)

@@ -1,18 +1,18 @@
-#ifndef QEchoXWidgetItem_Button_h__
-#define QEchoXWidgetItem_Button_h__
+#ifndef QEchoXWidgetComponent_Button_h__
+#define QEchoXWidgetComponent_Button_h__
 
-#include "IEchoXWidgetItem.h"
+#include "IEchoXWidgetComponent.h"
 #include "qvectornd.h"
 #include <QColor>
 #include <QImage>
 #include <QPushButton>
 
-class ECHOXCORE_API QEchoXWidgetItem_Button: public IEchoXWidgetItem {
+class ECHOXCORE_API QEchoXWidgetComponent_Button: public IEchoXWidgetComponent{
 	Q_OBJECT
 	Q_PROPERTY(QPushButton* Button READ button)
 public:
 public:
-	Q_INVOKABLE QEchoXWidgetItem_Button();
+	Q_INVOKABLE QEchoXWidgetComponent_Button();
 private:
 	QWidget* widget() { return mButton; };
 	QSize desiredSize() override { return QSize(60, 60); }
@@ -21,4 +21,4 @@ private:
 	QPushButton* mButton;
 };
 
-#endif // QEchoXWidgetItem_Button_h__
+#endif // QEchoXWidgetComponent_Button_h__

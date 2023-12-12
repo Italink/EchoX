@@ -14,7 +14,7 @@ class QEchoXProjectItemListWidget: public QListWidget {
 	Q_OBJECT
 public:
 Q_SIGNALS:
-	void asItemDropped(QPoint, IEchoXItem*);
+	void asItemDropped(QPoint, IEchoXComponent*);
 protected:
 	void startDrag(Qt::DropActions supportedActions) override;
 };
@@ -31,7 +31,7 @@ Q_SIGNALS:
 	void asReturnBack();
 private:
 	void closeEvent(QCloseEvent* e) override;
-	void onItemDropped(QPoint center, IEchoXItem* item);
+	void onItemDropped(QPoint center, IEchoXComponent* item);
 	void onCurrentItemChanged(QListWidgetItem* widgetItem);
 private:
 	QEchoXProject* mProject = nullptr;

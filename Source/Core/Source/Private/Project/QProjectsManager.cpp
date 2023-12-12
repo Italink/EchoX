@@ -161,10 +161,10 @@ bool QProjectsManager::loadProjectFull(QEchoXProject* inProject)
 	return false;
 }
 
-IEchoXItem* QProjectsManager::createItemByName(const QString& inItemTypeName)
+IEchoXComponent* QProjectsManager::createItemByName(const QString& inItemTypeName)
 {
 	if (auto meteObject = mItemTypeMap.value(inItemTypeName)) {
-		return qobject_cast<IEchoXItem*>(meteObject->newInstance());
+		return qobject_cast<IEchoXComponent*>(meteObject->newInstance());
 	}
 	return nullptr;
 }

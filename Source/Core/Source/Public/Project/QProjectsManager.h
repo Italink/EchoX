@@ -28,7 +28,7 @@ public:
 	QEchoXProject* loadProjectOnlyHeader(QFile file);
 	bool loadProjectFull(QEchoXProject* inProject);
 
-	IEchoXItem* createItemByName(const QString& inItemTypeName);
+	IEchoXComponent* createItemByName(const QString& inItemTypeName);
 	const QMap<QString, const QMetaObject*>& getItemsMap();
 	void registerItemType(const QMetaObject* inMetaObject);
 	void unregisterItemType(const QMetaObject* inMetaObject);

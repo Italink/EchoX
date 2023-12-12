@@ -15,7 +15,6 @@
 #include "Render/RHI/QRhiMaterialGroup.h"
 #include "Render/RHI/QRhiUniformBlock.h"
 #include "QColor4DButton.hpp"
-#include "Window3D/QQuadF.h"
 
 void DetailCustomizationPlugin::startup() {
 	qDebug() << "DetailCustomizationPlugin::startup";

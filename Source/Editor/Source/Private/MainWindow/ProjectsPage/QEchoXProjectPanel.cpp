@@ -6,7 +6,7 @@
 #include <QDrag>
 #include <QScreen>
 #include "Utils/LoggingCategory.h"
-#include "Project/Item/IEchoXWidgetItem.h"
+#include "Project/Widget/IEchoXWidgetComponent.h"
 
 class QEchoXDropWidget :public QWidget {
 public:
@@ -52,11 +52,11 @@ void QEchoXProjectItemListWidget::startDrag(Qt::DropActions supportedActions)
 	indexes.removeIf(isNotDragEnabled);
 	if (indexes.size()  ==  1) {
 		QString itemTypename = model()->data(indexes[0], Qt::ItemDataRole::UserRole).toString();
-		if (IEchoXItem* item = QProjectsManager::Get().createItemByName(itemTypename)) {
+		if (IEchoXComponent* item = QProjectsManager::Get().createItemByName(itemTypename)) {
 			QDrag drag(this);
 			drag.setMimeData(model()->mimeData(indexes));
 			QPixmap pixmap;
-			IEchoXWidgetItem* widgetItem = qobject_cast<IEchoXWidgetItem*>(item);
+			IEchoXWidgetComponent* widgetItem = qobject_cast<IEchoXWidgetComponent*>(item);
 			if (widgetItem) {
 				QWidget* widget = widgetItem->widget();
 				widget->resize(widgetItem->desiredSize());
@@ -156,7 +156,7 @@ void QEchoXProjectPanel::refreshItemList()
 void QEchoXProjectPanel::refreshOutliner()
 {
 	mOutliner->clear();
-	for (IEchoXItem* item : mProject->getItems()) {
+	for (IEchoXComponent* item : mProject->getItems()) {
 		QListWidgetItem* wItem = new QListWidgetItem(item->metaObject()->className());
 		wItem->setData(Qt::ItemDataRole::UserRole, QVariant::fromValue(item));
 		mOutliner->addItem(wItem);
@@ -168,7 +168,7 @@ void QEchoXProjectPanel::closeEvent(QCloseEvent* e)
 	mProject->save();
 }
 
-void QEchoXProjectPanel::onItemDropped(QPoint center, IEchoXItem* item)
+void QEchoXProjectPanel::onItemDropped(QPoint center, IEchoXComponent* item)
 {
 	mProject->addItem(item);
 }
@@ -176,7 +176,7 @@ void QEchoXProjectPanel::onItemDropped(QPoint center, IEchoXItem* item)
 void QEchoXProjectPanel::onCurrentItemChanged(QListWidgetItem* widgetItem)
 {
 	if (widgetItem) {
-		IEchoXItem* item = widgetItem->data(Qt::ItemDataRole::UserRole).value<IEchoXItem*>();
+		IEchoXComponent* item = widgetItem->data(Qt::ItemDataRole::UserRole).value<IEchoXComponent*>();
 		if (item) {
 			mDetailView->setObject(item);
 			return;

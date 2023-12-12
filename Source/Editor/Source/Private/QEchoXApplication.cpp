@@ -1,5 +1,4 @@
 #include "QEchoXApplication.h"
-#include "Window3D/QWindow3D.h"
 #include "framelesshelperwidgets_global.h"
 #include "framelesswidgetshelper.h"
 #include "QEchoXTrayMenu.h"
@@ -16,9 +15,10 @@
 #include "Settings/QSettingsManager.h"
 #include "Settings/QEchoXStyleSettings.h"
 #include "Plugin/QEnginePluginManager.h"
-#include "Project/Item/QEchoXWidgetItem_Button.h"
+#include "Project/Widget/QEchoXWidgetComponent_Button.h"
 #include "QAudioAnalyseSettings.h"
 #include "QSmtcSettings.h"
+#include "Project/Widget/VFX/QWidgetVFXManager.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QEchoXCoreApplication(argc, argv)
@@ -33,7 +33,7 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	mSysIcon->setContextMenu(mSysTrayMenu);
 	mSysIcon->show();
 	mMainWindow->setMinimumSize(800, 600);
-	mMainWindow->show();
+	//mMainWindow->show();
 	setQuitOnLastWindowClosed(false);
 	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 
@@ -41,12 +41,13 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QAudioAnalyseManager::Get().startup();
 	QSmtcManager::Get().startup();
 	QProjectsManager::Get().loadProjects();
+	QWidgetVFXManager::Get();
 
 	QEchoXStyleSettings::Register();
 	QAudioAnalyseSettings::Register();
 	QSmtcSettings::Register();
 
-	QProjectsManager::Get().registerItemType(&QEchoXWidgetItem_Button::staticMetaObject);
+	QProjectsManager::Get().registerItemType(&QEchoXWidgetComponent_Button::staticMetaObject);
 
 	QEnginePluginManager::Get().loadPlugins();
 	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {

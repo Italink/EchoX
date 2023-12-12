@@ -2,9 +2,8 @@
 #define QWindow3DEditor_h__
 
 #include <QWidget>
-#include "Window3D/QQuadF.h"
-
-class QWindow3D;
+#include "QWindow3D.h"
+#include "EchoXCoreAPI.h"
 
 class QWindow3DEditorVertex : public QWidget{
 	Q_OBJECT

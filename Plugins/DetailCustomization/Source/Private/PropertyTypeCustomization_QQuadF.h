@@ -2,7 +2,7 @@
 #define PropertyTypeCustomization_QQuadF_h__
 
 #include "DetailView/IPropertyTypeCustomization.h"
-#include "Window3D/QQuadF.h"
+#include "Project/Widget/3D/QQuadF.h"
 
 class PropertyTypeCustomization_QQuadF :public IPropertyTypeCustomization {
 public:

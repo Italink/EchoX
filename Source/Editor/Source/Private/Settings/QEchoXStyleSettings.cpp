@@ -5,6 +5,7 @@
 
 QEchoXStyleSettings::QEchoXStyleSettings()
 {
+	refreshDetailViewStyle();
 }
 
 QColor QEchoXStyleSettings::getThemeColor()
