@@ -4,28 +4,38 @@
 QWidgetVFXRenderer::QWidgetVFXRenderer()
 	: IRenderer(QRhiHelper::InitParams({ QRhi::D3D12 }), QSize(800, 600), Type::Window)
 {
-
 }
 
 void QWidgetVFXRenderer::addVFX(IWidgetVFX* inVFX)
 {
 	inVFX->setParent(this);
-	mVFXProgress.insert(inVFX, 0.0f);
+	mVFXMap.insert(inVFX, 0.0f);
 }
 
 void QWidgetVFXRenderer::setupGraph(QRenderGraphBuilder& graphBuilder)
 {
-	float delta = 0.1f;
+	float delta = 0.01f;
 
-	for (auto it = mVFXProgress.begin(); it != mVFXProgress.end(); it++) {
+	for (auto it = mVFXMap.begin(); it != mVFXMap.end(); it++) {
 		it.key()->play(it.value(), graphBuilder);
 		it.value() += delta;
+		if (it.value() > it.key()->getPlayDurationSec()) {
+			mOutdatedVFXList <<(it.key());
+		}
+	}
+}
+
+void QWidgetVFXRenderer::endFrame()
+{
+	for (auto& item : mOutdatedVFXList) {
+		mVFXMap.remove(item);
+		Q_EMIT item->asFinished();
+		item->deleteLater();
 	}
 
-	//for (const auto& VFX : mVFXProgress.asKeyValueRange()) {
-	//	if (VFX.second > VFX.first->getPlayDurationSec()) {
-	//		mVFXProgress.remove(VFX.first);
-	//	}
-	//}
+	if (!mOutdatedVFXList.isEmpty() && mVFXMap.isEmpty())
+		Q_EMIT asEmptied();
+
+	mOutdatedVFXList.clear();
 }
 

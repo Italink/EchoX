@@ -11,7 +11,8 @@
 #include "QEchoXStyleSettings.h"
 #include "SettingsPage/QEchoXSettingsPage.h"
 #include "PluginsPage/QEchoXPluginsPage.h"
-#include "Window3D/QWindow3DEditor.h"
+#include "Project/Widget/3D/QWindow3DEditor.h"
+#include "Project/Widget/VFX/QWidgetVFXManager.h"
 
 using namespace FRAMELESSHELPER_NAMESPACE;
 
@@ -100,6 +101,7 @@ void QEchoXMainWindow::showEvent(QShowEvent* e)
 void QEchoXMainWindow::closeEvent(QCloseEvent* e)
 {
 	QWindow3DEditor::Instance()->hide();
+	QWidgetVFXManager::Get().playWidgetCloseVFX(this);
 }
 
 void QEchoXMainWindow::paintEvent(QPaintEvent* e)

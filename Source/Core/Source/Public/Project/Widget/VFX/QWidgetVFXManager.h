@@ -12,7 +12,7 @@ public:
 	void playWidgetCloseVFX(QWidget* inWidget);
 private:
 	QWidgetVFXManager();
-	void addVFX(IWidgetVFX* inVFX);
+	void addVFX(QWidget* inWidget, IWidgetVFX* inVFX);
 private:
 	QWidgetVFXRenderer* mRenderer;
 	QWidget* mViewport = nullptr;

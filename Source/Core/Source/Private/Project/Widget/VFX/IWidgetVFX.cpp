@@ -1,17 +1,12 @@
 #include "IWidgetVFX.h"
 
-QRect IWidgetVFX::assessPlayArea()
+QRect IWidgetVFX::assessWidget(QWidget* widget)
 {
-	return QRect(mWidget->mapToGlobal(QPoint(0, 0)), mWidget->size());
+	return QRect(widget->mapToGlobal(QPoint(0, 0)), widget->size());
 }
 
-void IWidgetVFX::setupWidget(QWidget* widget)
+QRect IWidgetVFX::getCachedPlayArea() const
 {
-	mWidget = widget;
-}
-
-QWidget* IWidgetVFX::getWidget() const
-{
-	return mWidget;
+	return mCachedPlayArea;
 }
 

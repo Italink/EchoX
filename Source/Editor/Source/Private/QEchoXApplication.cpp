@@ -33,7 +33,7 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	mSysIcon->setContextMenu(mSysTrayMenu);
 	mSysIcon->show();
 	mMainWindow->setMinimumSize(800, 600);
-	//mMainWindow->show();
+	mMainWindow->show();
 	setQuitOnLastWindowClosed(false);
 	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 

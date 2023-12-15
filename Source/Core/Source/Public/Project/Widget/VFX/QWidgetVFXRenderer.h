@@ -10,10 +10,14 @@ class ECHOXCORE_API QWidgetVFXRenderer : public IRenderer {
 public:
 	QWidgetVFXRenderer();
 	void addVFX(IWidgetVFX* inVFX);
+Q_SIGNALS:
+	void asEmptied();
 private:
 	void setupGraph(QRenderGraphBuilder& graphBuilder) override;
+	void endFrame() override;
 private:
-	QMap<IWidgetVFX*, float> mVFXProgress;
+	QMap<IWidgetVFX*, float> mVFXMap;
+	QList<IWidgetVFX*> mOutdatedVFXList;
 };
 
 #endif // QWidgetVFXRenderer_h__
