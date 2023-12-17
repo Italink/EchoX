@@ -12,7 +12,7 @@ QEchoXSettingsPage::QEchoXSettingsPage()
 	hLayout->addWidget(mSplitter);
 	mSplitter->addWidget(mSettingsOutliner);
 	mSplitter->addWidget(mSettingsViewBox);
-	mSplitter->setSizes({ 300,500 });
+	mSplitter->setSizes({ 300,800 });
 	QHBoxLayout* viewLayout = new QHBoxLayout(mSettingsViewBox);
 	mSettingsOutliner->setHeaderHidden(true);
 	mSettingsOutliner->setIndentation(8);

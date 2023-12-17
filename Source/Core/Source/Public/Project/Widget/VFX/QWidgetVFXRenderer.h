@@ -8,7 +8,7 @@
 class ECHOXCORE_API QWidgetVFXRenderer : public IRenderer {
 	Q_OBJECT
 public:
-	QWidgetVFXRenderer();
+	QWidgetVFXRenderer(QRhiHelper::InitParams params);
 	void addVFX(IWidgetVFX* inVFX);
 Q_SIGNALS:
 	void asEmptied();

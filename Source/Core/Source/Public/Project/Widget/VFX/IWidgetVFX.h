@@ -3,8 +3,9 @@
 
 #include <QWidget>
 #include "Render/RenderGraph/QRenderGraphBuilder.h"
+#include "EchoXCoreAPI.h"
 
-class IWidgetVFX: public QObject {
+class ECHOXCORE_API IWidgetVFX: public QObject {
 	Q_OBJECT
 public:
 	virtual float getPlayDurationSec() const = 0;
@@ -15,10 +16,21 @@ Q_SIGNALS:
 protected:
 	virtual QRect assessWidget(QWidget* widget);
 	virtual void play(float timeSec, QRenderGraphBuilder& graphBuilder) = 0;
-private:
+protected:
 	friend class QWidgetVFXRenderer;
 	friend class QWidgetVFXManager;
 	QRect mCachedPlayArea;
 };
+
+class ECHOXCORE_API IWidgetCloseVFX : public IWidgetVFX {
+	Q_OBJECT
+public:
+	QRect assessWidget(QWidget* widget) override;
+	QImage getCahceWidgetImage() const;
+protected:
+	QImage mCahcedWidgetImage;
+	QRhiSignal mSigNeedUploadImage;
+};
+
 
 #endif // IWidgetVFX_h__

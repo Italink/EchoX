@@ -12,6 +12,7 @@ target_link_libraries(EchoX PRIVATE
 add_custom_command(TARGET EchoX POST_BUILD     
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                     $<TARGET_FILE_DIR:QSmtcServer>
+                    $<TARGET_FILE_DIR:TracyClient>
                     $<TARGET_FILE_DIR:EchoX>)     
 
 qengine_make_copy_target(EchoXCopyDLLTarget)

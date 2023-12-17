@@ -10,3 +10,14 @@ QRect IWidgetVFX::getCachedPlayArea() const
 	return mCachedPlayArea;
 }
 
+QRect IWidgetCloseVFX::assessWidget(QWidget* widget)
+{
+	mCahcedWidgetImage = widget->grab().toImage().convertedTo(QImage::Format_RGBA8888);
+	mSigNeedUploadImage.request();
+	return IWidgetVFX::assessWidget(widget);
+}
+
+QImage IWidgetCloseVFX::getCahceWidgetImage() const
+{
+	return mCahcedWidgetImage;
+}

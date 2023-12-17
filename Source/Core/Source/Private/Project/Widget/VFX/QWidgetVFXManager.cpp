@@ -3,6 +3,10 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include "Render/RenderGraph/Painter/TexturePainter.h"
+#include "Render/RHI/QRhiTransparencyWindowContainter.h"
+#include "tracy/Tracy.hpp"
+#include "WidgetCloseVFX/QWdigetCloseVFX_Diffusion.h"
+#include <QTimer>
 
 QWidgetVFXManager& QWidgetVFXManager::Get()
 {
@@ -10,132 +14,72 @@ QWidgetVFXManager& QWidgetVFXManager::Get()
 	return Instance;
 }
 
-class QWidgetVFX : public IWidgetVFX {
-public:
-	QImage mImage;
-	QShader mFadeOutFS;
-	QRhiBufferRef mUniformBuffer;
-	QRhiSamplerRef mSampler;
-	QRhiTextureRef mTexture;
-	QRhiGraphicsPipelineRef mPipeline;
-	QRhiShaderResourceBindingsRef mBindings;
-public:
-	QWidgetVFX() {
-		mFadeOutFS = QRhiHelper::newShaderFromCode(QShader::FragmentStage, R"(#version 450
-			layout (binding = 0) uniform sampler2D uWidgetImage;
-			layout (binding = 1) uniform UniformBlock{
-				float alpha;
-			}UBO;
-			layout (location = 0) in vec2 vUV;
-			layout (location = 0) out vec4 outFragColor;
-			void main() {
-				outFragColor = vec4(texture(uWidgetImage, vUV).rgb, 1.0f) * UBO.alpha;
-			}
-	)");
-	}
-
-	QRect assessWidget(QWidget* widget) override {
-		mImage = widget->grab().toImage().convertedTo(QImage::Format_RGBA8888);
-		widget->close();
-		return IWidgetVFX::assessWidget(widget);
-	}
-	float getPlayDurationSec() const  override {
-		return 5;
-	};
-	void play(float timeSec, QRenderGraphBuilder& builder) override {
-		builder.setupSampler(mSampler, "Sampler",
-			QRhiSampler::Linear,
-			QRhiSampler::Linear,
-			QRhiSampler::None,
-			QRhiSampler::Repeat,
-			QRhiSampler::Repeat,
-			QRhiSampler::Repeat);
-
-		builder.setupTexture(mTexture, "WidgetImage", QRhiTexture::RGBA8, getCachedPlayArea().size(), 1);
-		builder.setupBuffer(mUniformBuffer, "WidgetAlpha", QRhiBuffer::Dynamic, QRhiBuffer::UniformBuffer, sizeof(float));
-
-		builder.setupShaderResourceBindings(mBindings, "TextureBindings", {
-			QRhiShaderResourceBinding::sampledTexture(0,QRhiShaderResourceBinding::FragmentStage,mTexture.get(),mSampler.get()),
-			QRhiShaderResourceBinding::uniformBuffer(1,QRhiShaderResourceBinding::FragmentStage,mUniformBuffer.get())
-		});
-
-		QRhiGraphicsPipelineState PSO;
-
-		QRhiGraphicsPipeline::TargetBlend blendState;
-		blendState.enable = true;
-		PSO.targetBlends = { blendState };
-
-		PSO.sampleCount = builder.getMainRenderTarget()->sampleCount();
-		PSO.shaderResourceBindings = mBindings.get();
-		PSO.renderPassDesc = builder.getMainRenderTarget()->renderPassDescriptor();
-		PSO.shaderStages = {
-			{ QRhiShaderStage::Vertex, builder.getFullScreenVS() },
-			{ QRhiShaderStage::Fragment, mFadeOutFS }
-		};
-		builder.setupGraphicsPipeline(mPipeline, "WidgetFadeOutPipeline", PSO);
-		builder.addPass([this, &builder, timeSec](QRhiCommandBuffer* cmdBuffer) {
-			QRhi* rhi = cmdBuffer->rhi();
-			auto batch = rhi->nextResourceUpdateBatch();
-			if (!mImage.isNull()) {
-				batch->uploadTexture(mTexture.get(), mImage);
-				mImage = QImage();
-			}
-			float process = 1.0 - timeSec / getPlayDurationSec();
-			qDebug() << process;
-			batch->updateDynamicBuffer(mUniformBuffer.get(), 0, sizeof(float), &process);
-			cmdBuffer->beginPass(builder.getMainRenderTarget(), QColor::fromRgbF(0.0f, 0.0f, 0.0f, 0.0f), { 1.0f, 0 }, batch);
-			cmdBuffer->setGraphicsPipeline(mPipeline.get());
-			cmdBuffer->setViewport(QRhiViewport(0, 0, builder.getMainRenderTarget()->pixelSize().width(), builder.getMainRenderTarget()->pixelSize().height()));
-			cmdBuffer->setShaderResources(mBindings.get());
-			cmdBuffer->draw(4);
-			cmdBuffer->endPass();
-		});
-	}
-};
-
 void QWidgetVFXManager::playWidgetCloseVFX(QWidget* inWidget)
 {
-	QWidgetVFX* VFX = new QWidgetVFX;
+	QWidgetCloseVFX_Diffusion* VFX = new QWidgetCloseVFX_Diffusion;
 	addVFX(inWidget,VFX);
+	QTimer::singleShot(100, [inWidget]() {
+		inWidget->close();
+	});
+
 }
 
 QWidgetVFXManager::QWidgetVFXManager()
-	: mRenderer(new QWidgetVFXRenderer)
+	: mRhiParams(QRhiHelper::InitParams({ QRhi::Vulkan ,QRhi::Flag(),QRhiSwapChain::NoVSync | QRhiSwapChain::SurfaceHasNonPreMulAlpha }))
+	, mRenderer(new QWidgetVFXRenderer(mRhiParams))
 {
-	QPushButton* bt = new QPushButton("SSS");
+	QPushButton* bt = new QPushButton("A");
+	bt->setWindowFlag(Qt::FramelessWindowHint);
+	bt->move(500, 300);
 	bt->setMinimumSize(400, 400);
 	bt->show();
 	connect(bt, &QPushButton::clicked, this, [bt, this]() {
 		playWidgetCloseVFX(bt);
 	});
 
-	bt = new QPushButton("SSS");
+	bt = new QPushButton("B");
+	bt->setWindowFlag(Qt::FramelessWindowHint);
+	bt->move(500, 800);
 	bt->setMinimumSize(400, 400);
 	bt->show();
 	connect(bt, &QPushButton::clicked, this, [bt, this]() {
 		playWidgetCloseVFX(bt);
 	});
 
-	bt = new QPushButton("SSS");
+	bt = new QPushButton("C");
+	bt->setWindowFlag(Qt::FramelessWindowHint);
+	bt->move(1000, 300);
 	bt->setMinimumSize(400, 400);
 	bt->show();
 	connect(bt, &QPushButton::clicked, this, [bt, this]() {
 		playWidgetCloseVFX(bt);
 	});
 
-	bt = new QPushButton("SSS");
+	bt = new QPushButton("D");
+	bt->setWindowFlag(Qt::FramelessWindowHint);
+	bt->move(1000, 800);
 	bt->setMinimumSize(400, 400);
 	bt->show();
 	connect(bt, &QPushButton::clicked, this, [bt, this]() {
 		playWidgetCloseVFX(bt);
 	});
 
-	mViewport = QWidget::createWindowContainer(mRenderer->maybeWindow());
+	QImage image(800, 800, QImage::Format_RGBA8888);
+	QPainter painter(&image);
+	painter.fillRect(QRect(0, 0, 600, 800), Qt::red);
+	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+	painter.fillRect(QRect(400, 0, 400, 800), Qt::blue);
+	painter.end();
+	image.save("aaaaaaaaaaaaaa.png");
+
+	mViewport = QRhiTransparencyWindowContainter::create(mRenderer->maybeWindow(),mRhiParams.backend);
+	mViewport->setAttribute(Qt::WA_TransparentForMouseEvents);
 	mViewport->setWindowFlags(Qt::FramelessWindowHint| Qt::WindowStaysOnTopHint);
 	mViewport->setAttribute(Qt::WA_TranslucentBackground);
 	mViewport->setAttribute(Qt::WA_Mapped);
 	mViewport->show();
-	//connect(mRenderer, &QWidgetVFXRenderer::asEmptied, mViewport, &QWidget::hide);
+	mViewport->setGeometry(QRect(0,0,1,1));
+	connect(mRenderer, &QWidgetVFXRenderer::asEmptied, mViewport, &QWidget::hide);
 }
 
 void QWidgetVFXManager::addVFX(QWidget* inWidget, IWidgetVFX* inVFX)
@@ -143,11 +87,9 @@ void QWidgetVFXManager::addVFX(QWidget* inWidget, IWidgetVFX* inVFX)
 	QRect playArea = inVFX->assessWidget(inWidget);
 	inVFX->mCachedPlayArea = playArea;
 	if (mViewport->isHidden()) {
-		mViewport->resize(1, 1);
-		mViewport->setParent(nullptr);
 		mViewport->show();
+		mRenderer->resetTimer();
 	}
-	mRenderer->maybeWindow()->requestUpdate();
 	mViewport->setGeometry(playArea);
 	mRenderer->addVFX(inVFX);
 }
