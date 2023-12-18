@@ -23,6 +23,7 @@ protected:
 	void waitReady();
 private:
 	void showEvent(QShowEvent * e) override;
+	void hideEvent(QHideEvent * event) override;
 	void closeEvent(QCloseEvent * e) override;
 	void paintEvent(QPaintEvent * e) override;
 private Q_SLOTS:

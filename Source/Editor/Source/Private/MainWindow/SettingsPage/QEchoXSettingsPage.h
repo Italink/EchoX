@@ -7,6 +7,7 @@
 #include <QStackedWidget>
 #include <QMap>
 #include "DetailView/QDetailView.h"
+#include "QEchoXSettingsOutliner.h"
 
 class IEchoXSettings;
 
@@ -14,11 +15,10 @@ class QEchoXSettingsPage : public QWidget {
 	Q_OBJECT
 public:
 	QEchoXSettingsPage();
-	void refreshSettings();
-	void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+	void onSettingsSelected(IEchoXSettings* settings);
 private:
 	QSplitter* mSplitter;
-	QTreeWidget* mSettingsOutliner;
+	QEchoXSettingsOutliner* mSettingsOutliner;
 	QWidget* mSettingsViewBox;
 };
 

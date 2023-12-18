@@ -9,7 +9,7 @@ QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()
 			vec2 uv;
 			float age;
 		};
-		layout(std140,binding = 0) buffer ParticleBuffer{
+		layout(std140, binding = 0) buffer ParticleBuffer{
 			Particle Particles[];
 		};
 		layout (binding = 1) uniform UniformBlock{
@@ -97,7 +97,7 @@ QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()
 
 QRect QWidgetCloseVFX_Diffusion::assessWidget(QWidget* widget)
 {
-	return IWidgetCloseVFX::assessWidget(widget).adjusted(-500, -500, 500, 500);
+	return IWidgetCloseVFX::assessWidget(widget)/*.adjusted(-500, -500, 500, 500)*/;
 }
 
 float QWidgetCloseVFX_Diffusion::getPlayDurationSec() const
@@ -181,8 +181,6 @@ void QWidgetCloseVFX_Diffusion::preSetup(float timeSec, QRenderGraphBuilder& bui
 		ctx.imageSize = QVector2D(mCahcedWidgetImage.width(), mCahcedWidgetImage.height());
 		ctx.process = timeSec / getPlayDurationSec();
 		ctx.deltaSec = builder.getDeltaSec();
-		//qDebug() << "process" << ctx.process;
-		//qDebug() << "deltaSec" << builder.getDeltaSec();
 		batch->updateDynamicBuffer(mUniformBuffer.get(), 0, sizeof(UpdateContextBuffer), &ctx);
 		cmdBuffer->resourceUpdate(batch);
 

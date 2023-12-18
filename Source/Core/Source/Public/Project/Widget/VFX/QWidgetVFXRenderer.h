@@ -19,7 +19,7 @@ private:
 private:
 	struct VFXState {
 		QRhiViewport viewport;
-		float process = 0.0f;
+		float playtimeSec = 0.0f;
 		bool bPending = true;
 	};
 	QRect mPlayGeomtry;

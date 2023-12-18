@@ -43,13 +43,12 @@ void QEchoXStyleSettings::refreshDetailViewStyle()
 	if (mThemeColor.valueF() < 0.6) {
 		inlineFontColor = QColor(255, 255, 255);
 	}
-
 	mDetailViewPalette.mShadowColor = QColor(200, 200, 200);
 	mDetailViewPalette.mGridLineColor = QColor(240, 240, 240);
 	mDetailViewPalette.mCategoryColor = QColor(250, 250, 250, 100);
 	mDetailViewPalette.mHoveredColor = mThemeColor.lighter(100);
 	mDetailViewPalette.mHoveredColor.setAlpha(150);
-	mDetailViewPalette.mSelectedColor = mThemeColor.lighter(150);
+	mDetailViewPalette.mSelectedColor = mThemeColor.lighter(100);
 	mDetailViewPalette.mSelectedColor.setAlpha(200);
 	mDetailViewPalette.mArrowColor = mThemeColor;
 	mDetailViewPalette.mIconColor = mThemeColor;

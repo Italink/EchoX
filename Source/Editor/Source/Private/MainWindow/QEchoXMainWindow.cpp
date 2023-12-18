@@ -95,7 +95,13 @@ void QEchoXMainWindow::waitReady()
 
 void QEchoXMainWindow::showEvent(QShowEvent* e)
 {
-	QWindow3DEditor::Instance()->show();
+	//QWindow3DEditor::Instance()->show();
+	activateWindow();
+}
+
+void QEchoXMainWindow::hideEvent(QHideEvent* event)
+{
+	QWindow3DEditor::Instance()->hide();
 }
 
 void QEchoXMainWindow::closeEvent(QCloseEvent* e)

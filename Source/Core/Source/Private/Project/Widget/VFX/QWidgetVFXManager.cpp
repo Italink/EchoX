@@ -26,53 +26,9 @@ QWidgetVFXManager::QWidgetVFXManager()
 	: mRhiParams(QRhiHelper::InitParams({ QRhi::Vulkan ,QRhi::Flag(),QRhiSwapChain::NoVSync | QRhiSwapChain::SurfaceHasNonPreMulAlpha }))
 	, mRenderer(new QWidgetVFXRenderer(mRhiParams))
 {
-	QPushButton* bt = new QPushButton("A");
-	bt->setWindowFlag(Qt::FramelessWindowHint);
-	bt->move(500, 300);
-	bt->setMinimumSize(400, 400);
-	bt->show();
-	connect(bt, &QPushButton::clicked, this, [bt, this]() {
-		playWidgetCloseVFX(bt);
-	});
-
-	bt = new QPushButton("B");
-	bt->setWindowFlag(Qt::FramelessWindowHint);
-	bt->move(500, 800);
-	bt->setMinimumSize(400, 400);
-	bt->show();
-	connect(bt, &QPushButton::clicked, this, [bt, this]() {
-		playWidgetCloseVFX(bt);
-	});
-
-	bt = new QPushButton("C");
-	bt->setWindowFlag(Qt::FramelessWindowHint);
-	bt->move(1000, 300);
-	bt->setMinimumSize(400, 400);
-	bt->show();
-	connect(bt, &QPushButton::clicked, this, [bt, this]() {
-		playWidgetCloseVFX(bt);
-	});
-
-	bt = new QPushButton("D");
-	bt->setWindowFlag(Qt::FramelessWindowHint);
-	bt->move(1000, 800);
-	bt->setMinimumSize(400, 400);
-	bt->show();
-	connect(bt, &QPushButton::clicked, this, [bt, this]() {
-		playWidgetCloseVFX(bt);
-	});
-
-	QImage image(800, 800, QImage::Format_RGBA8888);
-	QPainter painter(&image);
-	painter.fillRect(QRect(0, 0, 600, 800), Qt::red);
-	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
-	painter.fillRect(QRect(400, 0, 400, 800), Qt::blue);
-	painter.end();
-	image.save("aaaaaaaaaaaaaa.png");
-
 	mViewport = QRhiTransparencyWindowContainter::create(mRenderer->maybeWindow(),mRhiParams.backend);
 	mViewport->setAttribute(Qt::WA_TransparentForMouseEvents);
-	mViewport->setWindowFlags(Qt::FramelessWindowHint| Qt::WindowStaysOnTopHint);
+	mViewport->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
 	mViewport->setAttribute(Qt::WA_TranslucentBackground);
 	mViewport->setAttribute(Qt::WA_Mapped);
 	mViewport->show();
