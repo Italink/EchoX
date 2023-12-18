@@ -36,7 +36,9 @@ public:
 	QWidgetCloseVFX_Diffusion();
 	QRect assessWidget(QWidget* widget) override;
 	float getPlayDurationSec() const  override;
-	void play(float timeSec, QRenderGraphBuilder& builder) override;
+
+	void preSetup(float timeSec, QRenderGraphBuilder& builder) override;
+	void render(float timeSec, const QRhiViewport& viewport, QRhiCommandBuffer* cmdBuffer) override;
 };
 
 #endif // QWdigetCloseVFX_Diffusion_h__

@@ -9,14 +9,21 @@ class ECHOXCORE_API QWidgetVFXRenderer : public IRenderer {
 	Q_OBJECT
 public:
 	QWidgetVFXRenderer(QRhiHelper::InitParams params);
-	void addVFX(IWidgetVFX* inVFX);
+	QRect addVFX(QWidget* inWidget, IWidgetVFX* inVFX);
 Q_SIGNALS:
 	void asEmptied();
 private:
 	void setupGraph(QRenderGraphBuilder& graphBuilder) override;
 	void endFrame() override;
+	void updateViewport();
 private:
-	QMap<IWidgetVFX*, float> mVFXMap;
+	struct VFXState {
+		QRhiViewport viewport;
+		float process = 0.0f;
+		bool bPending = true;
+	};
+	QRect mPlayGeomtry;
+	QMap<IWidgetVFX*, VFXState> mVFXMap;
 	QList<IWidgetVFX*> mOutdatedVFXList;
 };
 

@@ -18,9 +18,7 @@ void QWidgetVFXManager::playWidgetCloseVFX(QWidget* inWidget)
 {
 	QWidgetCloseVFX_Diffusion* VFX = new QWidgetCloseVFX_Diffusion;
 	addVFX(inWidget,VFX);
-	QTimer::singleShot(100, [inWidget]() {
-		inWidget->close();
-	});
+	QObject::connect(VFX, &IWidgetVFX::asStarted, inWidget, &QWidget::close);
 
 }
 
@@ -84,13 +82,12 @@ QWidgetVFXManager::QWidgetVFXManager()
 
 void QWidgetVFXManager::addVFX(QWidget* inWidget, IWidgetVFX* inVFX)
 {
-	QRect playArea = inVFX->assessWidget(inWidget);
-	inVFX->mCachedPlayArea = playArea;
+	QRect playGemotry = mRenderer->addVFX(inWidget, inVFX);
 	if (mViewport->isHidden()) {
 		mViewport->show();
 		mRenderer->resetTimer();
 	}
-	mViewport->setGeometry(playArea);
-	mRenderer->addVFX(inVFX);
+	mViewport->setGeometry(playGemotry);
+	
 }
 

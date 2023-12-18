@@ -51,7 +51,7 @@ QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()
 		}
 		void main() {
 			CurrParticle.position = CurrParticle.position + CurrParticle.velocity * UBO.deltaSec;
-			float realProcess = UBO.process / 0.7;
+			float realProcess = UBO.process / 0.6;
 			vec2 randomVelocity = CurrParticle.uv.x - CurrParticle.uv.y > 1 - realProcess* 2 ? vec2(rand(CurrParticle.uv,0.0,0.0001),rand(CurrParticle.uv * UBO.deltaSec * 63.4165  ,-0.003,0.01)) + rand(CurrParticle.uv,0.0,0.001)* sin( CurrParticle.uv.y/CurrParticle.uv.x * 10)   : vec2(0);
 			CurrParticle.velocity = CurrParticle.velocity + randomVelocity;
 			CurrParticle.age = CurrParticle.age + (CurrParticle.uv.x - CurrParticle.uv.y > 1 - realProcess * 2 ? UBO.deltaSec : 0 );
@@ -71,7 +71,7 @@ QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()
 		};
 		void main() {
 			vUV = inUV;
-			const float lifetime = 1;
+			const float lifetime = 0.4;
 			vAlpha =   clamp(lifetime - inAge,0,1)/lifetime;
 			gl_Position = vec4(inPosition,0,1);
 			gl_PointSize = 1;
@@ -97,15 +97,15 @@ QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()
 
 QRect QWidgetCloseVFX_Diffusion::assessWidget(QWidget* widget)
 {
-	return IWidgetCloseVFX::assessWidget(widget).adjusted(-500,-500, 500, 500);
+	return IWidgetCloseVFX::assessWidget(widget).adjusted(-500, -500, 500, 500);
 }
 
 float QWidgetCloseVFX_Diffusion::getPlayDurationSec() const
 {
-	return 5;
+	return 1.5;
 }
 
-void QWidgetCloseVFX_Diffusion::play(float timeSec, QRenderGraphBuilder& builder)
+void QWidgetCloseVFX_Diffusion::preSetup(float timeSec, QRenderGraphBuilder& builder)
 {
 	builder.setupBuffer(mVertexBuffer, "Vertex", QRhiBuffer::Immutable, QRhiBuffer::VertexBuffer | QRhiBuffer::StorageBuffer, mCahcedWidgetImage.width() * mCahcedWidgetImage.height() * sizeof(Vertex));
 	builder.setupBuffer(mUniformBuffer, "WidgetAlpha", QRhiBuffer::Dynamic, QRhiBuffer::UniformBuffer, sizeof(UpdateContextBuffer));
@@ -121,7 +121,7 @@ void QWidgetCloseVFX_Diffusion::play(float timeSec, QRenderGraphBuilder& builder
 	builder.setupShaderResourceBindings(mInitBindings, "InitBindings", {
 		QRhiShaderResourceBinding::bufferLoadStore(0, QRhiShaderResourceBinding::ComputeStage, mVertexBuffer.get()),
 		QRhiShaderResourceBinding::uniformBuffer(1,QRhiShaderResourceBinding::ComputeStage,mUniformBuffer.get())
-	});
+		});
 	QRhiComputePipelineState CPSO;
 	CPSO.shaderResourceBindings = mInitBindings.get();
 	CPSO.shaderStage = { QRhiShaderStage::Compute, mDiffusionInitCS };
@@ -142,9 +142,16 @@ void QWidgetCloseVFX_Diffusion::play(float timeSec, QRenderGraphBuilder& builder
 	});
 
 	QRhiGraphicsPipelineState PSO;
+	PSO.depthTest = false;
 	PSO.topology = QRhiGraphicsPipeline::Points;
 	QRhiGraphicsPipeline::TargetBlend blendState;
 	blendState.enable = true;
+	blendState.opColor = QRhiGraphicsPipeline::Add;
+	blendState.srcColor = QRhiGraphicsPipeline::One;
+	blendState.dstColor = QRhiGraphicsPipeline::One;
+	blendState.opAlpha = QRhiGraphicsPipeline::Add;
+	blendState.srcAlpha = QRhiGraphicsPipeline::One;
+	blendState.dstAlpha = QRhiGraphicsPipeline::One;
 	PSO.targetBlends = { blendState };
 	PSO.sampleCount = builder.getMainRenderTarget()->sampleCount();
 	PSO.shaderResourceBindings = mRenderBindings.get();
@@ -159,7 +166,7 @@ void QWidgetCloseVFX_Diffusion::play(float timeSec, QRenderGraphBuilder& builder
 		QRhiVertexInputAttribute{ 0, 1, QRhiVertexInputAttribute::Float2, offsetof(Vertex, velocity) },
 		QRhiVertexInputAttribute{ 0, 2, QRhiVertexInputAttribute::Float2, offsetof(Vertex, uv) },
 		QRhiVertexInputAttribute{ 0, 3, QRhiVertexInputAttribute::Float, offsetof(Vertex, age) },
-	});
+		});
 	builder.setupGraphicsPipeline(mRenderPipeline, "WidgetDiffusionPipeline", PSO);
 	builder.addPass([this, &builder, timeSec](QRhiCommandBuffer* cmdBuffer) {
 		QRhi* rhi = cmdBuffer->rhi();
@@ -192,14 +199,15 @@ void QWidgetCloseVFX_Diffusion::play(float timeSec, QRenderGraphBuilder& builder
 		cmdBuffer->setShaderResources(mUpdateBindings.get());
 		cmdBuffer->dispatch(mCahcedWidgetImage.width(), mCahcedWidgetImage.height(), 1);
 		cmdBuffer->endComputePass();
-
-		cmdBuffer->beginPass(builder.getMainRenderTarget(), QColor::fromRgbF(0.0f, 0.0f, 0.0f, 0.0f), { 1.0f, 0 });
-		cmdBuffer->setGraphicsPipeline(mRenderPipeline.get());
-		cmdBuffer->setViewport(QRhiViewport(0, 0, builder.getMainRenderTarget()->pixelSize().width(), builder.getMainRenderTarget()->pixelSize().height()));
-		cmdBuffer->setShaderResources(mRenderBindings.get());
-		const QRhiCommandBuffer::VertexInput VertexInput(mVertexBuffer.get(), 0);
-		cmdBuffer->setVertexInput(0, 1, &VertexInput);
-		cmdBuffer->draw(mCahcedWidgetImage.width() * mCahcedWidgetImage.height());
-		cmdBuffer->endPass();
 	});
+}
+
+void QWidgetCloseVFX_Diffusion::render(float timeSec, const QRhiViewport& viewport, QRhiCommandBuffer* cmdBuffer)
+{
+	cmdBuffer->setGraphicsPipeline(mRenderPipeline.get());
+	cmdBuffer->setViewport(viewport);
+	cmdBuffer->setShaderResources(mRenderBindings.get());
+	const QRhiCommandBuffer::VertexInput VertexInput(mVertexBuffer.get(), 0);
+	cmdBuffer->setVertexInput(0, 1, &VertexInput);
+	cmdBuffer->draw(mCahcedWidgetImage.width() * mCahcedWidgetImage.height());
 }

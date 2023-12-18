@@ -15,7 +15,8 @@ Q_SIGNALS:
 	void asFinished();
 protected:
 	virtual QRect assessWidget(QWidget* widget);
-	virtual void play(float timeSec, QRenderGraphBuilder& graphBuilder) = 0;
+	virtual void preSetup(float timeSec, QRenderGraphBuilder& builder) = 0;
+	virtual void render(float timeSec, const QRhiViewport& viewport, QRhiCommandBuffer* cmdBuffer) = 0;
 protected:
 	friend class QWidgetVFXRenderer;
 	friend class QWidgetVFXManager;
