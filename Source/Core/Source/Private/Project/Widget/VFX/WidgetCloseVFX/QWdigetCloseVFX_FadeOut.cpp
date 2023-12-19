@@ -1,4 +1,5 @@
 #include "QWdigetCloseVFX_FadeOut.h"
+#include "Object/QEngineObjectManager.h"
 
 QWdigetCloseVFX_FadeOut::QWdigetCloseVFX_FadeOut()
 {
@@ -72,3 +73,4 @@ void QWdigetCloseVFX_FadeOut::render(float timeSec, const QRhiViewport& viewport
 	cmdBuffer->draw(4);
 }
 
+QENGINE_REGISTER_CLASS(QWdigetCloseVFX_FadeOut)

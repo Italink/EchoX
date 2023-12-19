@@ -7,6 +7,7 @@
 #include "tracy/Tracy.hpp"
 #include "WidgetCloseVFX/QWdigetCloseVFX_Diffusion.h"
 #include <QTimer>
+#include "QWidgetVFXSettings.h"
 
 QWidgetVFXManager& QWidgetVFXManager::Get()
 {
@@ -19,13 +20,14 @@ void QWidgetVFXManager::playWidgetCloseVFX(QWidget* inWidget)
 	QWidgetCloseVFX_Diffusion* VFX = new QWidgetCloseVFX_Diffusion;
 	addVFX(inWidget,VFX);
 	QObject::connect(VFX, &IWidgetVFX::asStarted, inWidget, &QWidget::close);
-
 }
 
 QWidgetVFXManager::QWidgetVFXManager()
 	: mRhiParams(QRhiHelper::InitParams({ QRhi::Vulkan ,QRhi::Flag(),QRhiSwapChain::NoVSync | QRhiSwapChain::SurfaceHasNonPreMulAlpha }))
 	, mRenderer(new QWidgetVFXRenderer(mRhiParams))
 {
+	QWidgetVFXSettings::Register();
+
 	mViewport = QRhiTransparencyWindowContainter::create(mRenderer->maybeWindow(),mRhiParams.backend);
 	mViewport->setAttribute(Qt::WA_TransparentForMouseEvents);
 	mViewport->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
@@ -44,6 +46,5 @@ void QWidgetVFXManager::addVFX(QWidget* inWidget, IWidgetVFX* inVFX)
 		mRenderer->resetTimer();
 	}
 	mViewport->setGeometry(playGemotry);
-	
 }
 

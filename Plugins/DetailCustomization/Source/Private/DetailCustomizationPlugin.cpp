@@ -1,8 +1,8 @@
 #include "DetailCustomizationPlugin.h"
-#include <QDebug>
 #include "Asset/QStaticMesh.h"
 #include "DetailCustomization_QGlslSandboxRenderPass.h"
 #include "DetailCustomization_QMediaPlayer.h"
+#include "DetailCustomization_QObject.h"
 #include "DetailCustomization_QRhiMaterialGroup.h"
 #include "DetailCustomization_QRhiUniformBlock.h"
 #include "DetailView/QDetailViewManager.h"
@@ -10,20 +10,21 @@
 #include "PropertyTypeCustomization_QQuadF.h"
 #include "PropertyTypeCustomization_QStaticMesh.h"
 #include "PropertyTypeCustomization_TextureInfo.h"
+#include "QColor4DButton.hpp"
 #include "QMediaPlayer"
 #include "Render/QPrimitiveRenderProxy.h"
 #include "Render/RHI/QRhiMaterialGroup.h"
 #include "Render/RHI/QRhiUniformBlock.h"
-#include "QColor4DButton.hpp"
+#include <QDebug>
 
 void DetailCustomizationPlugin::startup() {
 	qDebug() << "DetailCustomizationPlugin::startup";
 	QDetailViewManager* mgr = QDetailViewManager::Instance();
+	mgr->registerCustomClassLayout<DetailCustomization_QObject>(&QObject::staticMetaObject);
 	mgr->registerCustomClassLayout<DetailCustomization_QRhiUniformBlock>(&QRhiUniformBlock::staticMetaObject);
 	mgr->registerCustomClassLayout<DetailCustomization_QRhiMaterialGroup>(&QRhiMaterialGroup::staticMetaObject);
 	//mgr->registerCustomClassLayout<DetailCustomization_QGlslSandboxRenderPass>(&QGlslSandboxRenderPass::staticMetaObject);
 	mgr->registerCustomClassLayout<DetailCustomization_QMediaPlayer>(&QMediaPlayer::staticMetaObject);
-
 	mgr->registerCustomPropertyTypeLayout<QRhiTextureDesc*, PropertyTypeCustomization_TextureInfo>();
 	mgr->registerCustomPropertyTypeLayout<QSharedPointer<QStaticMesh>, PropertyTypeCustomization_QStaticMesh>();
 	mgr->registerCustomPropertyTypeLayout<QMatrix4x4, PropertyTypeCustomization_QMatrix4x4>();
@@ -52,6 +53,7 @@ void DetailCustomizationPlugin::startup() {
 void DetailCustomizationPlugin::shutdown() {
 	qDebug() << "DetailCustomizationPlugin::shutdown";
 	QDetailViewManager* mgr = QDetailViewManager::Instance();
+	mgr->unregisterCustomClassLayout(&QObject::staticMetaObject);
 	mgr->unregisterCustomClassLayout(&QRhiUniformBlock::staticMetaObject);
 	mgr->unregisterCustomClassLayout(&QRhiMaterialGroup::staticMetaObject);
 	//mgr->unregisterCustomClassLayout(&QGlslSandboxRenderPass::staticMetaObject);

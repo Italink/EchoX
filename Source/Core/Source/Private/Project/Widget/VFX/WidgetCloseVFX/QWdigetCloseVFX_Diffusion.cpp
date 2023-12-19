@@ -1,4 +1,5 @@
 #include "QWdigetCloseVFX_Diffusion.h"
+#include "Object/QEngineObjectManager.h"
 
 QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()
 {
@@ -209,3 +210,5 @@ void QWidgetCloseVFX_Diffusion::render(float timeSec, const QRhiViewport& viewpo
 	cmdBuffer->setVertexInput(0, 1, &VertexInput);
 	cmdBuffer->draw(mCahcedWidgetImage.width() * mCahcedWidgetImage.height());
 }
+
+QENGINE_REGISTER_CLASS(QWidgetCloseVFX_Diffusion)

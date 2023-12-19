@@ -40,6 +40,7 @@ public:
         return view; 
     }
     virtual QString category() const { return "QEchoX"; }
+    virtual bool visible() const { return true; }
 
     QString getName();
     QFile getSettingsFile();

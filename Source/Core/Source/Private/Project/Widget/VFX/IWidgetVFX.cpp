@@ -1,4 +1,5 @@
 #include "IWidgetVFX.h"
+#include "Object/QEngineObjectManager.h"
 
 QRect IWidgetVFX::assessWidget(QWidget* widget)
 {
@@ -21,3 +22,5 @@ QImage IWidgetCloseVFX::getCahceWidgetImage() const
 {
 	return mCahcedWidgetImage;
 }
+
+QENGINE_REGISTER_CLASS(IWidgetCloseVFX)
