@@ -4,6 +4,7 @@
 #include "IWidgetVFX.h"
 
 class QWidgetCloseVFX_Diffusion : public IWidgetCloseVFX {
+	Q_OBJECT
 public:
 	QShader mDiffusionInitCS;
 	QShader mDiffusionUpdateCS;

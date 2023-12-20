@@ -9,10 +9,7 @@ class ECHOXCORE_API QWidgetVFXSettings : public IEchoXSettings {
 	Q_OBJECT
 public:
 	ECHOX_DECLARE_SETTINGS(QWidgetVFXSettings, WidgetVFX)
-	ECHOX_CONF_VAR(QColor, ThemeColor) = QColor(112, 115, 222);
-	ECHOX_CONF_VAR(float, ShadowWidth) = 5;
 	ECHOX_CONF_VAR(QSharedPointer<IWidgetCloseVFX>, CloseWidgetVFX);
-
 	Q_CLASSINFO("CloseWidgetVFX","Instanced")
 };
 

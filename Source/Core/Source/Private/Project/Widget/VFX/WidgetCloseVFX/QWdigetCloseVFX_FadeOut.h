@@ -2,8 +2,12 @@
 #define QWdigetCloseVFX_FadeOut_h__
 
 #include "IWidgetVFX.h"
+#include "Settings/IEchoXSettings.h"
 
 class QWdigetCloseVFX_FadeOut : public IWidgetCloseVFX {
+	Q_OBJECT
+	ECHOX_CONF_VAR(int, a) = 1;
+	ECHOX_CONF_VAR(int, b) = 1;
 public:
 	QShader mFadeOutFS;
 	QRhiBufferRef mUniformBuffer;

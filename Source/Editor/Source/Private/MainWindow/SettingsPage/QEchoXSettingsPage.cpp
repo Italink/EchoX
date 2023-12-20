@@ -20,15 +20,18 @@ QEchoXSettingsPage::QEchoXSettingsPage()
 
 void QEchoXSettingsPage::onSettingsSelected(IEchoXSettings* settings)
 {
-	if (settings) {
-		while (QLayoutItem* item = mSettingsViewBox->layout()->takeAt(0)) {
-			if (QWidget* widget = item->widget())
-				widget->deleteLater();
-			delete item;
+	while (QLayoutItem* item = mSettingsViewBox->layout()->takeAt(0)) {
+		if (QWidget* widget = item->widget()) {
+			widget->close();
+			widget->setParent(nullptr);
+			widget->deleteLater();
 		}
+		delete item;
+	}
+	if (settings) {
 		QWidget* view = settings->createWidget();
+		view->setAttribute(Qt::WA_DeleteOnClose);
 		connect(view, &QObject::destroyed, settings, &IEchoXSettings::save);
 		mSettingsViewBox->layout()->addWidget(view);
-		return;
 	}
 }

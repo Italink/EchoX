@@ -52,8 +52,10 @@ QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()
 		}
 		void main() {
 			CurrParticle.position = CurrParticle.position + CurrParticle.velocity * UBO.deltaSec;
-			float realProcess = UBO.process / 0.6;
-			vec2 randomVelocity = CurrParticle.uv.x - CurrParticle.uv.y > 1 - realProcess* 2 ? vec2(rand(CurrParticle.uv,0.0,0.0001),rand(CurrParticle.uv * UBO.deltaSec * 63.4165  ,-0.003,0.01)) + rand(CurrParticle.uv,0.0,0.001)* sin( CurrParticle.uv.y/CurrParticle.uv.x * 10)   : vec2(0);
+			float radius = CurrParticle.uv.x * CurrParticle.uv.x + CurrParticle.uv.y * CurrParticle.uv.y;
+			float realProcess = UBO.process / 0.6 + sin( radius * 20 + UBO.process*10 ) * 0.01;
+			
+			vec2 randomVelocity = CurrParticle.uv.x - CurrParticle.uv.y > 1 - realProcess * 2 ? vec2(rand(CurrParticle.uv,0.0,0.0001),rand(CurrParticle.uv * UBO.deltaSec * 63.4165  ,-0.003,0.01)) + rand(CurrParticle.uv,0.0,0.001)* sin( radius * 10)   : vec2(0);
 			CurrParticle.velocity = CurrParticle.velocity + randomVelocity;
 			CurrParticle.age = CurrParticle.age + (CurrParticle.uv.x - CurrParticle.uv.y > 1 - realProcess * 2 ? UBO.deltaSec : 0 );
 		}
@@ -103,7 +105,7 @@ QRect QWidgetCloseVFX_Diffusion::assessWidget(QWidget* widget)
 
 float QWidgetCloseVFX_Diffusion::getPlayDurationSec() const
 {
-	return 1.5;
+	return 2;
 }
 
 void QWidgetCloseVFX_Diffusion::preSetup(float timeSec, QRenderGraphBuilder& builder)

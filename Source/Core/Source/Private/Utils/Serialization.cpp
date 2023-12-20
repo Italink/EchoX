@@ -7,6 +7,7 @@
 #include <QImage>
 #include <QPixmap>
 #include "LoggingCategory.h"
+#include "DetailView/QPropertyHandle.h"
 
 template<typename From, typename To>
 void registerType(std::function<To(const From&)> convertor) {
@@ -109,8 +110,6 @@ void Serialization::registerBuiltinType()
 		}
 		return vec;
 	});
-
-
 }
 
 QCborValue Serialization::toCborValue(const QVariant& var)
@@ -147,13 +146,13 @@ QCborValue Serialization::toCborValue(const QVariant& var)
 		return QCborValue(var.toInt());
 	}
 	else {
-		QRegularExpression reg("(QSharedPointer|std::shared_ptr|shared_ptr)\\<(.+)\\>");
+		QRegularExpression reg("QSharedPointer\\<(.+)\\>");
 		QRegularExpressionMatch match = reg.match(metaType.name(), 0, QRegularExpression::MatchType::PartialPreferCompleteMatch, QRegularExpression::AnchorAtOffsetMatchOption);
 		QStringList matchTexts = match.capturedTexts();
 		QMetaType innerMetaType;
 		const QMetaObject* metaObject = nullptr;
 		if (!matchTexts.isEmpty()) {
-			QString innerMetaTypeName = matchTexts.back() + "*";
+			QString innerMetaTypeName = matchTexts.back();
 			innerMetaType = QMetaType::fromName(innerMetaTypeName.toLocal8Bit());
 			if (!innerMetaType.isValid()) {
 				innerMetaType = QMetaType::fromName(matchTexts.back().toLocal8Bit());
@@ -162,6 +161,12 @@ QCborValue Serialization::toCborValue(const QVariant& var)
 				qWarning() << "please use qRegisterMetaType() for " << innerMetaTypeName;
 			}
 			metaObject = innerMetaType.metaObject();
+			if (metaObject && metaObject->inherits(&QObject::staticMetaObject)) {
+				QObject* objectPtr = *(QObject**)var.data();
+				if (objectPtr) {
+					metaObject = objectPtr->metaObject();
+				}
+			}
 		}
 		else {
 			metaObject = metaType.metaObject();
@@ -175,7 +180,7 @@ QCborValue Serialization::toCborValue(const QVariant& var)
 		if (metaObject) {
 			QCborMap object;
 			if (metaObject != metaType.metaObject()) {
-				object.insert(QString("OverrideMetaTypeName"), QString(metaObject->metaType().name()));
+				object.insert(QString("MetaTypeName"), QString(metaObject->metaType().name()));
 			}
 			for (int i = 0; i < metaObject->propertyCount(); i++) {
 				QMetaProperty prop = metaObject->property(i);
@@ -214,31 +219,6 @@ QCborMap Serialization::toCbor(QObject* object)
 {
 	return toCborValue(QVariant::fromValue(object)).toMap();
 }
-
-struct ExternalRefCountWithMetaType : public QtSharedPointer::ExternalRefCountData {
-	typedef ExternalRefCountData Parent;
-	QMetaType mMetaType;
-	void* mData;
-
-	static void deleter(ExternalRefCountData* self) {
-		ExternalRefCountWithMetaType* that =
-			static_cast<ExternalRefCountWithMetaType*>(self);
-		that->mMetaType.destroy(that->mData);
-		Q_UNUSED(that); // MSVC warns if T has a trivial destructor
-	}
-
-	static inline ExternalRefCountData* create(QMetaType inMetaType, void* inPtr)
-	{
-		ExternalRefCountWithMetaType* d = static_cast<ExternalRefCountWithMetaType*>(::operator new(sizeof(ExternalRefCountWithMetaType)));
-
-		// initialize the d-pointer sub-object
-		// leave d->data uninitialized
-		new (d) Parent(ExternalRefCountWithMetaType::deleter); // can't throw
-		d->mData = inPtr;
-		d->mMetaType = inMetaType;
-		return d;
-	}
-};
 
 QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 	if (QMetaType::canConvert(QMetaType::fromType<QCborValue>(), metaType)) {
@@ -289,21 +269,33 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 		QCborMap object = value.toMap();
 		const QMetaObject* metaObject = nullptr;
 		QVariant newObject;
-		QRegularExpression reg("(QSharedPointer|std::shared_ptr|shared_ptr)\\<(.+)\\>");
+		QRegularExpression reg("QSharedPointer\\<(.+)\\>");
 		QRegularExpressionMatch match = reg.match(metaType.name());
 		QStringList matchTexts = match.capturedTexts();
 		bool bIsSharedPointer = false;
 		bool bIsPointer = false;
 		if (!matchTexts.isEmpty()) {
 			QMetaType innerMetaType = QMetaType::fromName((matchTexts.back()).toLocal8Bit());
+			QMetaType realMetaType = innerMetaType;
 			metaObject = innerMetaType.metaObject();
+			if (object.contains(QString("MetaTypeName"))) {
+				QString metaTypeName = object.value(QString("MetaTypeName")).toString();
+				QMetaType overrideMetaType = QMetaType::fromName(metaTypeName.toLocal8Bit());
+				if (overrideMetaType.isRegistered() && overrideMetaType.metaObject()) {
+					metaObject = overrideMetaType.metaObject();
+					realMetaType = overrideMetaType;
+				}
+				else {
+					qCWarning(EchoX) << "override meta type is invalid";
+				}
+			}
 			bIsSharedPointer = true;
 			bIsPointer = true;
-			if (innerMetaType.isValid()) {
-				void* ptr = innerMetaType.create();
+			if (realMetaType.isValid()) {
+				void* ptr = realMetaType.create();
 				QVariant sharedPtr(metaType);
 				memcpy(sharedPtr.data(), &ptr, sizeof(ptr));
-				QtSharedPointer::ExternalRefCountData* data = ExternalRefCountWithMetaType::create(innerMetaType, ptr);
+				QtSharedPointer::ExternalRefCountData* data = ExternalRefCountWithMetaType::create(realMetaType, ptr);
 				memcpy((char*)sharedPtr.data() + sizeof(ptr), &data, sizeof(data));
 				newObject = sharedPtr;
 			}
@@ -311,9 +303,9 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 		else {
 			metaObject = metaType.metaObject();
 			bIsPointer = metaType.flags().testFlag(QMetaType::IsPointer);
-			if (object.contains(QString("OverrideMetaTypeName"))) {
-				QString overrideMetaTypeName = object.value(QString("OverrideMetaTypeName")).toString();
-				QMetaType overrideMetaType = QMetaType::fromName(overrideMetaTypeName.toLocal8Bit());
+			if (object.contains(QString("MetaTypeName"))) {
+				QString MetaTypeName = object.value(QString("MetaTypeName")).toString();
+				QMetaType overrideMetaType = QMetaType::fromName(MetaTypeName.toLocal8Bit());
 				if (overrideMetaType.isRegistered() && overrideMetaType.metaObject()) {
 					metaObject = overrideMetaType.metaObject();
 				}
@@ -321,7 +313,6 @@ QVariant fromCborValue(const QCborValue& value, QMetaType metaType) {
 					qCWarning(EchoX) << "override meta type is invalid";
 				}
 			}
-
 			if (metaObject) {
 				if (metaObject->inherits(&QObject::staticMetaObject)) {
 					QObject* obj = metaObject->newInstance();

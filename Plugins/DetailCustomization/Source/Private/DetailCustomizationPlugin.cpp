@@ -10,6 +10,7 @@
 #include "PropertyTypeCustomization_QQuadF.h"
 #include "PropertyTypeCustomization_QStaticMesh.h"
 #include "PropertyTypeCustomization_TextureInfo.h"
+#include "PropertyTypeCustomization_QObject.h"
 #include "QColor4DButton.hpp"
 #include "QMediaPlayer"
 #include "Render/QPrimitiveRenderProxy.h"
@@ -27,6 +28,7 @@ void DetailCustomizationPlugin::startup() {
 	mgr->registerCustomClassLayout<DetailCustomization_QMediaPlayer>(&QMediaPlayer::staticMetaObject);
 	mgr->registerCustomPropertyTypeLayout<QRhiTextureDesc*, PropertyTypeCustomization_TextureInfo>();
 	mgr->registerCustomPropertyTypeLayout<QSharedPointer<QStaticMesh>, PropertyTypeCustomization_QStaticMesh>();
+	mgr->registerCustomPropertyTypeLayout<QObject*, PropertyTypeCustomization_QObject>();
 	mgr->registerCustomPropertyTypeLayout<QMatrix4x4, PropertyTypeCustomization_QMatrix4x4>();
 	mgr->registerCustomPropertyTypeLayout<QQuadF, PropertyTypeCustomization_QQuadF>();
 
@@ -61,6 +63,7 @@ void DetailCustomizationPlugin::shutdown() {
 
 	mgr->unregisterCustomPropertyValueWidgeCreator(QMetaType::fromType<QRhiTextureDesc*>());
 	mgr->unregisterCustomPropertyValueWidgeCreator(QMetaType::fromType<QSharedPointer<QStaticMesh>>());
+	mgr->unregisterCustomPropertyValueWidgeCreator(QMetaType::fromType <QObject*>());
 	mgr->unregisterCustomPropertyValueWidgeCreator(QMetaType::fromType<QMatrix4x4>());
 	mgr->unregisterCustomPropertyValueWidgeCreator(QMetaType::fromType<QQuadF>());
 	mgr->unregisterCustomPropertyValueWidgeCreator(QMetaType::fromType<QColor4D>());
