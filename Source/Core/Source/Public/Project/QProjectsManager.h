@@ -10,6 +10,11 @@
 class ECHOXCORE_API QProjectsManager : public QObject {
 	Q_OBJECT
 public:
+	struct ComponentTypesInfo{
+		QString name;
+		QString category;
+		const QMetaObject* metaObject;
+	};
 	inline static QString ProjectSuffix = "echox";
 	static QProjectsManager& Get();
 	void loadProjects();
@@ -29,22 +34,24 @@ public:
 	bool loadProjectFull(QEchoXProject* inProject);
 
 	IEchoXComponent* createItemByName(const QString& inItemTypeName);
-	const QMap<QString, const QMetaObject*>& getItemsMap();
-	void registerItemType(const QMetaObject* inMetaObject);
+	QList<ComponentTypesInfo> getComponentTypeInfos();
+
+	void registerItemType(const QMetaObject* inMetaObject,const QString& inCategory = "Common");
 	void unregisterItemType(const QMetaObject* inMetaObject);
 Q_SIGNALS:
-	void asItemTypesChanged();
+	void asComponentTypeInfoChanged();
 	void asProjectsChanged();
 	void asProjectCreated(QEchoXProject*);
 	void asProjectRemoved(QEchoXProject*);
-	void asCurrrentProjectChanged(QEchoXProject*);
+	void asCurrentProjectChanged();
+	void asCurrentProjectComponentChanged();
 private:
 	QProjectsManager();
 	void ensureProjectDir();
 	void addProject(QEchoXProject* inProject);
 private:
 	QDir mProjectDir = QDir("./Projects");
-	QMap<QString, const QMetaObject*> mItemTypeMap;
+	QMap<QString, ComponentTypesInfo> mComponentTypeInfoMap;
 	QList<QEchoXProject*> mProjectList;
 	QEchoXProject* mCurrentProject = nullptr;
 };

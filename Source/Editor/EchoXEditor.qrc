@@ -8,5 +8,6 @@
         <file>Resources/return.png</file>
         <file>Resources/setting-fill.png</file>
         <file>Resources/inner_shadow.png</file>
+        <file>Qml/PluginPage.qml</file>
     </qresource>
 </RCC>

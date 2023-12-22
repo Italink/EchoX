@@ -7,37 +7,25 @@
 #include <QSplitter>
 #include "Project/QProjectsManager.h"
 #include "DetailView/QDetailView.h"
+#include "MainWindow/ProjectsPage/QEchoXComponentSelector.h"
+#include "MainWindow/ProjectsPage/QEchoXComponentOutliner.h"
 
 class QPushButton;
-
-class QEchoXProjectItemListWidget: public QListWidget {
-	Q_OBJECT
-public:
-Q_SIGNALS:
-	void asItemDropped(QPoint, IEchoXComponent*);
-protected:
-	void startDrag(Qt::DropActions supportedActions) override;
-};
 
 class QEchoXProjectPanel: public QWidget {
 	Q_OBJECT
 public:
 	QEchoXProjectPanel();
-	void setProject(QEchoXProject* inProject);
-	QEchoXProject* getProject() const;
-	void refreshItemList();
-	void refreshOutliner();
 Q_SIGNALS:
 	void asReturnBack();
 private:
 	void closeEvent(QCloseEvent* e) override;
-	void onItemDropped(QPoint center, IEchoXComponent* item);
-	void onCurrentItemChanged(QListWidgetItem* widgetItem);
+	void onComponentDropped(QPoint center, IEchoXComponent* inComponent);
+	void onComponentSelected(IEchoXComponent* inComponent);
 private:
-	QEchoXProject* mProject = nullptr;
 	QPushButton* mBtReturn = nullptr;
-	QEchoXProjectItemListWidget* mItemResouceList = nullptr;
-	QListWidget* mOutliner = nullptr;
+	QEchoXComponentSelector* mComponentSelector = nullptr;
+	QEchoXComponentOutliner* mComponentOutliner = nullptr;
 	QDetailView* mDetailView = nullptr;
 };
 

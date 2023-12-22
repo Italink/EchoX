@@ -1,4 +1,4 @@
-#include "QWdigetCloseVFX_Diffusion.h"
+#include "QWidgetCloseVFX_Diffusion.h"
 #include "Object/QEngineObjectManager.h"
 
 QWidgetCloseVFX_Diffusion::QWidgetCloseVFX_Diffusion()

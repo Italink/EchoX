@@ -24,14 +24,16 @@ public:
 	bool save();
 	void setItems(QList<IEchoXComponent*> val);
 	void setThumbnail(QPixmap inPixmap);
-	void addItem(IEchoXComponent* inItem);
-	void removeItem(IEchoXComponent* inItem);
+	void addComponent(IEchoXComponent* inItem);
+	void removeComponent(IEchoXComponent* inItem);
+	void clearInvailedItem();
 Q_SIGNALS:
-	void asItemsChanged();
+	void asComponentsChanged();
 private:
 	bool bActivated = false;
+	bool bModified = false;
 	QPixmap mThumbnail;
-	QList<IEchoXComponent*> mItems;
+	QList<IEchoXComponent*> mComponents;
 };
 
 #endif // QEchoXProject_h__

@@ -90,12 +90,17 @@ const QList<QEchoXProject*>& QProjectsManager::getProjectList()
 void QProjectsManager::setCurrentProject(QEchoXProject* inProject)
 {
 	if (mCurrentProject != inProject) {
-		if (mCurrentProject) 
+		if (mCurrentProject) {
 			mCurrentProject->deactivate();
+			mCurrentProject->disconnect(this);
+		}
 		mCurrentProject = inProject;
-		loadProjectFull(mCurrentProject);
-		mCurrentProject->activate();
-		Q_EMIT asCurrrentProjectChanged(mCurrentProject);
+		if (mCurrentProject) {
+			loadProjectFull(mCurrentProject);
+			mCurrentProject->activate();
+			Q_EMIT asCurrentProjectChanged();
+			connect(mCurrentProject, &QEchoXProject::asComponentsChanged, this, &QProjectsManager::asCurrentProjectComponentChanged);
+		}
 	}
 }
 
@@ -163,21 +168,25 @@ bool QProjectsManager::loadProjectFull(QEchoXProject* inProject)
 
 IEchoXComponent* QProjectsManager::createItemByName(const QString& inItemTypeName)
 {
-	if (auto meteObject = mItemTypeMap.value(inItemTypeName)) {
+	if (auto meteObject = mComponentTypeInfoMap.value(inItemTypeName).metaObject) {
 		return qobject_cast<IEchoXComponent*>(meteObject->newInstance());
 	}
 	return nullptr;
 }
 
-const QMap<QString, const QMetaObject*>& QProjectsManager::getItemsMap()
+QList<QProjectsManager::ComponentTypesInfo> QProjectsManager::getComponentTypeInfos()
 {
-	return mItemTypeMap;
+	return mComponentTypeInfoMap.values();
 }
 
-void QProjectsManager::registerItemType(const QMetaObject* inMetaObject)
+void QProjectsManager::registerItemType(const QMetaObject* inMetaObject, const QString& inCategory)
 {
-	qRegisterMetaType(inMetaObject->metaType());;
-	mItemTypeMap.insert(inMetaObject->className(), inMetaObject);
+	qRegisterMetaType(inMetaObject->metaType());
+	ComponentTypesInfo info;
+	info.name = inMetaObject->className();
+	info.category = inCategory;
+	info.metaObject = inMetaObject;
+	mComponentTypeInfoMap.insert(inMetaObject->className(), info);
 	bool isInvaild = false;
 	for (int i = 0; i < inMetaObject->constructorCount(); i++) {
 		QMetaMethod method = inMetaObject->constructor(i);
@@ -188,10 +197,10 @@ void QProjectsManager::registerItemType(const QMetaObject* inMetaObject)
 	if (!isInvaild) {
 		qCFatal(EchoX) << "must use Q_INVOKABLE";
 	}
-	Q_EMIT asItemTypesChanged();
+	Q_EMIT asComponentTypeInfoChanged();
 }
 
 void QProjectsManager::unregisterItemType(const QMetaObject* inMetaObject)
 {
-	mItemTypeMap.remove(inMetaObject->className());
+	mComponentTypeInfoMap.remove(inMetaObject->className());
 }

@@ -84,13 +84,15 @@ void QEchoXProjectsPanel::refreshIconSize()
 
 QRect QEchoXProjectsPanel::getProjectGemotry(QEchoXProject* inProject)
 {
-	const QListWidgetItem* item = mProjectItemMap.value(inProject);
-	if (item) {
-		QRect rect = mProjectListWidget->visualItemRect(item);
-		QPoint pos = mProjectListWidget->mapToParent(rect.topLeft());
-		rect.moveTopLeft(pos);
-		rect.setHeight(rect.height() - mTextHeight);
-		return rect;
+	if (inProject) {
+		const QListWidgetItem* item = mProjectItemMap.value(inProject);
+		if (item) {
+			QRect rect = mProjectListWidget->visualItemRect(item);
+			QPoint pos = mProjectListWidget->mapToParent(rect.topLeft());
+			rect.moveTopLeft(pos);
+			rect.setHeight(rect.height() - mTextHeight);
+			return rect;
+		}
 	}
 	return QRect();
 }

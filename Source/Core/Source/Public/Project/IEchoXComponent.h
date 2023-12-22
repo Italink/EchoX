@@ -7,8 +7,14 @@
 class ECHOXCORE_API IEchoXComponent : public QObject {
 	Q_OBJECT
 public:
+	bool isActivated() const;
+	void activateInternal();
+	void deactivateInternal();
+protected:
 	virtual void activate() {};
 	virtual void deactivate() {};
+private:
+	bool bActivated = false;
 };
 
 #endif // IEchoXComponent_h__

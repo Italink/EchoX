@@ -1,7 +1,7 @@
-#include "QWdigetCloseVFX_FadeOut.h"
+#include "QWidgetCloseVFX_FadeOut.h"
 #include "Object/QEngineObjectManager.h"
 
-QWdigetCloseVFX_FadeOut::QWdigetCloseVFX_FadeOut()
+QWidgetCloseVFX_FadeOut::QWidgetCloseVFX_FadeOut()
 {
 	mFadeOutFS = QRhiHelper::newShaderFromCode(QShader::FragmentStage, R"(#version 450
 			layout (binding = 0) uniform sampler2D uWidgetImage;
@@ -16,12 +16,12 @@ QWdigetCloseVFX_FadeOut::QWdigetCloseVFX_FadeOut()
 	)");
 }
 
-float QWdigetCloseVFX_FadeOut::getPlayDurationSec() const
+float QWidgetCloseVFX_FadeOut::getPlayDurationSec() const
 {
 	return 10;
 }
 
-void QWdigetCloseVFX_FadeOut::preSetup(float timeSec, QRenderGraphBuilder& builder)
+void QWidgetCloseVFX_FadeOut::preSetup(float timeSec, QRenderGraphBuilder& builder)
 {
 	builder.setupSampler(mSampler, "Sampler",
 		QRhiSampler::Linear,
@@ -65,7 +65,7 @@ void QWdigetCloseVFX_FadeOut::preSetup(float timeSec, QRenderGraphBuilder& build
 	});
 }
 
-void QWdigetCloseVFX_FadeOut::render(float timeSec, const QRhiViewport& viewport, QRhiCommandBuffer* cmdBuffer)
+void QWidgetCloseVFX_FadeOut::render(float timeSec, const QRhiViewport& viewport, QRhiCommandBuffer* cmdBuffer)
 {
 	cmdBuffer->setGraphicsPipeline(mPipeline.get());
 	cmdBuffer->setViewport(viewport);
@@ -73,4 +73,4 @@ void QWdigetCloseVFX_FadeOut::render(float timeSec, const QRhiViewport& viewport
 	cmdBuffer->draw(4);
 }
 
-QENGINE_REGISTER_CLASS(QWdigetCloseVFX_FadeOut)
+QENGINE_REGISTER_CLASS(QWidgetCloseVFX_FadeOut)

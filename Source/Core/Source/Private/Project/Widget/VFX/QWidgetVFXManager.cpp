@@ -5,7 +5,7 @@
 #include "Render/RenderGraph/Painter/TexturePainter.h"
 #include "Render/RHI/QRhiTransparencyWindowContainter.h"
 #include "tracy/Tracy.hpp"
-#include "WidgetCloseVFX/QWdigetCloseVFX_Diffusion.h"
+#include "WidgetCloseVFX/QWidgetCloseVFX_Diffusion.h"
 #include <QTimer>
 #include "QWidgetVFXSettings.h"
 

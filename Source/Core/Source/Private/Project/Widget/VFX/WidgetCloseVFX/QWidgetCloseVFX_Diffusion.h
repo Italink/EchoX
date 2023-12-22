@@ -1,5 +1,5 @@
-#ifndef QWdigetCloseVFX_Diffusion_h__
-#define QWdigetCloseVFX_Diffusion_h__
+#ifndef QWidgetCloseVFX_Diffusion_h__
+#define QWidgetCloseVFX_Diffusion_h__
 
 #include "IWidgetVFX.h"
 
@@ -42,4 +42,4 @@ public:
 	void render(float timeSec, const QRhiViewport& viewport, QRhiCommandBuffer* cmdBuffer) override;
 };
 
-#endif // QWdigetCloseVFX_Diffusion_h__
+#endif // QWidgetCloseVFX_Diffusion_h__

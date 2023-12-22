@@ -14,15 +14,17 @@ QString QEchoXProject::getProjectName() const
 
 void QEchoXProject::activate()
 {
+	clearInvailedItem();
 	bActivated = true;
-	for (auto& item : mItems)
-		item->activate();
+	for (auto& item : mComponents)
+		item->activateInternal();
 }
 
 void QEchoXProject::deactivate()
 {
-	for (auto& item : mItems)
-		item->deactivate();
+	clearInvailedItem();
+	for (auto& item : mComponents)
+		item->deactivateInternal();
 	bActivated = false;
 }
 
@@ -39,7 +41,7 @@ QFile QEchoXProject::getProjectFile() const
 
 QList<IEchoXComponent*> QEchoXProject::getItems() const
 {
-	return mItems;
+	return mComponents;
 }
 
 QPixmap QEchoXProject::getThumbnail()
@@ -59,7 +61,7 @@ bool QEchoXProject::save()
 
 void QEchoXProject::setItems(QList<IEchoXComponent*> val)
 {
-	mItems = val;
+	mComponents = val;
 }
 
 void QEchoXProject::setThumbnail(QPixmap inPixmap)
@@ -67,19 +69,24 @@ void QEchoXProject::setThumbnail(QPixmap inPixmap)
 	mThumbnail = inPixmap.scaled(QSize(400, 400));
 }
 
-void QEchoXProject::addItem(IEchoXComponent* inItem)
+void QEchoXProject::addComponent(IEchoXComponent* inItem)
 {
-	mItems << inItem;
+	mComponents << inItem;
 	inItem->setParent(this);
-	Q_EMIT asItemsChanged();
+	Q_EMIT asComponentsChanged();
 	if (bActivated) {
-		inItem->activate();
+		inItem->activateInternal();
 	}
 }
 
-void QEchoXProject::removeItem(IEchoXComponent* inItem)
+void QEchoXProject::removeComponent(IEchoXComponent* inItem)
 {
-	if (mItems.removeOne(inItem)) {
-		Q_EMIT asItemsChanged();
+	if (mComponents.removeOne(inItem)) {
+		Q_EMIT asComponentsChanged();
 	}
+}
+
+void QEchoXProject::clearInvailedItem()
+{
+	mComponents.removeAll(nullptr);
 }

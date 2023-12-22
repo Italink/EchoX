@@ -38,7 +38,7 @@ void QEchoXProjectsPage::onEnterProject(QEchoXProject* inProject)
 	mDestPixmap = mProjectPanel->grab().toImage();
 
 	mSwitchAnimation->start(QAbstractAnimation::KeepWhenStopped);
-	mProjectPanel->setProject(inProject);
+	QProjectsManager::Get().setCurrentProject(inProject);
 
 	mSwitchAnimation->disconnect(mFinishedConnection);
 	mFinishedConnection = connect(mSwitchAnimation, &QVariantAnimation::finished, this, [this]() {
@@ -55,7 +55,7 @@ void QEchoXProjectsPage::onLeaveProject()
 
 	mProjectsPanel->resize(size());
 	mSrcRect = rect();
-	mDestRect = mProjectsPanel->getProjectGemotry(mProjectPanel->getProject());
+	mDestRect = mProjectsPanel->getProjectGemotry(QProjectsManager::Get().getCurrentProject());
 	mSrcPixmap = mProjectPanel->grab().toImage();
 	mDestPixmap = mProjectsPanel->grab().toImage();
 
