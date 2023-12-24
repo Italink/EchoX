@@ -42,8 +42,8 @@ public:
     virtual QString category() const { return "QEchoX"; }
     virtual bool visible() const { return true; }
 
-    QString getName();
-    QFile getSettingsFile();
+    QString getName() const;
+    QFile getSettingsFile() const;
     bool save();
     bool reload();
 };

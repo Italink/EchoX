@@ -30,6 +30,7 @@ QEchoXMainWindow::QEchoXMainWindow()
 		mBody->setCurrentWidget(item ? item->getPage() : mPlaceholderPage);
 	});
 	connect(QWindow3DEditor::Instance(), &QWindow3DEditor::asClicked, this, &QWidget::activateWindow);
+	connect(QEchoXStyleSettings::Get(), &QEchoXStyleSettings::asStyleChanged, this, &QEchoXMainWindow::updateStyleSheet);
 }
 
 QEchoXMainWindow::~QEchoXMainWindow()
@@ -75,6 +76,8 @@ void QEchoXMainWindow::initialize()
 	helper->setSystemButton(mTitleBar->minimizeButton(), Global::SystemButtonType::Minimize);
 	helper->setSystemButton(mTitleBar->maximizeButton(), Global::SystemButtonType::Maximize);
 	helper->setSystemButton(mTitleBar->closeButton(), Global::SystemButtonType::Close);
+
+	updateStyleSheet();
 }
 
 void QEchoXMainWindow::addNavigationItem(const QString& inName, const QString& inIconPath, QWidget* inPage)
@@ -136,6 +139,7 @@ void QEchoXMainWindow::updateStyleSheet()
 		const QColor windowBackgroundColor = (dark ? Global::kDefaultSystemDarkColor : Global::kDefaultSystemLightColor);
 		setStyleSheet(FRAMELESSHELPER_STRING_LITERAL("background-color: %1;").arg(windowBackgroundColor.name()));
 	}
+	setStyleSheet(QEchoXStyleSettings::Get()->getStyleSheet());
 	update();
 }
 

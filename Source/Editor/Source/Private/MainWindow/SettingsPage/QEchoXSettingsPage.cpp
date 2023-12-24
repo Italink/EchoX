@@ -2,20 +2,41 @@
 #include "Settings/QSettingsManager.h"
 #include "Settings/IEchoXSettings.h"
 #include <QMetaClassInfo>
+#include <QQuickWidget>
+#include <QAbstractItemModel>
+#include <QQmlEngine>
+#include <QQmlContext>
+#include <QQuickItem>
+#include "Settings/QEchoXStyleSettings.h"
+#include "QEchoXSettingsModel.h"
 
 QEchoXSettingsPage::QEchoXSettingsPage()
 	: mSplitter(new QSplitter)
-	, mSettingsOutliner(new QEchoXSettingsOutliner())
 	, mSettingsViewBox(new QWidget)
+    , mSettingsModel(new QEchoXSettingsModel)
 {
-
 	QHBoxLayout* hLayout = new QHBoxLayout(this);
+	hLayout->setContentsMargins(10, 10, 10, 10);
 	hLayout->addWidget(mSplitter);
-	mSplitter->addWidget(mSettingsOutliner);
+	QQuickWidget* quick = new QQuickWidget;
+
+	mSettingsModel->refresh();
+
+	quick->setResizeMode(QQuickWidget::ResizeMode::SizeRootObjectToView);
+	quick->setAttribute(Qt::WA_AlwaysStackOnTop);
+	quick->setClearColor(Qt::transparent);
+	quick->rootContext()->setContextProperty("settingsModel", mSettingsModel);
+	quick->rootContext()->setContextProperty("echoxStyle", QEchoXStyleSettings::Get());
+	quick->setSource(QUrl("qrc:/Qml/SettingsPageOutliner.qml"));
+	
+
+	mSplitter->addWidget(quick);
 	mSplitter->addWidget(mSettingsViewBox);
 	mSplitter->setSizes({ 300,800 });
 	QHBoxLayout* viewLayout = new QHBoxLayout(mSettingsViewBox);
-	connect(mSettingsOutliner, &QEchoXSettingsOutliner::asSettingsSelected, this, &QEchoXSettingsPage::onSettingsSelected);
+
+    connect(&QSettingsManager::Get(), &QSettingsManager::asSettingsChanged, mSettingsModel, &QEchoXSettingsModel::refresh);
+	connect(mSettingsModel, &QEchoXSettingsModel::settingsSelected, this, &QEchoXSettingsPage::onSettingsSelected);
 }
 
 void QEchoXSettingsPage::onSettingsSelected(IEchoXSettings* settings)

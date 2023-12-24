@@ -22,6 +22,34 @@ void QEchoXStyleSettings::setThemeColor(QColor var)
 	}
 }
 
+QColor QEchoXStyleSettings::getHoveredColor()
+{
+	return mDetailViewPalette.mHoveredColor;
+}
+
+void QEchoXStyleSettings::setHoveredColor(QColor var)
+{
+	if (mDetailViewPalette.mHoveredColor != var) {
+		mDetailViewPalette.mHoveredColor = var;
+		refreshDetailViewStyle();
+		Q_EMIT asStyleChanged();
+	}
+}
+
+QColor QEchoXStyleSettings::getSelectedColor()
+{
+	return mDetailViewPalette.mSelectedColor;
+}
+
+void QEchoXStyleSettings::setSelectedColor(QColor var)
+{
+	if (mDetailViewPalette.mSelectedColor != var) {
+		mDetailViewPalette.mSelectedColor = var;
+		refreshDetailViewStyle();
+		Q_EMIT asStyleChanged();
+	}
+}
+
 float QEchoXStyleSettings::getShadowWidth()
 {
 	return mShadowWidth;
@@ -162,8 +190,11 @@ void QEchoXStyleSettings::refreshDetailViewStyle()
 		.arg(inlineFontColor.name(QColor::HexArgb))
 		.arg(mDetailViewPalette.mSelectedColor.name(QColor::HexArgb))
 		.toLocal8Bit();
-	qDebug() << mDetailViewPalette.mStyleSheet;
 	QEngineEditorStyleManager::Instance()->setPalette(mDetailViewPalette);
-	qApp->getMainEditor()->setStyleSheet(mDetailViewPalette.mStyleSheet);
+}
+
+QByteArray QEchoXStyleSettings::getStyleSheet() const
+{
+	return mDetailViewPalette.mStyleSheet;
 }
 

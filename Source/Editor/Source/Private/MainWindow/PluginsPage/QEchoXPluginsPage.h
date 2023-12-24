@@ -5,10 +5,13 @@
 #include <QListWidget>
 #include "DetailView/QDetailView.h"
 
-class QEchoXPluginsPage : public QQuickWidget {
+class QEchoXPluginsModel;
+
+class QEchoXPluginsPage : public QWidget {
 	Q_OBJECT
 public:
 	QEchoXPluginsPage();
+	QEchoXPluginsModel* mPluginsModel = nullptr;
 };
 
 #endif // QEchoXPluginsPage_h__

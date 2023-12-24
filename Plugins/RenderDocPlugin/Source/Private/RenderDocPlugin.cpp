@@ -5,6 +5,18 @@
 
 RENDERDOC_API_1_1_2* rdoc_api = nullptr;
 
+RenderDocPlugin::Info RenderDocPlugin::info()
+{
+	RenderDocPlugin::Info i;
+	i.icon = QUrl("qrc:/Resources/delete.png");
+	i.name = "CorePlugin";
+	i.author = "italink";
+	i.description = "this is a custom plugin";
+	i.link = "github.com";
+	return i;
+}
+
+
 void RenderDocPlugin::startup() {
 	if (renderdoc.load()) {
 		pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)renderdoc.resolve("RENDERDOC_GetAPI");

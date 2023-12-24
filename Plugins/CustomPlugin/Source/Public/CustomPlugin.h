@@ -5,7 +5,7 @@
 
 class CustomPlugin: public IEnginePlugin {
 protected:
-	Type type() override { return IEnginePlugin::Editor; }
+	Info info() override;
 	void startup() override;
 	void shutdown() override;
 };

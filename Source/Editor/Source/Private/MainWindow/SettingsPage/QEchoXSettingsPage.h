@@ -7,19 +7,21 @@
 #include <QStackedWidget>
 #include <QMap>
 #include "DetailView/QDetailView.h"
-#include "QEchoXSettingsOutliner.h"
+#include "Settings/QSettingsManager.h"
+#include "Settings/IEchoXSettings.h"
 
-class IEchoXSettings;
+class QEchoXSettingsModel;
 
 class QEchoXSettingsPage : public QWidget {
 	Q_OBJECT
 public:
 	QEchoXSettingsPage();
-	void onSettingsSelected(IEchoXSettings* settings);
+private:
+    void onSettingsSelected(IEchoXSettings* settings);
 private:
 	QSplitter* mSplitter;
-	QEchoXSettingsOutliner* mSettingsOutliner;
 	QWidget* mSettingsViewBox;
+	QEchoXSettingsModel* mSettingsModel = nullptr;
 };
 
 #endif // QEchoXSettingsPage_h__

@@ -5,12 +5,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-QString IEchoXSettings::getName()
+QString IEchoXSettings::getName() const
 {
 	return metaObject()->classInfo(metaObject()->indexOfClassInfo("ClassName")).value();
 }
 
-QFile IEchoXSettings::getSettingsFile()
+QFile IEchoXSettings::getSettingsFile() const
 {
 	return QSettingsManager::Get().getSettingsDir().filePath(getName() + ".json");
 }

@@ -18,6 +18,17 @@
 #include "Render/RHI/QRhiUniformBlock.h"
 #include <QDebug>
 
+DetailCustomizationPlugin::Info DetailCustomizationPlugin::info()
+{
+	DetailCustomizationPlugin::Info i;
+	i.icon = QUrl("qrc:/Resources/delete.png");
+	i.name = "DetailCustomizationPlugin";
+	i.author = "italink";
+	i.description = "this is a custom plugin";
+	i.link = "github.com";
+	return i;
+}
+
 void DetailCustomizationPlugin::startup() {
 	qDebug() << "DetailCustomizationPlugin::startup";
 	QDetailViewManager* mgr = QDetailViewManager::Instance();

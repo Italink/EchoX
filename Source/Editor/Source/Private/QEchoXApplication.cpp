@@ -22,20 +22,8 @@
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QEchoXCoreApplication(argc, argv)
-	, mMainWindow(new QEchoXMainWindow)
-	, mSysIcon(new QSystemTrayIcon(this))
-	, mSysTrayMenu(new QEchoXMenu(nullptr))
 {
 	Q_INIT_RESOURCE(EchoXEditor);
-
-	mSysIcon->setToolTip("EchoX");
-	mSysIcon->setIcon(QIcon(":/Resources/SystemTrayIcon.png"));
-	mSysIcon->setContextMenu(mSysTrayMenu);
-	mSysIcon->show();
-	mMainWindow->setMinimumSize(1200, 800);
-	mMainWindow->show();
-	setQuitOnLastWindowClosed(false);
-	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 
 	Serialization::registerBuiltinType();
 	QAudioAnalyseManager::Get().startup();
@@ -50,19 +38,27 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QProjectsManager::Get().registerItemType(&QEchoXWidgetComponent_Button::staticMetaObject);
 
 	QEnginePluginManager::Get().loadPlugins();
-	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {
+	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginHandlers()) {
 		pluginHandler.startup();
 	}
 
-	connect(QEchoXStyleSettings::Get(), &QEchoXStyleSettings::asStyleChanged, mMainWindow, [this]() {
-		mMainWindow->update();
-	});
+	mMainWindow = (new QEchoXMainWindow);
+	mSysIcon = (new QSystemTrayIcon(this));
+	mSysTrayMenu = (new QEchoXMenu(nullptr));
+	mSysIcon->setToolTip("EchoX");
+	mSysIcon->setIcon(QIcon(":/Resources/SystemTrayIcon.png"));
+	mSysIcon->setContextMenu(mSysTrayMenu);
+	mSysIcon->show();
+	mMainWindow->setMinimumSize(1200, 800);
+	mMainWindow->show();
+	setQuitOnLastWindowClosed(false);
+	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 }
 
 QEchoXApplication::~QEchoXApplication() {
 	QEchoXStyleSettings::Unregister();
 
-	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginMap()) {
+	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginHandlers()) {
 		pluginHandler.shutdown();
 	}
 

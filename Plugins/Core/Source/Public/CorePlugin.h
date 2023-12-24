@@ -5,7 +5,7 @@
 
 class CorePlugin: public IEnginePlugin {
 protected:	
-	Type type() override { return IEnginePlugin::Core; }
+	Info info() override;
 	void startup() override;
 	void shutdown() override;
 };
