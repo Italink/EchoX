@@ -8,7 +8,8 @@
         <file>Resources/return.png</file>
         <file>Resources/setting-fill.png</file>
         <file>Resources/inner_shadow.png</file>
-        <file>Qml/PluginPage.qml</file>
-        <file>Qml/SettingsPageOutliner.qml</file>
+        <file>Resources/Qml/PluginPage.qml</file>
+        <file>Resources/Qml/SettingsPageOutliner.qml</file>
+        <file>Resources/Qml/ProjectsView.qml</file>
     </qresource>
 </RCC>

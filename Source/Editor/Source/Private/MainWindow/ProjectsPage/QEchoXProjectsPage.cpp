@@ -5,6 +5,13 @@
 #include "Project/QProjectsManager.h"
 #include "QEchoXProjectsPanel.h"
 #include "QEchoXProjectPanel.h"
+#include <QAbstractItemModel>
+#include <QQmlEngine>
+#include <QQmlContext>
+#include <QQuickWidget>
+#include "Plugin/QEnginePluginManager.h"
+#include "Settings/QEchoXStyleSettings.h"
+
 
 QEchoXProjectsPage::QEchoXProjectsPage()
 	: mProjectsPanel(new QEchoXProjectsPanel)
@@ -16,7 +23,18 @@ QEchoXProjectsPage::QEchoXProjectsPage()
 	mSwitchAnimation->setStartValue(0.0f);
 	mSwitchAnimation->setEndValue(1.0f);
 	mLayout->setContentsMargins(0, 0, 0, 0);
-	mLayout->addWidget(mProjectsPanel);
+
+	QQuickWidget* quick = new QQuickWidget;
+	QHBoxLayout* h = new QHBoxLayout(this);
+	h->setContentsMargins(10, 10, 10, 10);
+	h->addWidget(quick);
+	quick->setResizeMode(QQuickWidget::ResizeMode::SizeRootObjectToView);
+	quick->setAttribute(Qt::WA_AlwaysStackOnTop);
+	quick->setClearColor(Qt::transparent);
+	quick->rootContext()->setContextProperty("echoxStyle", QEchoXStyleSettings::Get());
+	quick->setSource(QUrl("qrc:/Resources/Qml/ProjectsView.qml"));
+	mLayout->addWidget(quick);
+
 	connect(mProjectsPanel, &QEchoXProjectsPanel::asProjectDoubleClicked, this, &QEchoXProjectsPage::onEnterProject);
 	connect(mProjectPanel, &QEchoXProjectPanel::asReturnBack, this, &QEchoXProjectsPage::onLeaveProject);
 	connect(mSwitchAnimation, &QVariantAnimation::valueChanged, this, [this](QVariant var) {

@@ -27,7 +27,7 @@ QEchoXSettingsPage::QEchoXSettingsPage()
 	quick->setClearColor(Qt::transparent);
 	quick->rootContext()->setContextProperty("settingsModel", mSettingsModel);
 	quick->rootContext()->setContextProperty("echoxStyle", QEchoXStyleSettings::Get());
-	quick->setSource(QUrl("qrc:/Qml/SettingsPageOutliner.qml"));
+	quick->setSource(QUrl("qrc:/Resources/Qml/SettingsPageOutliner.qml"));
 	
 
 	mSplitter->addWidget(quick);

@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 TreeView {
-    objectName: "hello"
     id: outliner
     model: settingsModel
     Layout.fillWidth : true
