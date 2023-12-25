@@ -5,7 +5,7 @@ import Qt5Compat.GraphicalEffects
 
 GridView {
     id: projectsView
-    model: ["apple", "banan asdasdasda", "che rryasdas", "dasasd atasde asdas","apple", "banana", "cherry", "date","apple", "banana", "cherry", "date","apple", "banana", "cherry", "date"]
+    model: ["apple", "banan asdasdasda asdasd asd asd as asd asd asd asd", "che  asd rryasd asdasas", "dasasd atasde asdas","appl a sa e", "banana", "cherry", "date","apple", "banana", "cherry", "date","apple", "banana", "cherry", "date"]
     cellWidth  : 100
     cellHeight : 150
     delegate: Rectangle {
@@ -20,10 +20,12 @@ GridView {
         }
         Text {
             elide: Text.ElideRight
+            horizontalAlignment: Text.AlignHCenter
             wrapMode:Text.WordWrap
-            anchors.fill: parent
+            anchors.left: icon.left
+            anchors.right: icon.right
             anchors.top: icon.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
             text: modelData
         }
     }
