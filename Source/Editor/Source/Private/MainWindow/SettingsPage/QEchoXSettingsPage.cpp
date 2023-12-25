@@ -20,8 +20,6 @@ QEchoXSettingsPage::QEchoXSettingsPage()
 	hLayout->addWidget(mSplitter);
 	QQuickWidget* quick = new QQuickWidget;
 
-	mSettingsModel->refresh();
-
 	quick->setResizeMode(QQuickWidget::ResizeMode::SizeRootObjectToView);
 	quick->setAttribute(Qt::WA_AlwaysStackOnTop);
 	quick->setClearColor(Qt::transparent);
@@ -29,13 +27,11 @@ QEchoXSettingsPage::QEchoXSettingsPage()
 	quick->rootContext()->setContextProperty("echoxStyle", QEchoXStyleSettings::Get());
 	quick->setSource(QUrl("qrc:/Resources/Qml/SettingsPageOutliner.qml"));
 	
-
 	mSplitter->addWidget(quick);
 	mSplitter->addWidget(mSettingsViewBox);
 	mSplitter->setSizes({ 300,800 });
 	QHBoxLayout* viewLayout = new QHBoxLayout(mSettingsViewBox);
 
-    connect(&QSettingsManager::Get(), &QSettingsManager::asSettingsChanged, mSettingsModel, &QEchoXSettingsModel::refresh);
 	connect(mSettingsModel, &QEchoXSettingsModel::settingsSelected, this, &QEchoXSettingsPage::onSettingsSelected);
 }
 

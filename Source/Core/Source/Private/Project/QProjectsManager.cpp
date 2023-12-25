@@ -30,6 +30,7 @@ QEchoXProject* QProjectsManager::createProject(QString inName)
 	addProject(project);
 	project->save();
 	Q_EMIT asProjectCreated(project);
+	Q_EMIT asProjectsChanged();
 	return project;
 }
 
@@ -56,6 +57,7 @@ void QProjectsManager::removeProject(QEchoXProject* inProject)
 {
 	mProjectList.removeOne(inProject);
 	Q_EMIT asProjectRemoved(inProject);
+	Q_EMIT asProjectsChanged();
 	inProject->getProjectFile().remove();
 	inProject->setParent(nullptr);
 	inProject->deleteLater();

@@ -2,6 +2,8 @@
 
 QEchoXSettingsModel::QEchoXSettingsModel(QObject* parent)
 	: QAbstractItemModel(parent) {
+    refresh();
+    connect(&QSettingsManager::Get(), &QSettingsManager::asSettingsChanged, this, &QEchoXSettingsModel::refresh);
 }
 
 QVariant QEchoXSettingsModel::data(const QModelIndex& index, int role) const {
