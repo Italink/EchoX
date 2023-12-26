@@ -2,6 +2,7 @@
 
 QEchoXPluginsModel::QEchoXPluginsModel(QObject* parent)
     : QAbstractItemModel(parent) {
+    connect(&QEnginePluginManager::Get(), &QEnginePluginManager::asPluginChanged, this, &QEchoXPluginsModel::refresh);
 }
 
 QEchoXPluginsModel::~QEchoXPluginsModel() {

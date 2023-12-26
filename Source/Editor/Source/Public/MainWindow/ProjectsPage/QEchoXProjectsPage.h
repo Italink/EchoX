@@ -10,6 +10,7 @@ class QEchoXProjectPanel;
 class QHBoxLayout;
 class QVariantAnimation;
 class QEchoXProject;
+class QEchoXProjectsModel;
 
 class QEchoXProjectsPage: public QWidget {
 	Q_OBJECT
@@ -20,6 +21,7 @@ private:
 	void onLeaveProject();
 	void paintEvent(QPaintEvent* event) override;
 private:
+	QEchoXProjectsModel* mProjectsModel;
 	QEchoXProjectsPanel* mProjectsPanel;
 	QEchoXProjectPanel* mProjectPanel;
 	QHBoxLayout* mLayout;

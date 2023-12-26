@@ -20,6 +20,4 @@ QEchoXPluginsPage::QEchoXPluginsPage()
     quick->rootContext()->setContextProperty("pluginsModel", mPluginsModel);
 	quick->rootContext()->setContextProperty("echoxStyle", QEchoXStyleSettings::Get());
 	quick->setSource(QUrl("qrc:/Resources/Qml/PluginPage.qml"));
-
-    connect(&QEnginePluginManager::Get(), &QEnginePluginManager::asPluginChanged, mPluginsModel, &QEchoXPluginsModel::refresh);
 }

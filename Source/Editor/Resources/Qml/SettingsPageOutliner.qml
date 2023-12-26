@@ -51,7 +51,7 @@ TreeView {
         Text {
             id: label
             x: padding + (treeDelegate.isTreeNode ? (treeDelegate.depth + 1) * treeDelegate.indent : 0)
-            y: implicitHeight*0.25
+            y: implicitHeight * 0.25
             width: treeDelegate.width - treeDelegate.padding - x
             text: model.name
             color: treeDelegate.hasChildren ? "#444444" : "#666666"
