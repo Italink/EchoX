@@ -1,7 +1,7 @@
 add_subdirectory(QSmtcServer)
 add_subdirectory(PFFFT)
 add_subdirectory(Gist)
-add_subdirectory(framelesshelper)
+add_subdirectory(QWindowKit)
 
 function(get_all_targets OUT_LIST)
     set(TARGETS)
