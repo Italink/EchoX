@@ -11,5 +11,13 @@
         <file>Resources/Qml/PluginPage.qml</file>
         <file>Resources/Qml/SettingsPageOutliner.qml</file>
         <file>Resources/Qml/ProjectsView.qml</file>
+        <file>Resources/Qml/MainWindow.qml</file>
+        <file>Resources/Icon/close.svg</file>
+        <file>Resources/Icon/fullscreen.svg</file>
+        <file>Resources/Icon/maximize.svg</file>
+        <file>Resources/Icon/minimize.svg</file>
+        <file>Resources/Icon/more-line.svg</file>
+        <file>Resources/Icon/restore.svg</file>
+        <file>Resources/Qml/IconButton.qml</file>
     </qresource>
 </RCC>

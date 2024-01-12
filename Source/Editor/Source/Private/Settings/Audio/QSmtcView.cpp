@@ -3,7 +3,6 @@
 #include <QFile>
 #include <QPainter>
 #include <QGraphicsDropShadowEffect>
-#include "QNeumorphicEffect.h"
 
 #define ADD_LABEL(NAME, Col, Row) gLayout->addWidget(new QElideLabel(#NAME), Col, Row);  gLayout->addWidget(mLb##NAME, Col, Row + 1);
 
@@ -30,8 +29,6 @@ QSmtcView::QSmtcView()
 
 {
 	setStyleSheet("QWidget{color: #ffffff;}");
-	auto effect = new QNeumorphicEffect();
-	mLbThumbnail->setGraphicsEffect(effect);
 
 	QGridLayout* gLayout = new QGridLayout(this);
 	gLayout->setColumnStretch(0, 3);

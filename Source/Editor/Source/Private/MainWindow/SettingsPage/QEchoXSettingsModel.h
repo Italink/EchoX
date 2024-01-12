@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QMap>
 #include <QAbstractItemModel>
-#include "DetailView/QDetailView.h"
 #include "Settings/QSettingsManager.h"
 #include "Settings/IEchoXSettings.h"
 

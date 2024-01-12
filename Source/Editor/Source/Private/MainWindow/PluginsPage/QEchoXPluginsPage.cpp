@@ -3,6 +3,7 @@
 #include <QAbstractItemModel>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QHBoxLayout>
 #include "Plugin/QEnginePluginManager.h"
 #include "QEchoXPluginsModel.h"
 #include "Settings/QEchoXStyleSettings.h"

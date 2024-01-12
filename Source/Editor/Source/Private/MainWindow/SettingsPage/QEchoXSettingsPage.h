@@ -6,7 +6,6 @@
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QMap>
-#include "DetailView/QDetailView.h"
 #include "Settings/QSettingsManager.h"
 #include "Settings/IEchoXSettings.h"
 

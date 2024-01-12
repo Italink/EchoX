@@ -2,6 +2,7 @@
 #define QEchoXApplication_h__
 
 #include "QEchoXCoreApplication.h"
+#include <QQmlApplicationEngine>
 #include "EchoXEditorAPI.h"
 
 class QEchoXMainWindow;
@@ -24,6 +25,7 @@ private:
 	QEchoXMainWindow* mMainWindow = nullptr;
 	QSystemTrayIcon* mSysIcon = nullptr;
 	QEchoXMenu* mSysTrayMenu = nullptr;
+	QQmlApplicationEngine* mQmlEngine;
 };
 
 #endif // QEchoXApplication_h__

@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include "EchoXCoreAPI.h"
-#include "DetailView/QDetailView.h"
 #include "QSettingsManager.h"
 
 #define ECHOX_CONF_VAR(Type, Name)\
@@ -35,8 +34,7 @@ private: \
 class ECHOXCORE_API IEchoXSettings: public QObject {
 public:
 	virtual QWidget* createWidget() { 
-        auto view = new QDetailView();
-        view->setObject(this);
+        auto view = nullptr;
         return view; 
     }
     virtual QString category() const { return "QEchoX"; }

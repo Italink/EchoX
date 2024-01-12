@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QMap>
 #include <QAbstractItemModel>
-#include "DetailView/QDetailView.h"
 #include "Project/QProjectsManager.h"
 
 class QEchoXProjectsModel : public QAbstractItemModel {

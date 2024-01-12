@@ -3,7 +3,6 @@
 
 #include <QQuickWidget>
 #include <QListWidget>
-#include "DetailView/QDetailView.h"
 
 class QEchoXPluginsModel;
 

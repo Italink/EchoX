@@ -2,6 +2,7 @@
 #define QCustomSettings_h__
 
 #include "Settings/IEchoXSettings.h"
+#include "QColor"
 
 class QCustomSettings : public IEchoXSettings {
 	Q_OBJECT

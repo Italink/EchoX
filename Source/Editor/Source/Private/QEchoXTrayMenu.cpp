@@ -1,5 +1,4 @@
 #include "QEchoXTrayMenu.h"
-#include "framelesswidgetshelper.h"
 #include <QWidgetAction>
 #include <QPainter>
 #include <QStyleOption>

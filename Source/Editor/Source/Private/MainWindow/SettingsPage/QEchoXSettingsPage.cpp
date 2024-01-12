@@ -6,6 +6,7 @@
 #include <QAbstractItemModel>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QHBoxLayout>
 #include <QQuickItem>
 #include "Settings/QEchoXStyleSettings.h"
 #include "QEchoXSettingsModel.h"

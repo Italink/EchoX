@@ -40,6 +40,12 @@ ColumnLayout{
             onClicked: {
                 projectsModel.createNewProject()
             }
+            Component.onCompleted: {
+                console.log("Component.onCompleted")
+            }
+            Component.onDestruction: {
+                 console.log("Component.onDestruction")
+            }
         }
     }
 

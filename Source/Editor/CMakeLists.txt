@@ -9,8 +9,8 @@ qengine_add_target(EchoXEditor
         Qt::Multimedia
         Qt::QuickWidgets
         EchoXCore
-        FramelessHelper::Core
-        FramelessHelper::Widgets
+    PRIVATE_DEPENDENCY 
+        QWindowKit::Quick
     QRC_FILE EchoXEditor.qrc
     SOURCE_GROUP " "
 )

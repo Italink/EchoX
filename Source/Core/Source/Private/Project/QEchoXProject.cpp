@@ -1,7 +1,6 @@
 #include "QEchoXProject.h"
 #include "QProjectsManager.h"
 #include "Serialization.h"
-#include "DetailView/QDetailView.h"
 
 QEchoXProject::QEchoXProject()
 {

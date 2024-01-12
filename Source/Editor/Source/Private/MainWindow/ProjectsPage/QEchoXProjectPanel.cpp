@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QDrag>
 #include <QScreen>
+#include <QVBoxLayout>
 #include "Utils/LoggingCategory.h"
 #include "Project/Widget/IEchoXWidgetComponent.h"
 
@@ -12,7 +13,6 @@ QEchoXProjectPanel::QEchoXProjectPanel()
 	: mBtReturn(new QPushButton("Return"))
 	, mComponentSelector(new QEchoXComponentSelector)
 	, mComponentOutliner(new QEchoXComponentOutliner)
-	, mDetailView(new QDetailView)
 {
 	mBtReturn->setIcon(QIcon(":/Resources/return.png"));
 	mBtReturn->setMaximumWidth(100);
@@ -27,7 +27,7 @@ QEchoXProjectPanel::QEchoXProjectPanel()
 
 	QSplitter* vSplitter = new QSplitter(Qt::Vertical);
 	vSplitter->addWidget(mComponentOutliner);
-	vSplitter->addWidget(mDetailView);
+	//vSplitter->addWidget(mDetailView);
 
 	hSplitter->addWidget(vSplitter);
 
@@ -53,5 +53,4 @@ void QEchoXProjectPanel::onComponentDropped(QPoint center, IEchoXComponent* inCo
 
 void QEchoXProjectPanel::onComponentSelected(IEchoXComponent* inComponent)
 {
-	mDetailView->setObject(inComponent);
 }

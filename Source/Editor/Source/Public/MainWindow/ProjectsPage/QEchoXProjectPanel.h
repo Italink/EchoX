@@ -6,7 +6,6 @@
 #include <QWheelEvent>
 #include <QSplitter>
 #include "Project/QProjectsManager.h"
-#include "DetailView/QDetailView.h"
 #include "MainWindow/ProjectsPage/QEchoXComponentSelector.h"
 #include "MainWindow/ProjectsPage/QEchoXComponentOutliner.h"
 
@@ -26,7 +25,7 @@ private:
 	QPushButton* mBtReturn = nullptr;
 	QEchoXComponentSelector* mComponentSelector = nullptr;
 	QEchoXComponentOutliner* mComponentOutliner = nullptr;
-	QDetailView* mDetailView = nullptr;
+	//QDetailView* mDetailView = nullptr;
 };
 
 #endif // QEchoXProjectPanel_h__
