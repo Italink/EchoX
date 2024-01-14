@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-
+class QEchoXProjectsModel;
 class QEchoXSettingsModel;
 class QEchoXPluginsModel;
 class QQuickText;
@@ -24,6 +24,7 @@ protected:
 private:
 	QQuickText* mPageNameText = nullptr;
 	QQuickStackView* mStackView = nullptr;
+	QEchoXProjectsModel* mProjectsModel = nullptr;
 	QEchoXSettingsModel* mSettingsModel = nullptr;
 	QEchoXPluginsModel* mPluginsModel = nullptr;
 };

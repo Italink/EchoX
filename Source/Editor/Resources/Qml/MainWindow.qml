@@ -9,7 +9,7 @@ Window {
     width: 1200
     height: 800
     color: darkStyle.windowBackgroundColor
-    title: qsTr("Hello, world!")
+    title: qsTr("EchoX")
     Component.onCompleted: {
         //windowAgent.setup(window)
         window.visible = true
@@ -128,6 +128,39 @@ Window {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        pushEnter: Transition {
+             PropertyAnimation {
+                 property: "opacity"
+                 from: 0
+                 to:1
+                 duration: 400
+             }
+         }
+         pushExit: Transition {
+             PropertyAnimation {
+                 property: "opacity"
+                 from: 1
+                 to:0
+                 duration: 400
+             }
+         }
+         popEnter: Transition {
+             PropertyAnimation {
+                 property: "opacity"
+                 from: 0
+                 to:1
+                 duration: 400
+             }
+         }
+         popExit: Transition {
+             PropertyAnimation {
+                 property: "opacity"
+                 from: 1
+                 to:0
+                 duration: 400
+             }
+         }
+
         Component.onCompleted:{
             Controller.initialize(pageName,stackView)
         }
@@ -135,7 +168,7 @@ Window {
     
     Component {
         id: mainView
-        ProjectsView{
+        ProjectsPage{
             objectName : "EchoX"
         }
     }

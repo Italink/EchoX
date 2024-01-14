@@ -2,13 +2,15 @@
 #include <QDebug>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include "QEchoXProjectsModel.h"
 #include "QEchoXSettingsModel.h"
-#include "PluginsPage/QEchoXPluginsModel.h"
+#include "QEchoXPluginsModel.h"
 #include "private/qquickstackview_p.h"
 #include "private/qquicktext_p.h"
 
 QEchoXController::QEchoXController()
-	: mSettingsModel(new QEchoXSettingsModel)
+	: mProjectsModel(new QEchoXProjectsModel)
+	, mSettingsModel(new QEchoXSettingsModel)
 	, mPluginsModel(new QEchoXPluginsModel)
 {
 }
@@ -24,6 +26,7 @@ void QEchoXController::initialize(QQuickText* inPageNameText, QQuickStackView* i
 	mPageNameText = inPageNameText;
 	mStackView = inStackView;
 	QQmlEngine* engine = qmlEngine(mStackView);
+	engine->rootContext()->setContextProperty("ProjectsModel", mProjectsModel);
 	engine->rootContext()->setContextProperty("SettingsModel", mSettingsModel);
 	engine->rootContext()->setContextProperty("PluginsModel", mPluginsModel);
 	connect(mStackView, &QQuickStackView::currentItemChanged, [this]() {
@@ -34,7 +37,7 @@ void QEchoXController::initialize(QQuickText* inPageNameText, QQuickStackView* i
 
 void QEchoXController::openSettingsPage()
 {
-	mStackView->pushItem(QUrl("qrc:///Resources/Qml/SettingsPage.qml"));
+	mStackView->pushItem(QUrl("qrc:///Resources/Qml/SettingsPage.qml"), {},QQuickStackView::PushTransition);
 }
 
 Q_INVOKABLE void QEchoXController::goBack()

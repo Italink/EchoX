@@ -6,8 +6,6 @@
 #include "Audio/QSmtcManager.h"
 #include "Settings/Audio/QSmtcView.h"
 #include "Project/QProjectsManager.h"
-#include "QEchoXProjectsPanel.h"
-#include "QEchoXProjectsPage.h"
 #include "Settings/QSettingsManager.h"
 #include "Settings/QEchoXStyleSettings.h"
 #include "Plugin/QEnginePluginManager.h"
