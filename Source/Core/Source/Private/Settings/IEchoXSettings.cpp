@@ -4,6 +4,26 @@
 #include "Serialization.h"
 #include <QJsonDocument>
 #include <QJsonObject>
+#include "DetailView/QQuickDetailsView.h"
+
+QQuickItem* IEchoXSettings::createView(QQmlEngine* engine)
+{
+	QQmlComponent component = QQmlComponent(engine);
+	component.setData(R"(
+		import QtQuick
+		import QtQuick.Controls
+		import QtQuick.Layouts
+		import Qt.DetailsView
+		DetailsView {
+            id: detailsView
+            Layout.fillWidth : true
+            Layout.fillHeight: true
+        }
+	)",QUrl());
+	QQuickDetailsView* detailsView = qobject_cast<QQuickDetailsView*>(component.create());
+	detailsView->setObject(this);
+	return detailsView;
+}
 
 QString IEchoXSettings::getName() const
 {

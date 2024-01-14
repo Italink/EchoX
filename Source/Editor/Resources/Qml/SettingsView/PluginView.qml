@@ -24,7 +24,7 @@ RowLayout{
         }
         TreeView {
             id: outliner
-            model: pluginsModel
+            model: PluginsModel
             anchors.fill: parent
             property var currentPlugin : null
             delegate: Item {
@@ -45,7 +45,7 @@ RowLayout{
                 Rectangle {
                     visible: model == outliner.currentPlugin
                     anchors.fill: parent
-                    color:  echoxStyle.SelectedColor
+                    color:  EchoXStyle.SelectedColor
                 }
 
                 Rectangle {
@@ -68,7 +68,7 @@ RowLayout{
                         ColorOverlay {
                                 anchors.fill: icon
                                 source: icon
-                                color: echoxStyle.ThemeColor
+                                color: EchoXStyle.ThemeColor
                         }
                     }
                     Text {
@@ -99,7 +99,7 @@ RowLayout{
                 }
                 ColorAnimation on hoverdColor{
                     id: enterAnimation
-                    to: echoxStyle.HoveredColor
+                    to: EchoXStyle.HoveredColor
                     duration: 100
                     running: false
                 }

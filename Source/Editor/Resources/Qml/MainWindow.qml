@@ -1,44 +1,22 @@
-﻿import QtQuick 2.15
-import QtQuick.Window 2.15
-import QtQuick.Controls 2.15
-import Qt.labs.platform 1.1
+﻿import QtQuick 
+import QtQuick.Window 
+import QtQuick.Controls 
+import Qt.labs.platform 
 import QWindowKit
 
 Window {
     id: window
-    width: 800
-    height: 600
+    width: 1200
+    height: 800
     color: darkStyle.windowBackgroundColor
     title: qsTr("Hello, world!")
     Component.onCompleted: {
-        windowAgent.setup(window)
+        //windowAgent.setup(window)
         window.visible = true
-    }
-
-    QtObject {
-        id: lightStyle
-    }
-
-    QtObject {
-        id: darkStyle
-        readonly property color windowBackgroundColor: "#1E1E1E"
-    }
-
-    Timer {
-        interval: 100
-        running: true
-        repeat: true
-        onTriggered: timeLabel.text = Qt.formatTime(new Date(), "hh:mm:ss")
     }
 
     WindowAgent {
         id: windowAgent
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: contextMenu.open()
     }
 
     Rectangle {
@@ -51,25 +29,27 @@ Window {
         }
         height: 32
         color: window.active ? "#3C3C3C" : "#505050"
-        Component.onCompleted: windowAgent.setTitleBar(titleBar)
+        //Component.onCompleted: windowAgent.setTitleBar(titleBar)
 
-        Image {
-            id: iconButton
+        IconButton {
+            id: goBackButton
+            visible: stackView.depth > 1
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
-                leftMargin: 10
+                leftMargin: 2
             }
-            width: 18
-            height: 18
-            mipmap: true
-            source: "qrc:///app/example.png"
+            height: parent.height
+            source: "qrc:///Resources/Icon/back.svg"
+            onClicked: Controller.goBack()
+            //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
         }
 
         Text {
+            id: pageName
             anchors {
                 verticalCenter: parent.verticalCenter
-                left: iconButton.right
+                left: goBackButton.visible? goBackButton.right: parent.left
                 leftMargin: 10
             }
             horizontalAlignment: Text.AlignHCenter
@@ -87,11 +67,20 @@ Window {
             height: parent.height
 
             IconButton {
+                id: settingsButton
+                visible: !(stackView.currentItem && stackView.currentItem.objectName === "Settings")
+                height: parent.height
+                source: "qrc:///Resources/Icon/setting-fill.svg"
+                onClicked: Controller.openSettingsPage()
+                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
+            }
+
+            IconButton {
                 id: minButton
                 height: parent.height
                 source: "qrc:///Resources/Icon/minimize.svg"
                 onClicked: window.showMinimized()
-                Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
+                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
             }
 
             IconButton {
@@ -105,7 +94,7 @@ Window {
                         window.showMaximized()
                     }
                 }
-                Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Maximize, maxButton)
+                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Maximize, maxButton)
             }
 
             IconButton {
@@ -127,94 +116,27 @@ Window {
                     }
                 }
                 onClicked: window.close()
-                Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Close, closeButton)
+                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Close, closeButton)
             }
         }
     }
 
-    Label {
-        id: timeLabel
-        anchors.centerIn: parent
-        font {
-            pointSize: 75
-            bold: true
+    StackView {
+        id: stackView
+        initialItem: mainView
+        anchors.top: titleBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        Component.onCompleted:{
+            Controller.initialize(pageName,stackView)
         }
-        color: "#FEFEFE"
     }
-
-    Menu {
-        id: contextMenu
-
-        Menu {
-            id: themeMenu
-            title: qsTr("Theme")
-
-            MenuItemGroup {
-                id: themeMenuGroup
-                items: themeMenu.items
-            }
-
-            MenuItem {
-                text: qsTr("Light")
-                checkable: true
-                onTriggered: windowAgent.setWindowAttribute("dark-mode", false)
-            }
-
-            MenuItem {
-                text: qsTr("Dark")
-                checkable: true
-                onTriggered: windowAgent.setWindowAttribute("dark-mode", true)
-            }
-        }
-
-        Menu {
-            id: specialEffectMenu
-            title: qsTr("Special effect")
-
-            MenuItemGroup {
-                id: specialEffectMenuGroup
-                items: specialEffectMenu.items
-            }
-
-            MenuItem {
-                enabled: Qt.platform.os === "windows"
-                text: qsTr("DWM blur")
-                checkable: true
-                onTriggered: {
-                    window.color = checked ? "transparent" : darkStyle.windowBackgroundColor
-                    windowAgent.setWindowAttribute("dwm-blur", checked)
-                }
-            }
-
-            MenuItem {
-                enabled: Qt.platform.os === "windows"
-                text: qsTr("Acrylic material")
-                checkable: true
-                onTriggered: {
-                    window.color = checked ? "transparent" : darkStyle.windowBackgroundColor
-                    windowAgent.setWindowAttribute("acrylic-material", checked)
-                }
-            }
-
-            MenuItem {
-                enabled: Qt.platform.os === "windows"
-                text: qsTr("Mica")
-                checkable: true
-                onTriggered: {
-                    window.color = checked ? "transparent" : darkStyle.windowBackgroundColor
-                    windowAgent.setWindowAttribute("mica", checked)
-                }
-            }
-
-            MenuItem {
-                enabled: Qt.platform.os === "windows"
-                text: qsTr("Mica Alt")
-                checkable: true
-                onTriggered: {
-                    window.color = checked ? "transparent" : darkStyle.windowBackgroundColor
-                    windowAgent.setWindowAttribute("mica-alt", checked)
-                }
-            }
+    
+    Component {
+        id: mainView
+        ProjectsView{
+            objectName : "EchoX"
         }
     }
 }

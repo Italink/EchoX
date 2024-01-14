@@ -19,6 +19,6 @@ QEchoXPluginsPage::QEchoXPluginsPage()
 	quick->setAttribute(Qt::WA_AlwaysStackOnTop); 
 	quick->setClearColor(Qt::transparent);
     quick->rootContext()->setContextProperty("pluginsModel", mPluginsModel);
-	quick->rootContext()->setContextProperty("echoxStyle", QEchoXStyleSettings::Get());
+	quick->rootContext()->setContextProperty("EchoXStyle", QEchoXStyleSettings::Get());
 	quick->setSource(QUrl("qrc:/Resources/Qml/PluginPage.qml"));
 }

@@ -8,8 +8,6 @@
         <file>Resources/return.png</file>
         <file>Resources/setting-fill.png</file>
         <file>Resources/inner_shadow.png</file>
-        <file>Resources/Qml/PluginPage.qml</file>
-        <file>Resources/Qml/SettingsPageOutliner.qml</file>
         <file>Resources/Qml/ProjectsView.qml</file>
         <file>Resources/Qml/MainWindow.qml</file>
         <file>Resources/Icon/close.svg</file>
@@ -19,5 +17,9 @@
         <file>Resources/Icon/more-line.svg</file>
         <file>Resources/Icon/restore.svg</file>
         <file>Resources/Qml/IconButton.qml</file>
+        <file>Resources/Icon/setting-fill.svg</file>
+        <file>Resources/Qml/SettingsPage.qml</file>
+        <file>Resources/Qml/SettingsView/PluginView.qml</file>
+        <file>Resources/Icon/back.svg</file>
     </qresource>
 </RCC>

@@ -1,4 +1,5 @@
 #include "QEchoXSettingsModel.h"
+#include "private/qquickitem_p.h"
 
 QEchoXSettingsModel::QEchoXSettingsModel(QObject* parent)
 	: QAbstractItemModel(parent) {
@@ -61,10 +62,23 @@ void QEchoXSettingsModel::refresh() {
     Q_EMIT settingsChanged();
 }
 
-void QEchoXSettingsModel::notifyCurrentSettingChanged(QModelIndex index)
+void QEchoXSettingsModel::notifyCurrentIndexChanged(QQuickItem* parent, QModelIndex index)
 {
 	IEchoSettingsTreeNode* node = static_cast<IEchoSettingsTreeNode*>(index.internalPointer());
-	Q_EMIT settingsSelected(node->getSettings());
+	mCurrentSettings = node->getSettings();
+    if (mCurrentSettings) {
+        if (mCurrentSettingsView) {
+            mCurrentSettingsView->setParent(nullptr);
+            mCurrentSettingsView->setParentItem(nullptr);
+            mCurrentSettingsView->deleteLater();
+        }
+        mCurrentSettingsView = mCurrentSettings->createView(qmlEngine(parent));
+        mCurrentSettingsView->setParent(this);
+        mCurrentSettingsView->setParentItem(parent);
+        QQuickAnchors* anchors = QQuickItemPrivate::get(mCurrentSettingsView)->anchors();
+        anchors->setFill(parent);
+    }
+	Q_EMIT settingsSelected(mCurrentSettings);
 }
 
 int QEchoXSettingsModel::columnCount(const QModelIndex& parent) const {

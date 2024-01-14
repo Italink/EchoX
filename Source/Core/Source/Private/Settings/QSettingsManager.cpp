@@ -9,13 +9,24 @@ QSettingsManager& QSettingsManager::Get()
 
 void QSettingsManager::addSettings(const QMetaObject* inMetaObject, IEchoXSettings* inSettings)
 {
-	mSettings.insert(inMetaObject, inSettings);
+	inSettings->setParent(this);
+	mSettings << inSettings;
+	mSettingsTypeMap.insert(inMetaObject, inSettings);
 	inSettings->reload();
+}
+
+void QSettingsManager::removeSettings(const QMetaObject* inMetaObject)
+{
+	IEchoXSettings* settings = mSettingsTypeMap.take(inMetaObject);
+	if (settings) {
+		mSettings.removeOne(settings);
+		settings->deleteLater();
+	}
 }
 
 QList<IEchoXSettings*> QSettingsManager::getAllSettings()
 {
-	return mSettings.values();
+	return mSettings;
 }
 
 QDir QSettingsManager::getSettingsDir() const

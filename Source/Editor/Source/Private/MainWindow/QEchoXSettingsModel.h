@@ -41,7 +41,7 @@ public:
 
 class QEchoXSettingsModel : public QAbstractItemModel {
     Q_OBJECT
-        enum Roles {
+    enum Roles {
         name = 0,
     };
 public:
@@ -55,12 +55,17 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QHash<int, QByteArray> roleNames() const override;
     void refresh();
-    Q_INVOKABLE void notifyCurrentSettingChanged(QModelIndex index);
+    Q_INVOKABLE void notifyCurrentIndexChanged(QQuickItem* parent, QModelIndex index);
 Q_SIGNALS:
+    void asCurrentSettingIndexChanged();
     void settingsChanged();
     void settingsSelected(IEchoXSettings*);
 private:
     QList<QSharedPointer<EchoSettingsTreeNode_Categroy>> mCategoryList;
+    QObject* mPage = nullptr;
+    IEchoXSettings* mCurrentSettings = nullptr;
+    QQuickItem* mCurrentSettingsView = nullptr;
 };
 
 #endif // QEchoXSettingsModel_h__
+ 

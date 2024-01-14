@@ -31,7 +31,7 @@ QEchoXProjectsPage::QEchoXProjectsPage()
 	quick->setClearColor(Qt::transparent);
 	quick->rootContext()->setContextProperty("projectsModel", mProjectsModel);
 	mLayout->addWidget(quick);
-	quick->rootContext()->setContextProperty("echoxStyle", QEchoXStyleSettings::Get());
+	quick->rootContext()->setContextProperty("EchoXStyle", QEchoXStyleSettings::Get());
 	quick->setSource(QUrl("qrc:/Resources/Qml/ProjectsView.qml"));
 
 
@@ -55,7 +55,7 @@ void QEchoXProjectsPage::onEnterProject(QEchoXProject* inProject)
 	mSrcPixmap = mProjectsPanel->grab().toImage();
 	mDestPixmap = mProjectPanel->grab().toImage();
 
-	mSwitchAnimation->start(QAbstractAnimation::KeepWhenStopped);
+	mSwitchAnimation->start(QAbstractAnimation::KeepWhenStopped); 
 	QProjectsManager::Get().setCurrentProject(inProject);
 
 	mSwitchAnimation->disconnect(mFinishedConnection);

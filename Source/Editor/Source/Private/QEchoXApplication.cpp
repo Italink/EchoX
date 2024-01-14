@@ -1,7 +1,6 @@
 #include "QEchoXApplication.h"
 #include "QEchoXTrayMenu.h"
 #include "Render/RHI/QRhiHelper.h"
-#include "QEchoXMainWindow.h"
 #include "Settings/Audio/QAudioAnalyseView.h"
 #include "Utils/Serialization.h"
 #include "Audio/QSmtcManager.h"
@@ -17,6 +16,10 @@
 #include "QSmtcSettings.h"
 #include "Project/Widget/VFX/QWidgetVFXManager.h"
 #include <QWKQuick/qwkquickglobal.h>
+#include "QEchoXController.h"
+#include "DetailView/QQuickDetailsViewMananger.h"
+#include "DetailView/QQmlHelper.h"
+#include "QEchoXPluginsSettings.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QEchoXCoreApplication(argc, argv)
@@ -30,6 +33,7 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QProjectsManager::Get().loadProjects();
 	QWidgetVFXManager::Get();
 
+	QEchoXPluginsSettings::Register();
 	QEchoXStyleSettings::Register();
 	QAudioAnalyseSettings::Register();
 	QSmtcSettings::Register();
@@ -49,7 +53,7 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	mSysIcon->show();
 
 	QWK::registerTypes(mQmlEngine);
-
+	QQuickDetailsViewManager::Get()->registerQml();
 	setQuitOnLastWindowClosed(false);
 	connect(mSysIcon, &QSystemTrayIcon::activated, this, &QEchoXApplication::onActivatedSysTrayIcon);
 	const QUrl url(QStringLiteral("qrc:/Resources/Qml/MainWindow.qml"));
@@ -58,6 +62,9 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 			if (!obj && url == objUrl)
 				QCoreApplication::exit(-1);
 		}, Qt::QueuedConnection);
+	mQmlEngine->rootContext()->setContextProperty("helper", QQmlHelper::Get());
+	mQmlEngine->rootContext()->setContextProperty("EchoXStyle", QEchoXStyleSettings::Get());
+	mQmlEngine->rootContext()->setContextProperty("Controller", QEchoXController::Get());
 	mQmlEngine->load(url);
 }
 
@@ -79,9 +86,8 @@ void QEchoXApplication::preInitialize()
 #else
 	qputenv("QT_QUICK_CONTROLS_STYLE", "Default");
 #endif
-	qputenv("FRAMELESSHELPER_FORCE_HIDE_WINDOW_FRAME_BORDER", "1");
-	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-	QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+	//QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	//QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 }
 
 QEchoXMainWindow* QEchoXApplication::getMainEditor() const
@@ -92,7 +98,7 @@ QEchoXMainWindow* QEchoXApplication::getMainEditor() const
 QSystemTrayIcon* QEchoXApplication::getSystemTrayIcon() const
 {
 	return mSysIcon;
-}
+} 
 
 void QEchoXApplication::onActivatedSysTrayIcon(QSystemTrayIcon::ActivationReason reason)
 {

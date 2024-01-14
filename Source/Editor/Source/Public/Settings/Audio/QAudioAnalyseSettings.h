@@ -8,7 +8,7 @@ class QAudioAnalyseSettings : public IEchoXSettings {
 public:
 	ECHOX_DECLARE_SETTINGS(QAudioAnalyseSettings, AudioAnalyse)
 private:
-	QWidget* createWidget() override;
+	//QWidget* createWidget() override;
 
 };
 

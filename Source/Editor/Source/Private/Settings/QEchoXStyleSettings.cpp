@@ -1,7 +1,6 @@
 #include "QEchoXStyleSettings.h"
 #include "QEngineEditorStyleManager.h"
 #include "QEchoXApplication.h"
-#include "MainWindow/QEchoXMainWindow.h"
 
 QEchoXStyleSettings::QEchoXStyleSettings()
 {
@@ -47,7 +46,7 @@ void QEchoXStyleSettings::setSelectedColor(QColor var)
 		mDetailViewPalette.mSelectedColor = var;
 		refreshDetailViewStyle();
 		Q_EMIT asStyleChanged();
-	}
+	} 
 }
 
 float QEchoXStyleSettings::getShadowWidth()

@@ -2,8 +2,11 @@
 #define IEchoXSettings_h__
 
 #include <QObject>
-#include "EchoXCoreAPI.h"
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQuickItem>
 #include "QSettingsManager.h"
+#include "EchoXCoreAPI.h"
 
 #define ECHOX_CONF_VAR(Type, Name)\
 public: \
@@ -33,10 +36,7 @@ private: \
 
 class ECHOXCORE_API IEchoXSettings: public QObject {
 public:
-	virtual QWidget* createWidget() { 
-        auto view = nullptr;
-        return view; 
-    }
+    virtual QQuickItem* createView(QQmlEngine* engine);
     virtual QString category() const { return "QEchoX"; }
     virtual bool visible() const { return true; }
 

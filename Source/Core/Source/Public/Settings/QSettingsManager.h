@@ -14,26 +14,23 @@ public:
 	static QSettingsManager& Get();
 	template<typename SettingsType>
 	SettingsType* GetSettings() {
-		return qobject_cast<SettingsType*>(mSettings.value(&SettingsType::staticMetaObject));
+		return qobject_cast<SettingsType*>(mSettingsTypeMap.value(&SettingsType::staticMetaObject));
 	}
 
 	template<typename SettingsType>
 	void registerSettings() {
 		SettingsType* settings = new SettingsType();
-		settings->setParent(this);
 		addSettings(&SettingsType::staticMetaObject, settings);
 		Q_EMIT asSettingsChanged();
 	}
 
 	template<typename SettingsType>
 	void unregisterSettings() {
-		IEchoXSettings* settings = mSettings.take(&SettingsType::staticMetaObject);
-		if (settings) {
-			settings->deleteLater();
-		}
+		removeSettings(&SettingsType::staticMetaObject);
 		Q_EMIT asSettingsChanged();
 	}
 	void addSettings(const QMetaObject* inMetaObject, IEchoXSettings* inSettings);
+	void removeSettings(const QMetaObject* inMetaObject);
 	QList<IEchoXSettings*> getAllSettings();
 	QDir getSettingsDir() const;
 Q_SIGNALS:
@@ -42,7 +39,8 @@ private:
 	QSettingsManager();
 private:
 	QDir mSettingsDir = QDir("./Settings");
-	QHash<const QMetaObject*, IEchoXSettings*> mSettings;
+	QList<IEchoXSettings*> mSettings;
+	QHash<const QMetaObject*, IEchoXSettings*> mSettingsTypeMap;
 };
 
 #endif // QSettingsManager_h__

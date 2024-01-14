@@ -3,6 +3,7 @@
 
 #include "QEchoXCoreApplication.h"
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include "EchoXEditorAPI.h"
 
 class QEchoXMainWindow;
