@@ -23,7 +23,7 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QHash<int, QByteArray> roleNames() const override;
     void refresh();
-    Q_INVOKABLE void notifyProjectDoubleClicked(QModelIndex index);
+    Q_INVOKABLE void notifyProjectDoubleClicked(int index);
     Q_INVOKABLE void createNewProject();
 Q_SIGNALS:
 private:

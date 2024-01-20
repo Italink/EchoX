@@ -1,4 +1,5 @@
 #include "QEchoXProjectsModel.h"
+#include "QEchoXController.h"
 
 QEchoXProjectsModel::QEchoXProjectsModel(QObject* parent)
 	: QAbstractItemModel(parent) {
@@ -42,9 +43,12 @@ void QEchoXProjectsModel::refresh() {
     endResetModel();
 }
 
-void QEchoXProjectsModel::notifyProjectDoubleClicked(QModelIndex index)
+void QEchoXProjectsModel::notifyProjectDoubleClicked(int index)
 {
-    qDebug() << index.row();
+    qDebug() << index;
+    if (QEchoXProject* project = mProjectList.value(index)) {
+        QEchoXController::Get()->openProjectPage(project);
+    }
 }
 
 void QEchoXProjectsModel::createNewProject()

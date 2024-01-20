@@ -124,6 +124,10 @@ ColumnLayout{
                     enterAnimation.stop()
                     exitAnimation.start()
                 }
+                onDoubleClicked: {
+                    console.log(index)
+                    ProjectsModel.notifyProjectDoubleClicked(index)
+                }
             }
             ColorAnimation on hoverdColor{
                 id: enterAnimation

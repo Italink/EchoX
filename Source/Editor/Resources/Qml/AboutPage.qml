@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 
 ColumnLayout{
-
     RowLayout{
         Layout.fillWidth: true
         Layout.fillHeight: true

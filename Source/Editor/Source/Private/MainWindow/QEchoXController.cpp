@@ -7,6 +7,7 @@
 #include "QEchoXPluginsModel.h"
 #include "private/qquickstackview_p.h"
 #include "private/qquicktext_p.h"
+#include "Project/QEchoXProject.h"
 
 QEchoXController::QEchoXController()
 	: mProjectsModel(new QEchoXProjectsModel)
@@ -40,7 +41,12 @@ void QEchoXController::openSettingsPage()
 	mStackView->pushItem(QUrl("qrc:///Resources/Qml/SettingsPage.qml"), {},QQuickStackView::PushTransition);
 }
 
-Q_INVOKABLE void QEchoXController::goBack()
+void QEchoXController::openProjectPage(QEchoXProject* inProject)
+{
+	QQuickItem* item = mStackView->pushItem(QUrl("qrc:///Resources/Qml/ProjectPage.qml"), {}, QQuickStackView::PushTransition);
+}
+
+void QEchoXController::goBack()
 {
 	if (mStackView->depth() > 1) {
 		mStackView->popCurrentItem();
