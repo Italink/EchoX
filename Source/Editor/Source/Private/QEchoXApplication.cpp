@@ -5,7 +5,7 @@
 #include "Utils/Serialization.h"
 #include "Audio/QSmtcManager.h"
 #include "Settings/Audio/QSmtcView.h"
-#include "Project/QProjectsManager.h"
+#include "Project/QEchoXProjectsManager.h"
 #include "Settings/QSettingsManager.h"
 #include "Settings/QEchoXStyleSettings.h"
 #include "Plugin/QEnginePluginManager.h"
@@ -28,7 +28,7 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	Serialization::registerBuiltinType();
 	QAudioAnalyseManager::Get().startup();
 	//QSmtcManager::Get().startup();
-	QProjectsManager::Get().loadProjects();
+	QEchoXProjectsManager::Get().loadProjects();
 	QWidgetVFXManager::Get();
 
 	QEchoXPluginsSettings::Register();
@@ -36,7 +36,7 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QAudioAnalyseSettings::Register();
 	QSmtcSettings::Register();
 
-	QProjectsManager::Get().registerItemType(&QEchoXWidgetComponent_Button::staticMetaObject);
+	QEchoXProjectsManager::Get().registerComponentType(&QEchoXWidgetComponent_Button::staticMetaObject);
 
 	QEnginePluginManager::Get().loadPlugins();
 	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginHandlers()) {

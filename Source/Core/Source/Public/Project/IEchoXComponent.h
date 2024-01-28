@@ -10,6 +10,9 @@ public:
 	bool isActivated() const;
 	void activateInternal();
 	void deactivateInternal();
+
+	void setActivated(bool inActivated);
+	bool getActivated() const;
 protected:
 	virtual void activate() {};
 	virtual void deactivate() {};

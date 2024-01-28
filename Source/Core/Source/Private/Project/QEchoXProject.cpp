@@ -1,5 +1,5 @@
 #include "QEchoXProject.h"
-#include "QProjectsManager.h"
+#include "QEchoXProjectsManager.h"
 #include "Serialization.h"
 
 QEchoXProject::QEchoXProject()
@@ -29,13 +29,13 @@ void QEchoXProject::deactivate()
 
 bool QEchoXProject::rename(QString inNewName)
 {
-	QString name = QProjectsManager::Get().makeUniqueName(inNewName);
-	return getProjectFile().rename(QProjectsManager::Get().getProjectsDir().filePath(name + "." + QProjectsManager::ProjectSuffix));
+	QString name = QEchoXProjectsManager::Get().makeUniqueName(inNewName);
+	return getProjectFile().rename(QEchoXProjectsManager::Get().getProjectsDir().filePath(name + "." + QEchoXProjectsManager::ProjectSuffix));
 }
 
 QFile QEchoXProject::getProjectFile() const
 {
-	return QProjectsManager::Get().getProjectsDir().filePath(getProjectName() + "." + QProjectsManager::ProjectSuffix);
+	return QEchoXProjectsManager::Get().getProjectsDir().filePath(getProjectName() + "." + QEchoXProjectsManager::ProjectSuffix);
 }
 
 QList<IEchoXComponent*> QEchoXProject::getItems() const
@@ -55,7 +55,7 @@ QPixmap QEchoXProject::getThumbnail()
 
 bool QEchoXProject::save()
 {
-	return QProjectsManager::Get().saveProject(this);
+	return QEchoXProjectsManager::Get().saveProject(this);
 }
 
 void QEchoXProject::setItems(QList<IEchoXComponent*> val)
@@ -83,6 +83,11 @@ void QEchoXProject::removeComponent(IEchoXComponent* inItem)
 	if (mComponents.removeOne(inItem)) {
 		Q_EMIT asComponentsChanged();
 	}
+}
+
+const QList<IEchoXComponent*>& QEchoXProject::getComponents() const
+{
+	return mComponents;
 }
 
 void QEchoXProject::clearInvailedItem()

@@ -23,24 +23,16 @@ RowLayout{
             radius: 4
         }
         ListView{
+            clip: true
             id: componentOutliner
-            model: PluginsModel
+            model: ComponentModel
             anchors.fill: parent
-            property var currentPlugin : null
             delegate: Item {
-
-
                 implicitWidth: componentOutliner.width
                 implicitHeight: 50
 
                 property bool hoverd : false
                 property color hoverdColor : "transparent"
-                Rectangle {
-                    visible: model == componentOutliner.currentPlugin
-                    anchors.fill: parent
-                    color:  EchoXStyle.SelectedColor
-                }
-
                 Rectangle {
                     anchors.fill: parent
                     color:  hoverdColor
@@ -68,7 +60,7 @@ RowLayout{
                         Layout.fillWidth: true
                         text: model.name
                         color: "#444444"
-                        Layout.alignment: Qt.AlignLeft
+                        Layout.alignment: Qt.AlignLeft |Qt.AlignVCenter
                     }
                 }
                 MouseArea{
@@ -84,9 +76,9 @@ RowLayout{
                         enterAnimation.stop()
                         exitAnimation.start()
                     }
-                    onClicked: {
-                        if(componentOutliner.currentPlugin != model){
-                            componentOutliner.currentPlugin = model
+                    onPositionChanged: (mouse)=>{
+                        if(mouse.buttons & Qt.LeftButton){
+                            ComponentModel.notifyBeginDrag(index)
                         }
                     }
                 }
@@ -105,70 +97,116 @@ RowLayout{
             }
         }
     }
-    ColumnLayout{
+    SplitView{
+        id: splitView
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: 15
-        ListView{
-            id: projectOutliner
-            model: PluginsModel
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            property var currentPlugin : null
-            delegate: Item {
-                implicitWidth: projectOutliner.width
-                implicitHeight: 50
-
-                property bool hoverd : false
-                property color hoverdColor : "transparent"
-                Rectangle {
-                    visible: model == projectOutliner.currentPlugin
-                    anchors.fill: parent
-                    color:  EchoXStyle.SelectedColor
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    color:  hoverdColor
-                }
-
-                MouseArea{
-                    hoverEnabled : true
-                    anchors.fill: parent
-                    onEntered:{
-                        hoverd = true
-                        projectExitAnimation.stop()
-                        projectEnterAnimation.start()
+        Layout.margins: 10
+        orientation: Qt.Vertical
+        handle: Rectangle {
+             id: handleDelegate
+             implicitWidth: 4
+             implicitHeight: 4
+             color: SplitHandle.pressed ? EchoXStyle.HoveredColor
+                 : (SplitHandle.hovered ? Qt.lighter(EchoXStyle.HoveredColor, 1.1) : EchoXStyle.HoveredColor)
+     }
+        Rectangle{
+            SplitView.minimumHeight: 200
+            RectangularGlow {
+                anchors.fill: parent
+                glowRadius: 5
+                spread: 0.2
+                color: "#DDDDDD"
+                cornerRadius:  glowRadius
+            }
+            Rectangle {
+                color: "white"
+                anchors.fill: parent
+                radius: 4
+            }
+            ListView{
+                id: projectOutliner
+                model: CurrentProjectModel
+                clip: true
+                anchors.fill: parent
+                property var currComponent : null
+                delegate: Item {
+                    implicitWidth: projectOutliner.width
+                    implicitHeight: 30
+                    property bool hoverd : false
+                    property color hoverdColor : "transparent"
+                    Rectangle {
+                        visible: model == projectOutliner.currComponent
+                        anchors.fill: parent
+                        color:  EchoXStyle.SelectedColor
                     }
-                    onExited:{
-                        hoverd = false
-                        projectEnterAnimation.stop()
-                        projectExitAnimation.start()
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color:  hoverdColor
                     }
-                    onClicked: {
-                        if(projectOutliner.currentPlugin != model){
-                            projectOutliner.currentPlugin = model
+                    Text {
+                        anchors.fill: parent
+                        text: model.name
+                        color: "#444444"
+                        verticalAlignment:  Text.AlignVCenter
+                    }
+                    MouseArea{
+                        hoverEnabled : true
+                        anchors.fill: parent
+                        onEntered:{
+                            hoverd = true
+                            projectExitAnimation.stop()
+                            projectEnterAnimation.start()
+                        }
+                        onExited:{
+                            hoverd = false
+                            projectEnterAnimation.stop()
+                            projectExitAnimation.start()
+                        }
+                        onClicked: {
+                            if(projectOutliner.currComponent != model){
+                                projectOutliner.currComponent = model
+                                var comp = CurrentProjectModel.getComponentByIndex(index)
+                                detailsView.setObject(comp)
+                                console.log(comp)
+                            }
                         }
                     }
-                }
-                ColorAnimation on hoverdColor{
-                    id: projectEnterAnimation
-                    to: EchoXStyle.HoveredColor
-                    duration: 100
-                    running: false
-                }
-                ColorAnimation on hoverdColor{
-                    id: projectExitAnimation
-                    to: "transparent"
-                    duration: 100
-                    running: false
-                }
+                    ColorAnimation on hoverdColor{
+                        id: projectEnterAnimation
+                        to: EchoXStyle.HoveredColor
+                        duration: 100
+                        running: false
+                    }
+                    ColorAnimation on hoverdColor{
+                        id: projectExitAnimation
+                        to: "transparent"
+                        duration: 100
+                        running: false
+                    }
 
+                }
             }
         }
-        DetailsView {
-            Component.onCompleted: {
-                setObject(projectEnterAnimation)
+        Rectangle{
+            RectangularGlow {
+                anchors.fill: parent
+                glowRadius: 5
+                spread: 0.2
+                color: "#DDDDDD"
+                cornerRadius:  glowRadius
+            }
+            Rectangle {
+                color: "white"
+                anchors.fill: parent
+                radius: 4
+            }
+            SplitView.minimumHeight: 400
+            DetailsView {
+                clip: true
+                id: detailsView
+                anchors.fill: parent
             }
         }
     }

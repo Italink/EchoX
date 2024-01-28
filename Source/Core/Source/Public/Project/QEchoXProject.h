@@ -26,6 +26,7 @@ public:
 	void setThumbnail(QPixmap inPixmap);
 	void addComponent(IEchoXComponent* inItem);
 	void removeComponent(IEchoXComponent* inItem);
+	const QList<IEchoXComponent*>& getComponents() const;
 	void clearInvailedItem();
 Q_SIGNALS:
 	void asComponentsChanged();

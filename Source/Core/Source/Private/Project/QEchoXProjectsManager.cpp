@@ -1,15 +1,15 @@
-#include "QProjectsManager.h"
+#include "QEchoXProjectsManager.h"
 #include "Serialization.h"
 #include <QMetaMethod>
 #include "LoggingCategory.h"
 
-QProjectsManager& QProjectsManager::Get()
+QEchoXProjectsManager& QEchoXProjectsManager::Get()
 {
-	static QProjectsManager Instance;
+	static QEchoXProjectsManager Instance;
 	return Instance;
 }
 
-void QProjectsManager::loadProjects()
+void QEchoXProjectsManager::loadProjects()
 {
 	for (const QFileInfo& fileInfo : getProjectsDir().entryInfoList(QDir::Filter::Files | QDir::Filter::NoDotAndDotDot)) {
 		QString suffix = fileInfo.suffix();
@@ -21,7 +21,7 @@ void QProjectsManager::loadProjects()
 	Q_EMIT asProjectsChanged();
 }
 
-QEchoXProject* QProjectsManager::createProject(QString inName)
+QEchoXProject* QEchoXProjectsManager::createProject(QString inName)
 {
 	if (inName.isEmpty())
 		inName = "NewProject";
@@ -34,18 +34,18 @@ QEchoXProject* QProjectsManager::createProject(QString inName)
 	return project;
 }
 
-QProjectsManager::QProjectsManager()
+QEchoXProjectsManager::QEchoXProjectsManager()
 {
 }
 
-void QProjectsManager::ensureProjectDir()
+void QEchoXProjectsManager::ensureProjectDir()
 {
 	QDir dir = getProjectsDir();
 	if (!dir.exists())
 		dir.mkpath(".");
 }
 
-void QProjectsManager::addProject(QEchoXProject* inProject)
+void QEchoXProjectsManager::addProject(QEchoXProject* inProject)
 {
 	if (inProject) {
 		mProjectList << inProject;
@@ -53,7 +53,7 @@ void QProjectsManager::addProject(QEchoXProject* inProject)
 	}
 }
 
-void QProjectsManager::removeProject(QEchoXProject* inProject)
+void QEchoXProjectsManager::removeProject(QEchoXProject* inProject)
 {
 	mProjectList.removeOne(inProject);
 	Q_EMIT asProjectRemoved(inProject);
@@ -63,12 +63,12 @@ void QProjectsManager::removeProject(QEchoXProject* inProject)
 	inProject->deleteLater();
 }
 
-QDir QProjectsManager::getProjectsDir() const
+QDir QEchoXProjectsManager::getProjectsDir() const
 {
 	return mProjectDir;
 }
 
-QString QProjectsManager::makeUniqueName(QString inName) const
+QString QEchoXProjectsManager::makeUniqueName(QString inName) const
 {
 	QSet<QString> nameSet;
 	for (auto proj : mProjectList) {
@@ -84,12 +84,12 @@ QString QProjectsManager::makeUniqueName(QString inName) const
 	return newName;
 }
 
-const QList<QEchoXProject*>& QProjectsManager::getProjectList()
+const QList<QEchoXProject*>& QEchoXProjectsManager::getProjectList()
 {
 	return mProjectList;
 }
 
-void QProjectsManager::setCurrentProject(QEchoXProject* inProject)
+void QEchoXProjectsManager::setCurrentProject(QEchoXProject* inProject)
 {
 	if (mCurrentProject != inProject) {
 		if (mCurrentProject) {
@@ -101,17 +101,17 @@ void QProjectsManager::setCurrentProject(QEchoXProject* inProject)
 			loadProjectFull(mCurrentProject);
 			mCurrentProject->activate();
 			Q_EMIT asCurrentProjectChanged();
-			connect(mCurrentProject, &QEchoXProject::asComponentsChanged, this, &QProjectsManager::asCurrentProjectComponentChanged);
+			connect(mCurrentProject, &QEchoXProject::asComponentsChanged, this, &QEchoXProjectsManager::asCurrentProjectComponentChanged);
 		}
 	}
 }
 
-QEchoXProject* QProjectsManager::getCurrentProject()
+QEchoXProject* QEchoXProjectsManager::getCurrentProject()
 {
 	return mCurrentProject;
 }
 
-bool QProjectsManager::saveProject(QEchoXProject* inProject)
+bool QEchoXProjectsManager::saveProject(QEchoXProject* inProject)
 {
 	Q_ASSERT(inProject);
 	ensureProjectDir();
@@ -130,7 +130,7 @@ bool QProjectsManager::saveProject(QEchoXProject* inProject)
 	return false;
 }
 
-QEchoXProject* QProjectsManager::loadProjectOnlyHeader(QFile file)
+QEchoXProject* QEchoXProjectsManager::loadProjectOnlyHeader(QFile file)
 {
 	if (file.open(QFile::ReadOnly)) {
 		QDataStream stream(&file);
@@ -150,7 +150,7 @@ QEchoXProject* QProjectsManager::loadProjectOnlyHeader(QFile file)
 	return nullptr;
 }
 
-bool QProjectsManager::loadProjectFull(QEchoXProject* inProject)
+bool QEchoXProjectsManager::loadProjectFull(QEchoXProject* inProject)
 {
 	if (!inProject)
 		return false;
@@ -168,27 +168,29 @@ bool QProjectsManager::loadProjectFull(QEchoXProject* inProject)
 	return false;
 }
 
-IEchoXComponent* QProjectsManager::createItemByName(const QString& inItemTypeName)
+IEchoXComponent* QEchoXProjectsManager::createComponentByName(const QString& inComponentTypeName)
 {
-	if (auto meteObject = mComponentTypeInfoMap.value(inItemTypeName).metaObject) {
-		return qobject_cast<IEchoXComponent*>(meteObject->newInstance());
+	for (auto& componentType : mComponentTypeList) {
+		if (componentType.name == inComponentTypeName) {
+			return qobject_cast<IEchoXComponent*>(componentType.metaObject->newInstance());
+		}
 	}
 	return nullptr;
 }
 
-QList<QProjectsManager::ComponentTypesInfo> QProjectsManager::getComponentTypeInfos()
+const QList<QEchoXProjectsManager::ComponentTypesInfo>& QEchoXProjectsManager::getComponentTypeInfos()
 {
-	return mComponentTypeInfoMap.values();
+	return mComponentTypeList;
 }
 
-void QProjectsManager::registerItemType(const QMetaObject* inMetaObject, const QString& inCategory)
+void QEchoXProjectsManager::registerComponentType(const QMetaObject* inMetaObject, const QString& inCategory)
 {
 	qRegisterMetaType(inMetaObject->metaType());
 	ComponentTypesInfo info;
 	info.name = inMetaObject->className();
 	info.category = inCategory;
 	info.metaObject = inMetaObject;
-	mComponentTypeInfoMap.insert(inMetaObject->className(), info);
+	mComponentTypeList << info;
 	bool isInvaild = false;
 	for (int i = 0; i < inMetaObject->constructorCount(); i++) {
 		QMetaMethod method = inMetaObject->constructor(i);
@@ -202,7 +204,9 @@ void QProjectsManager::registerItemType(const QMetaObject* inMetaObject, const Q
 	Q_EMIT asComponentTypeInfoChanged();
 }
 
-void QProjectsManager::unregisterItemType(const QMetaObject* inMetaObject)
+void QEchoXProjectsManager::unregisterComponentType(const QMetaObject* inMetaObject)
 {
-	mComponentTypeInfoMap.remove(inMetaObject->className());
+	mComponentTypeList.removeIf([inMetaObject](const ComponentTypesInfo& info) {
+		return info.metaObject == inMetaObject;
+	});
 }

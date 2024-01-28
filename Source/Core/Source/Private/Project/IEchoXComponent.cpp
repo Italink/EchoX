@@ -17,3 +17,18 @@ void IEchoXComponent::deactivateInternal()
 	bActivated = false;
 }
 
+void IEchoXComponent::setActivated(bool inActivated)
+{
+	if (inActivated && !bActivated) {
+		activate();
+	}
+	else if (!inActivated&& bActivated) {
+		deactivate();
+	}
+}
+
+bool IEchoXComponent::getActivated() const
+{
+	return bActivated;
+}
+

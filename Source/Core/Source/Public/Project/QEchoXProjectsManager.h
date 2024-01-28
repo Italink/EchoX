@@ -1,5 +1,5 @@
-#ifndef QProjectsManager_h__
-#define QProjectsManager_h__
+#ifndef QEchoXProjectsManager_h__
+#define QEchoXProjectsManager_h__
 
 #include <QObject>
 #include <QHash>
@@ -7,7 +7,7 @@
 #include "QEchoXProject.h"
 #include "EchoXCoreAPI.h"
 
-class ECHOXCORE_API QProjectsManager : public QObject {
+class ECHOXCORE_API QEchoXProjectsManager : public QObject {
 	Q_OBJECT
 public:
 	struct ComponentTypesInfo{
@@ -16,7 +16,7 @@ public:
 		const QMetaObject* metaObject;
 	};
 	inline static QString ProjectSuffix = "echox";
-	static QProjectsManager& Get();
+	static QEchoXProjectsManager& Get();
 	void loadProjects();
 
 	QEchoXProject* createProject(QString inName);
@@ -33,11 +33,11 @@ public:
 	QEchoXProject* loadProjectOnlyHeader(QFile file);
 	bool loadProjectFull(QEchoXProject* inProject);
 
-	IEchoXComponent* createItemByName(const QString& inItemTypeName);
-	QList<ComponentTypesInfo> getComponentTypeInfos();
+	IEchoXComponent* createComponentByName(const QString& inComponentTypeName);
+	const QList<ComponentTypesInfo>& getComponentTypeInfos();
 
-	void registerItemType(const QMetaObject* inMetaObject,const QString& inCategory = "Common");
-	void unregisterItemType(const QMetaObject* inMetaObject);
+	void registerComponentType(const QMetaObject* inMetaObject,const QString& inCategory = "Common");
+	void unregisterComponentType(const QMetaObject* inMetaObject);
 Q_SIGNALS:
 	void asComponentTypeInfoChanged();
 	void asProjectsChanged();
@@ -46,14 +46,14 @@ Q_SIGNALS:
 	void asCurrentProjectChanged();
 	void asCurrentProjectComponentChanged();
 private:
-	QProjectsManager();
+	QEchoXProjectsManager();
 	void ensureProjectDir();
 	void addProject(QEchoXProject* inProject);
 private:
 	QDir mProjectDir = QDir("./Projects");
-	QMap<QString, ComponentTypesInfo> mComponentTypeInfoMap;
+	QList<ComponentTypesInfo> mComponentTypeList;
 	QList<QEchoXProject*> mProjectList;
 	QEchoXProject* mCurrentProject = nullptr;
 };
 
-#endif // QProjectsManager_h__
+#endif // QEchoXProjectsManager_h__

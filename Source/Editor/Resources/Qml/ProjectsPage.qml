@@ -38,7 +38,7 @@ ColumnLayout{
         Button{
             text: qsTr("Create New Project")
             onClicked: {
-                ProjectsModel.createNewProject()
+                Controller.createNewProject()
             }
         }
     }

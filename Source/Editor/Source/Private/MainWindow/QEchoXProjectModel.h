@@ -1,20 +1,20 @@
-#ifndef QEchoXProjectsModel_h__
-#define QEchoXProjectsModel_h__
+#ifndef QEchoXProjectModel_h__
+#define QEchoXProjectModel_h__
 
 #include <QTreeWidget>
 #include <QObject>
 #include <QMap>
 #include <QAbstractItemModel>
-#include "Project/QEchoXProjectsManager.h"
+#include "Project/QEchoXProject.h"
 
-class QEchoXProjectsModel : public QAbstractItemModel {
+class QEchoXProjectModel : public QAbstractItemModel {
     Q_OBJECT
         enum Roles {
         name = 0,
     };
 public:
-    QEchoXProjectsModel(QObject* parent = 0);
-    ~QEchoXProjectsModel() {}
+    QEchoXProjectModel(QObject* parent = 0);
+    ~QEchoXProjectModel() {}
     QVariant data(const QModelIndex& index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
@@ -23,10 +23,9 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QHash<int, QByteArray> roleNames() const override;
     void refresh();
-    Q_INVOKABLE void notifyProjectDoubleClicked(int index);
-Q_SIGNALS:
+    Q_INVOKABLE IEchoXComponent* getComponentByIndex(int index);
 private:
-    QList<QEchoXProject*> mProjectList;
+	QEchoXProject* mCurrentProject = nullptr;
 };
 
-#endif // QEchoXProjectsModel_h__
+#endif // QEchoXProjectModel_h__

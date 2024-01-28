@@ -4,7 +4,7 @@
 QEchoXProjectsModel::QEchoXProjectsModel(QObject* parent)
 	: QAbstractItemModel(parent) {
     refresh();
-    connect(&QProjectsManager::Get(), &QProjectsManager::asProjectsChanged, this, &QEchoXProjectsModel::refresh);
+    connect(&QEchoXProjectsManager::Get(), &QEchoXProjectsManager::asProjectsChanged, this, &QEchoXProjectsModel::refresh);
 }
 
 QVariant QEchoXProjectsModel::data(const QModelIndex& index, int role) const {
@@ -39,21 +39,15 @@ int QEchoXProjectsModel::rowCount(const QModelIndex& parent) const {
 
 void QEchoXProjectsModel::refresh() {
     beginResetModel();
-    mProjectList = QProjectsManager::Get().getProjectList();
+    mProjectList = QEchoXProjectsManager::Get().getProjectList();
     endResetModel();
 }
 
 void QEchoXProjectsModel::notifyProjectDoubleClicked(int index)
 {
-    qDebug() << index;
     if (QEchoXProject* project = mProjectList.value(index)) {
         QEchoXController::Get()->openProjectPage(project);
     }
-}
-
-void QEchoXProjectsModel::createNewProject()
-{
-    QProjectsManager::Get().createProject("NewProject");
 }
 
 int QEchoXProjectsModel::columnCount(const QModelIndex& parent) const {
