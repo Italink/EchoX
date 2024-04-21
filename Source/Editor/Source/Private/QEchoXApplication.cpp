@@ -18,6 +18,7 @@
 #include "DetailView/QQuickDetailsViewMananger.h"
 #include "DetailView/QQmlHelper.h"
 #include "QEchoXPluginsSettings.h"
+#include "qquickwidget.h"
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QEchoXCoreApplication(argc, argv)
@@ -84,8 +85,8 @@ void QEchoXApplication::preInitialize()
 #else
 	qputenv("QT_QUICK_CONTROLS_STYLE", "Default");
 #endif
-	//QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-	//QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 }
 
 QEchoXMainWindow* QEchoXApplication::getMainEditor() const

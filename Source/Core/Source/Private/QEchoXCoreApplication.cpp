@@ -1,6 +1,5 @@
 #include "QEchoXCoreApplication.h"
 #include "Project/Widget/3D/QWindow3D.h"
-#include "Project/Widget/3D/QWindow3DEditor.h"
 #include "Render/RHI/QRhiHelper.h"
 #include "tracy/Tracy.hpp"
 

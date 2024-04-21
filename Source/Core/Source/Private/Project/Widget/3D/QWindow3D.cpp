@@ -1,6 +1,5 @@
 #include "QWindow3D.h"
 #include "QWindow3DEffect.h"
-#include "QWindow3DEditor.h"
 #include <QApplication>
 #include <private/qwidgetwindow_p.h>
 #include <private/qcoreapplication_p.h>
