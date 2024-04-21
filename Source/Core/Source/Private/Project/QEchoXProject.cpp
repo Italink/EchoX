@@ -38,7 +38,7 @@ QFile QEchoXProject::getProjectFile() const
 	return QEchoXProjectsManager::Get().getProjectsDir().filePath(getProjectName() + "." + QEchoXProjectsManager::ProjectSuffix);
 }
 
-QList<IEchoXComponent*> QEchoXProject::getItems() const
+QList<IEchoXItem*> QEchoXProject::getItems() const
 {
 	return mComponents;
 }
@@ -58,7 +58,7 @@ bool QEchoXProject::save()
 	return QEchoXProjectsManager::Get().saveProject(this);
 }
 
-void QEchoXProject::setItems(QList<IEchoXComponent*> val)
+void QEchoXProject::setItems(QList<IEchoXItem*> val)
 {
 	mComponents = val;
 }
@@ -68,7 +68,7 @@ void QEchoXProject::setThumbnail(QPixmap inPixmap)
 	mThumbnail = inPixmap.scaled(QSize(400, 400));
 }
 
-void QEchoXProject::addComponent(IEchoXComponent* inItem)
+void QEchoXProject::addComponent(IEchoXItem* inItem)
 {
 	mComponents << inItem;
 	inItem->setParent(this);
@@ -78,14 +78,14 @@ void QEchoXProject::addComponent(IEchoXComponent* inItem)
 	}
 }
 
-void QEchoXProject::removeComponent(IEchoXComponent* inItem)
+void QEchoXProject::removeComponent(IEchoXItem* inItem)
 {
 	if (mComponents.removeOne(inItem)) {
 		Q_EMIT asComponentsChanged();
 	}
 }
 
-const QList<IEchoXComponent*>& QEchoXProject::getComponents() const
+const QList<IEchoXItem*>& QEchoXProject::getComponents() const
 {
 	return mComponents;
 }

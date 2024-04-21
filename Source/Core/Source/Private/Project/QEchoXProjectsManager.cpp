@@ -168,29 +168,29 @@ bool QEchoXProjectsManager::loadProjectFull(QEchoXProject* inProject)
 	return false;
 }
 
-IEchoXComponent* QEchoXProjectsManager::createComponentByName(const QString& inComponentTypeName)
+IEchoXItem* QEchoXProjectsManager::createItemByName(const QString& inItemTypeName)
 {
-	for (auto& componentType : mComponentTypeList) {
-		if (componentType.name == inComponentTypeName) {
-			return qobject_cast<IEchoXComponent*>(componentType.metaObject->newInstance());
+	for (auto& componentType : mItemTypeList) {
+		if (componentType.name == inItemTypeName) {
+			return qobject_cast<IEchoXItem*>(componentType.metaObject->newInstance());
 		}
 	}
 	return nullptr;
 }
 
-const QList<QEchoXProjectsManager::ComponentTypesInfo>& QEchoXProjectsManager::getComponentTypeInfos()
+const QList<QEchoXProjectsManager::ItemTypeInfo>& QEchoXProjectsManager::getItemTypeInfos()
 {
-	return mComponentTypeList;
+	return mItemTypeList;
 }
 
-void QEchoXProjectsManager::registerComponentType(const QMetaObject* inMetaObject, const QString& inCategory)
+void QEchoXProjectsManager::registerItemType(const QMetaObject* inMetaObject, const QString& inCategory)
 {
 	qRegisterMetaType(inMetaObject->metaType());
-	ComponentTypesInfo info;
+	ItemTypeInfo info;
 	info.name = inMetaObject->className();
 	info.category = inCategory;
 	info.metaObject = inMetaObject;
-	mComponentTypeList << info;
+	mItemTypeList << info;
 	bool isInvaild = false;
 	for (int i = 0; i < inMetaObject->constructorCount(); i++) {
 		QMetaMethod method = inMetaObject->constructor(i);
@@ -201,12 +201,12 @@ void QEchoXProjectsManager::registerComponentType(const QMetaObject* inMetaObjec
 	if (!isInvaild) {
 		qCFatal(EchoX) << "must use Q_INVOKABLE";
 	}
-	Q_EMIT asComponentTypeInfoChanged();
+	Q_EMIT asItemTypeInfoChanged();
 }
 
-void QEchoXProjectsManager::unregisterComponentType(const QMetaObject* inMetaObject)
+void QEchoXProjectsManager::unregisterItemType(const QMetaObject* inMetaObject)
 {
-	mComponentTypeList.removeIf([inMetaObject](const ComponentTypesInfo& info) {
+	mItemTypeList.removeIf([inMetaObject](const ItemTypeInfo& info) {
 		return info.metaObject == inMetaObject;
 	});
 }

@@ -10,7 +10,7 @@
 class ECHOXCORE_API QEchoXProjectsManager : public QObject {
 	Q_OBJECT
 public:
-	struct ComponentTypesInfo{
+	struct ItemTypeInfo{
 		QString name;
 		QString category;
 		const QMetaObject* metaObject;
@@ -33,13 +33,13 @@ public:
 	QEchoXProject* loadProjectOnlyHeader(QFile file);
 	bool loadProjectFull(QEchoXProject* inProject);
 
-	IEchoXComponent* createComponentByName(const QString& inComponentTypeName);
-	const QList<ComponentTypesInfo>& getComponentTypeInfos();
+	IEchoXItem* createItemByName(const QString& inItemTypeName);
+	const QList<ItemTypeInfo>& getItemTypeInfos();
 
-	void registerComponentType(const QMetaObject* inMetaObject,const QString& inCategory = "Common");
-	void unregisterComponentType(const QMetaObject* inMetaObject);
+	void registerItemType(const QMetaObject* inMetaObject,const QString& inCategory = "Common");
+	void unregisterItemType(const QMetaObject* inMetaObject);
 Q_SIGNALS:
-	void asComponentTypeInfoChanged();
+	void asItemTypeInfoChanged();
 	void asProjectsChanged();
 	void asProjectCreated(QEchoXProject*);
 	void asProjectRemoved(QEchoXProject*);
@@ -51,7 +51,7 @@ private:
 	void addProject(QEchoXProject* inProject);
 private:
 	QDir mProjectDir = QDir("./Projects");
-	QList<ComponentTypesInfo> mComponentTypeList;
+	QList<ItemTypeInfo> mItemTypeList;
 	QList<QEchoXProject*> mProjectList;
 	QEchoXProject* mCurrentProject = nullptr;
 };

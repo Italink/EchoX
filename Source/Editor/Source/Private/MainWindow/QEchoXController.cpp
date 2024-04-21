@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QQuickWindow>
 #include "QEchoXProjectsModel.h"
 #include "QEchoXComponentModel.h"
 #include "QEchoXProjectModel.h"
@@ -26,8 +27,9 @@ QEchoXController* QEchoXController::Get()
 	return &Instance;
 }
 
-void QEchoXController::initialize(QQuickText* inPageNameText, QQuickStackView* inStackView)
+void QEchoXController::initialize(QQuickWindow* window, QQuickText* inPageNameText, QQuickStackView* inStackView)
 {
+	mMainWindow = window;
 	mPageNameText = inPageNameText;
 	mStackView = inStackView;
 	QQmlEngine* engine = qmlEngine(mStackView);
@@ -40,7 +42,7 @@ void QEchoXController::initialize(QQuickText* inPageNameText, QQuickStackView* i
 		if(QQuickItem* item = mStackView->currentItem())
 			mPageNameText->setText(item->objectName());
 	});
-	connect(mComponentModel, &QEchoXComponentModel::asItemDropped, this, [](QPoint center, IEchoXComponent* inComponent) {
+	connect(mComponentModel, &QEchoXComponentModel::asItemDropped, this, [](QPoint center, IEchoXItem* inComponent) {
 		QEchoXProject* project = QEchoXProjectsManager::Get().getCurrentProject();
 		if (project) {
 			project->addComponent(inComponent);
@@ -69,4 +71,11 @@ void QEchoXController::goBack()
 void QEchoXController::createNewProject()
 {
 	QEchoXProjectsManager::Get().createProject("NewProject");
+}
+
+void QEchoXController::requestActivateMainWindow()
+{
+	if (mMainWindow) {
+		mMainWindow->requestActivate();
+	}
 }

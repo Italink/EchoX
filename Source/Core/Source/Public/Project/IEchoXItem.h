@@ -1,18 +1,17 @@
-#ifndef IEchoXComponent_h__
-#define IEchoXComponent_h__
+#ifndef IEchoXItem_h__
+#define IEchoXItem_h__
 
 #include <QObject>
 #include "EchoXCoreAPI.h"
 
-class ECHOXCORE_API IEchoXComponent : public QObject {
+class ECHOXCORE_API IEchoXItem : public QObject {
 	Q_OBJECT
 public:
-	bool isActivated() const;
 	void activateInternal();
 	void deactivateInternal();
 
+	bool isActivated() const;
 	void setActivated(bool inActivated);
-	bool getActivated() const;
 protected:
 	virtual void activate() {};
 	virtual void deactivate() {};
@@ -20,4 +19,4 @@ private:
 	bool bActivated = false;
 };
 
-#endif // IEchoXComponent_h__
+#endif // IEchoXItem_h__

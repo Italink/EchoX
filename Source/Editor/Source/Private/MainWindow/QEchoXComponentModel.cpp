@@ -6,7 +6,7 @@
 #include <QApplication>
 #include <QDrag>
 #include <QScreen>
-#include "Project/Widget/IEchoXWidgetComponent.h"
+#include "Project/Widget/IEchoXWidgetItem.h"
 #include "Utils/LoggingCategory.h"
 
 class QEchoXDropWidget :public QWidget {
@@ -47,7 +47,7 @@ private:
 QEchoXComponentModel::QEchoXComponentModel(QObject* parent)
 	: QAbstractItemModel(parent) {
     refresh();
-    connect(&QEchoXProjectsManager::Get(), &QEchoXProjectsManager::asComponentTypeInfoChanged, this, &QEchoXComponentModel::refresh);
+    connect(&QEchoXProjectsManager::Get(), &QEchoXProjectsManager::asItemTypeInfoChanged, this, &QEchoXComponentModel::refresh);
 }
 
 QVariant QEchoXComponentModel::data(const QModelIndex& index, int role) const {
@@ -65,7 +65,7 @@ QModelIndex QEchoXComponentModel::index(int row, int column, const QModelIndex& 
     if (!hasIndex(row, column, parent))
         return QModelIndex();
     if (!parent.isValid()) {
-        return createIndex(row, column, QEchoXProjectsManager::Get().getComponentTypeInfos()[row].metaObject);
+        return createIndex(row, column, QEchoXProjectsManager::Get().getItemTypeInfos()[row].metaObject);
     }
     return QModelIndex();
 }
@@ -76,7 +76,7 @@ QModelIndex QEchoXComponentModel::parent(const QModelIndex& index) const {
 
 int QEchoXComponentModel::rowCount(const QModelIndex& parent) const {
     if (!parent.isValid())
-        return QEchoXProjectsManager::Get().getComponentTypeInfos().size();
+        return QEchoXProjectsManager::Get().getItemTypeInfos().size();
     return 0;
 }
 
@@ -86,12 +86,12 @@ void QEchoXComponentModel::refresh() {
 }
 
 void QEchoXComponentModel::notifyBeginDrag(int index){
-    const QEchoXProjectsManager::ComponentTypesInfo& comp = QEchoXProjectsManager::Get().getComponentTypeInfos().value(index);
-	if (IEchoXComponent* item = QEchoXProjectsManager::Get().createComponentByName(comp.name)) {
+    const QEchoXProjectsManager::ItemTypeInfo& comp = QEchoXProjectsManager::Get().getItemTypeInfos().value(index);
+	if (IEchoXItem* item = QEchoXProjectsManager::Get().createItemByName(comp.name)) {
 		QDrag drag(this);
 		drag.setMimeData(this->mimeData({ this->index(index,0)}));
 		QPixmap pixmap;
-		IEchoXWidgetComponent* widgetItem = qobject_cast<IEchoXWidgetComponent*>(item);
+		IEchoXWidgetItem* widgetItem = qobject_cast<IEchoXWidgetItem*>(item);
 		if (widgetItem) {
 			QWidget* widget = widgetItem->widget();
 			widget->resize(widgetItem->desiredSize());

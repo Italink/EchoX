@@ -9,7 +9,7 @@
 #include "Settings/QSettingsManager.h"
 #include "Settings/QEchoXStyleSettings.h"
 #include "Plugin/QEnginePluginManager.h"
-#include "Project/Widget/QEchoXWidgetComponent_Button.h"
+#include "Project/Widget/QEchoXWidgetItem_Button.h"
 #include "QAudioAnalyseSettings.h"
 #include "QSmtcSettings.h"
 #include "Project/Widget/VFX/QWidgetVFXManager.h"
@@ -18,7 +18,8 @@
 #include "DetailView/QQuickDetailsViewMananger.h"
 #include "DetailView/QQmlHelper.h"
 #include "QEchoXPluginsSettings.h"
-#include "qquickwidget.h"
+#include "Render/RHI/QRhiTransparencyWindowContainter.h"
+#include <QScreen>
 
 QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	: QEchoXCoreApplication(argc, argv)
@@ -37,7 +38,7 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	QAudioAnalyseSettings::Register();
 	QSmtcSettings::Register();
 
-	QEchoXProjectsManager::Get().registerComponentType(&QEchoXWidgetComponent_Button::staticMetaObject);
+	QEchoXProjectsManager::Get().registerItemType(&QEchoXWidgetItem_Button::staticMetaObject);
 
 	QEnginePluginManager::Get().loadPlugins();
 	for (auto& pluginHandler : QEnginePluginManager::Get().getPluginHandlers()) {
@@ -65,6 +66,20 @@ QEchoXApplication::QEchoXApplication(int& argc, char** argv)
 	mQmlEngine->rootContext()->setContextProperty("EchoXStyle", QEchoXStyleSettings::Get());
 	mQmlEngine->rootContext()->setContextProperty("Controller", QEchoXController::Get());
 	mQmlEngine->load(url);
+
+	mRhiParams.backend = QRhi::D3D12;
+
+	mItemControlLayerRenderer = new QEchoXItemControlLayerRenderer(mRhiParams);
+	mItemControlLayerRenderer->setParent(this);
+
+	mItemControlLayerViewport = QRhiTransparencyWindowContainter::create(mItemControlLayerRenderer->maybeWindow(), mRhiParams.backend);
+	mItemControlLayerViewport->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+	mItemControlLayerViewport->setAttribute(Qt::WA_TranslucentBackground);
+	mItemControlLayerViewport->setAttribute(Qt::WA_Mapped);
+	mItemControlLayerViewport->setGeometry(QRect(0, 0, 1920, 1080));
+	mItemControlLayerViewport->show();
+
+	onScreenSizeChanged();
 }
 
 QEchoXApplication::~QEchoXApplication() {
@@ -87,11 +102,6 @@ void QEchoXApplication::preInitialize()
 #endif
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-}
-
-QEchoXMainWindow* QEchoXApplication::getMainEditor() const
-{
-	return mMainWindow;
 }
 
 QSystemTrayIcon* QEchoXApplication::getSystemTrayIcon() const
@@ -117,5 +127,15 @@ void QEchoXApplication::onActivatedSysTrayIcon(QSystemTrayIcon::ActivationReason
 	//default:
 	//	break;
 	//}
+}
+
+void QEchoXApplication::onScreenSizeChanged()
+{
+	QList<QScreen*> screens = this->screens();
+	QRect allGeomtry;
+	for (auto screen : screens) {
+		allGeomtry |= screen->availableGeometry();
+	}
+	mItemControlLayerViewport->setGeometry(allGeomtry);
 }
 

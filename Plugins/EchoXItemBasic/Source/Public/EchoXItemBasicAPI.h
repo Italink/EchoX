@@ -1,0 +1,12 @@
+#ifndef ECHOXITEMBASIC_API_H
+#define ECHOXITEMBASIC_API_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(ECHOXITEMBASIC_LIBRARY)
+#  define ECHOXITEMBASIC_API Q_DECL_EXPORT
+#else
+#  define ECHOXITEMBASIC_API Q_DECL_IMPORT
+#endif
+
+#endif // ECHOXITEMBASIC_API_H

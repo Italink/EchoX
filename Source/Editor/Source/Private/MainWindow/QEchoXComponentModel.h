@@ -26,7 +26,7 @@ public:
 
     Q_INVOKABLE void notifyBeginDrag(int index);
 Q_SIGNALS:
-	void asItemDropped(QPoint, IEchoXComponent*);
+	void asItemDropped(QPoint, IEchoXItem*);
 };
 
 #endif // QEchoXComponentModel_h__

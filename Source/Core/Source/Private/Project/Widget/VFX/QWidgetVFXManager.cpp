@@ -28,7 +28,7 @@ QWidgetVFXManager::QWidgetVFXManager()
 {
 	QWidgetVFXSettings::Register();
 
-	mViewport = QRhiTransparencyWindowContainter::create(mRenderer->maybeWindow(),mRhiParams.backend);
+	mViewport = QRhiTransparencyWindowContainter::create(mRenderer->maybeWindow(), mRhiParams.backend);
 	mViewport->setAttribute(Qt::WA_TransparentForMouseEvents);
 	mViewport->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
 	mViewport->setAttribute(Qt::WA_TranslucentBackground);

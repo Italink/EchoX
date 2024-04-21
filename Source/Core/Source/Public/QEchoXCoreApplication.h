@@ -18,4 +18,4 @@ protected:
 	QSharedPointer<QRhi> mRhi;
 };
 
-#endif // QEchoXCoreApplication_h__
+#endif //QEchoXCoreApplication_h__

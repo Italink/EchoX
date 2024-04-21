@@ -1,15 +1,15 @@
-#ifndef IEchoXWidgetComponent_h__
-#define IEchoXWidgetComponent_h__
+#ifndef IEchoXWidgetItem_h__
+#define IEchoXWidgetItem_h__
 
-#include "Project/IEchoXComponent.h"
+#include "Project/IEchoXItem.h"
 #include <QWidget>
 #include "Project/Widget/3D/QWindow3D.h"
 
-class ECHOXCORE_API IEchoXWidgetComponent: public IEchoXComponent {
+class ECHOXCORE_API IEchoXWidgetItem: public IEchoXItem {
 	Q_OBJECT
 	Q_PROPERTY(QQuadF Quad READ getQuad WRITE setQuad)
 public:
-	IEchoXWidgetComponent();
+	IEchoXWidgetItem();
 
 	virtual QWidget* widget() = 0;
 	virtual QSize desiredSize() = 0;
@@ -24,4 +24,4 @@ private:
 	QSharedPointer<QWindow3D> mWindow;
 };
 
-#endif // IEchoXWidgetComponent_h__
+#endif // IEchoXWidgetItem_h__

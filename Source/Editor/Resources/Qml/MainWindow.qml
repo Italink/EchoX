@@ -10,8 +10,9 @@ Window {
     height: 800
     color: darkStyle.windowBackgroundColor
     title: qsTr("EchoX")
+    flags: Qt.WindowStaysOnTopHint
     Component.onCompleted: {
-        //windowAgent.setup(window)
+        windowAgent.setup(window)
         window.visible = true
     }
 
@@ -29,7 +30,7 @@ Window {
         }
         height: 32
         color: window.active ? "#3C3C3C" : "#505050"
-        //Component.onCompleted: windowAgent.setTitleBar(titleBar)
+        Component.onCompleted: windowAgent.setTitleBar(titleBar)
 
         IconButton {
             id: goBackButton
@@ -42,7 +43,7 @@ Window {
             height: parent.height
             source: "qrc:///Resources/Icon/back.svg"
             onClicked: Controller.goBack()
-            //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
+            Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
         }
 
         Text {
@@ -72,7 +73,7 @@ Window {
                 height: parent.height
                 source: "qrc:///Resources/Icon/setting-fill.svg"
                 onClicked: Controller.openSettingsPage()
-                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
+                Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
             }
 
             IconButton {
@@ -80,7 +81,7 @@ Window {
                 height: parent.height
                 source: "qrc:///Resources/Icon/minimize.svg"
                 onClicked: window.showMinimized()
-                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
+                Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Minimize, minButton)
             }
 
             IconButton {
@@ -94,7 +95,7 @@ Window {
                         window.showMaximized()
                     }
                 }
-                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Maximize, maxButton)
+                Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Maximize, maxButton)
             }
 
             IconButton {
@@ -116,7 +117,7 @@ Window {
                     }
                 }
                 onClicked: window.close()
-                //Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Close, closeButton)
+                Component.onCompleted: windowAgent.setSystemButton(WindowAgent.Close, closeButton)
             }
         }
     }
@@ -162,7 +163,7 @@ Window {
          }
 
         Component.onCompleted:{
-            Controller.initialize(pageName,stackView)
+            Controller.initialize(window, pageName, stackView)
         }
     }
     

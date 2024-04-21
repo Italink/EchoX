@@ -10,7 +10,7 @@ QEchoXProjectModel::QEchoXProjectModel(QObject* parent)
 QVariant QEchoXProjectModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid())
         return QVariant();
-    IEchoXComponent* component = static_cast<IEchoXComponent*>(index.internalPointer());
+    IEchoXItem* component = static_cast<IEchoXItem*>(index.internalPointer());
     return component->metaObject()->className();
 }
 
@@ -47,7 +47,7 @@ void QEchoXProjectModel::refresh() {
     endResetModel();
 }
 
-IEchoXComponent* QEchoXProjectModel::getComponentByIndex(int index)
+IEchoXItem* QEchoXProjectModel::getComponentByIndex(int index)
 {
     return mCurrentProject->getComponents().value(index);
 }

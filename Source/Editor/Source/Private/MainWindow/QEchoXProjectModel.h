@@ -23,7 +23,7 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QHash<int, QByteArray> roleNames() const override;
     void refresh();
-    Q_INVOKABLE IEchoXComponent* getComponentByIndex(int index);
+    Q_INVOKABLE IEchoXItem* getComponentByIndex(int index);
 private:
 	QEchoXProject* mCurrentProject = nullptr;
 };

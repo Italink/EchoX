@@ -15,7 +15,7 @@ private:
 	void addVFX(QWidget* inWidget, IWidgetVFX* inVFX);
 private:
 	QRhiHelper::InitParams mRhiParams;
-	QWidgetVFXRenderer* mRenderer;
+	QWidgetVFXRenderer* mRenderer = nullptr;
 	QWidget* mViewport = nullptr;
 };
 

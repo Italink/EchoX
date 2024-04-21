@@ -5,6 +5,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "EchoXEditorAPI.h"
+#include "QEchoXItemControlLayerRenderer.h"
 
 class QEchoXMainWindow;
 class QEchoXMenu;
@@ -18,15 +19,18 @@ public:
 	~QEchoXApplication();
 	static void preInitialize();
 
-	QEchoXMainWindow* getMainEditor() const;
 	QSystemTrayIcon* getSystemTrayIcon() const;
 protected:
 	void onActivatedSysTrayIcon(QSystemTrayIcon::ActivationReason reason);
+	void onScreenSizeChanged();
 private:
-	QEchoXMainWindow* mMainWindow = nullptr;
 	QSystemTrayIcon* mSysIcon = nullptr;
 	QEchoXMenu* mSysTrayMenu = nullptr;
 	QQmlApplicationEngine* mQmlEngine;
+
+	QRhiHelper::InitParams mRhiParams;
+	QEchoXItemControlLayerRenderer* mItemControlLayerRenderer = nullptr;
+	QWidget* mItemControlLayerViewport = nullptr;
 };
 
 #endif // QEchoXApplication_h__
